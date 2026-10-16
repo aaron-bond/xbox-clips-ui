@@ -1,6 +1,6 @@
 # UI Plan — v1
 
-**Status:** proposed, not yet built. Written 2026-10-16.
+**Status:** scaffolded and tested locally; not yet deployed. Written 2026-10-16.
 **Where this stands right now, and what to do next: §11.**
 
 This is the plan for `xbox-clips-ui`, the frontend of a social hub for
@@ -117,9 +117,18 @@ work on direct visits and reloads.
 **TanStack Query for API data.** It caches responses across navigation,
 so going from a shelf to a clip and back does not spend another API
 call, and it removes duplicate in-flight requests. It is configured to
-match the shared budget: no automatic retries on 4xx, no refetch on
-window focus, and a clip's cached data is considered stale 5 minutes
-before its `media.expiresAt`.
+match the shared budget: no automatic retries at all, no refetch on
+window focus or reconnect, and a clip's cached data is considered stale
+5 minutes before its `media.expiresAt`. Retries are off even for server
+errors, because a retry is a request the visitor did not ask for.
+
+**The shelf requests the profile first, then clips by XUID.** Requesting
+both by gamertag in parallel would make the API resolve the same
+gamertag twice on a first visit, spending an extra upstream search.
+
+**Opening a clip from a shelf reuses the shelf's data.** The clip page is
+seeded from the cached list, so it costs no request while the clip's
+media URL is still fresh.
 
 **CSS Modules for styling; a component library is optional and
 deferred.** CSS Modules are built into Vite and need no dependency, which
@@ -204,8 +213,8 @@ request to `/clip/*`:
 
 ```
 crawler or person → xboxclips.io/clip/<xuid>/<clipId>
-  1. validate both params; invalid → serve the page unchanged
-  2. get the base HTML from the static build
+  1. get the root page from the static build (ASSETS)
+  2. validate both params; invalid → serve the page unchanged
   3. fetch preview metadata from the API over a service binding, with a short timeout
   4. rewrite <head>: <title>, og:title, og:description, og:image, og:url, twitter:card
   5. return the HTML
@@ -270,9 +279,9 @@ zone is on Cloudflare. It is not needed for v1.
   `application/octet-stream`, not `image/png`. Whether Discord, WhatsApp,
   iMessage and Slack accept that is untested. If they reject it, previews
   have a title but no image.
-- **Q3 — Base HTML in the function.** Whether `next()` returns the root
-  page for a `/clip/*` path through the single-page-app fallback, or the
-  function must fetch `/` from its assets explicitly.
+- **Q3 — Base HTML in the function. Settled by design:** the function
+  fetches `/` from its `ASSETS` binding explicitly, so it does not depend
+  on how the single-page-app fallback resolves `/clip/*`.
 - **Q4 — Visual design and component library.** No design yet. The
   reference is the layout style of GamerDVR's player video pages (§3).
   Whether a component library helps reach it is decided when the UI
@@ -300,9 +309,14 @@ zone is on Cloudflare. It is not needed for v1.
 
 Updated 2026-10-16.
 
-**Nothing is built.** The repository holds this plan and a one-line
-README. The backend serves every route in §2, and already allows this
-project's origins (§8).
+**Scaffolded and tested locally; not yet deployed.** Every route in §4,
+playback with its retry (§5), sharing (§6) and the preview function (§7)
+are built. 34 tests run without touching the API: app tests in a
+simulated browser, function tests in the Workers runtime. The production
+build and the function bundle both build, and a local Pages run confirmed
+routing and the function's fallback path. The backend serves every route
+in §2 and already allows this project's origins (§8). `TODO.md` is the
+working backlog; `CLAUDE.md` is the map of the code.
 
 ### Settled
 
@@ -316,9 +330,7 @@ project's origins (§8).
 
 ### Next steps, in order
 
-1. Scaffold this repo: Vite app, routes, API client, playback, sharing,
-   the preview function, tests, `README.md`, `CLAUDE.md`, `TODO.md`.
-2. Create the Pages project with Git integration and attach the custom
+1. Create the Pages project with Git integration and attach the custom
    domain.
-3. With the function live, settle Q1 and B4, and check Q2 by pasting a
+2. With the function live, settle Q1 and B4, and check Q2 by pasting a
    clip link into Discord and a messaging app.

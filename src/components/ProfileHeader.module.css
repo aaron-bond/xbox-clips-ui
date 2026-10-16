@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  margin-bottom: 24px;
+}
+
+.pic {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--surface-raised);
+  object-fit: cover;
+}
+
+.name {
+  margin: 0;
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
+
+.score {
+  margin: 0;
+  color: var(--text-muted);
+}

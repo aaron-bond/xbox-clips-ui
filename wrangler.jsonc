@@ -1,0 +1,12 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Pages project config. Being a Pages config, this file is the source of truth for
+  // these settings: the dashboard shows them but cannot edit them.
+  "name": "xbox-clips-ui",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-10-01",
+
+  // The preview function (functions/clip/[xuid]/[clipId].ts) reaches the API Worker
+  // directly over this binding, not over the public internet.
+  "services": [{ "binding": "API", "service": "xbox-clips-api" }]
+}

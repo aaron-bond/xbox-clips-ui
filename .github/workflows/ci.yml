@@ -1,0 +1,22 @@
+name: CI
+
+# Deploys are handled by Cloudflare Pages' Git integration: production from main,
+# a preview for every other branch and pull request. This workflow only checks.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
