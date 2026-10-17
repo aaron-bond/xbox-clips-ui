@@ -5,19 +5,14 @@ any trade-off made.
 
 ## Deployment
 
-- [ ] Create the Pages project with Git integration, named `xbox-clips-ui`
-      (README, Deployment). If the name is taken, the pages.dev hostname gets
-      a suffix and the API's allowed origins must change to match.
 - [ ] Check the Pages build uses Node 24 from `.node-version`.
-- [ ] Attach `xboxclips.io` and `www.xboxclips.io`; redirect `www` to the apex.
+- [ ] Add `www.xboxclips.io` as a Pages custom domain, and a 301 redirect
+      rule from `www` to the apex that keeps path and query.
 
 ## Open questions (PLAN §9)
 
-- [ ] **Q1: client IP over the service binding.** With the function live,
-      check what `CF-Connecting-IP` the API sees on a preview request, and
-      settle the API's per-IP limit for it (API TODO, B4).
-- [ ] **Q2: thumbnail as `og:image`.** Paste a deployed clip link into
-      Discord, WhatsApp, iMessage and Slack, and check the image renders.
+- [ ] **Q2: thumbnail as `og:image`.** WhatsApp renders it. Still to check:
+      Discord, iMessage, Slack.
 - [ ] **Q4: visual design and component library.** Decide once the layout
       has been used for a while.
 
@@ -28,6 +23,19 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **Pages project and first deploy** (2026-10-17). Project
+      `xbox-clips-ui` with Git integration, live at
+      `https://xbox-clips-ui.pages.dev`. The dashboard's "Create application"
+      opens the Workers flow; Pages is reached from a separate entry on that
+      page. Verified live: routing, deep links, and per-clip preview tags
+      served to a crawler via the API service binding.
+- [x] **`xboxclips.io` attached** (2026-10-17). Serves the app, deep links
+      work, the API allows the origin, and clip previews carry `og:url` on
+      the domain.
+- [x] **Q1 answered** (2026-10-17). The API sees the visitor's IP as
+      `CF-Connecting-IP` on preview requests over the binding, so its per-IP
+      limit needs no change.
 
 - [x] **Scaffold per PLAN §11** (2026-10-16). Search, player shelf, clip
       page with playback and one automatic retry, copy and native share, the

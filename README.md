@@ -41,7 +41,9 @@ request and on `main`.
 
 One-time setup, in the Cloudflare dashboard:
 
-1. **Workers & Pages → Create → Pages → Connect to Git**, and pick this
+1. **Workers & Pages → Create application**, then take the **Pages**
+   entry on that page (the default flow there creates a Worker, which is
+   wrong for this repo), then **Connect to Git** and pick this
    repository. Name the project `xbox-clips-ui`; the API's allowed origins
    assume that name.
 2. Build settings: framework preset **None**, build command

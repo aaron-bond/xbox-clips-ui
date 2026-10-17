@@ -1,6 +1,6 @@
 # UI Plan — v1
 
-**Status:** scaffolded and tested locally; not yet deployed. Written 2026-10-16.
+**Status:** live at `https://xboxclips.io`. Written 2026-10-16.
 **Where this stands right now, and what to do next: §11.**
 
 This is the plan for `xbox-clips-ui`, the frontend of a social hub for
@@ -243,8 +243,8 @@ crawler or person → xboxclips.io/clip/<xuid>/<clipId>
 
 ## 8. Backend changes this depends on
 
-Made in `xbox-clips-api` and recorded in its own plan. B1–B3 are done;
-B4 waits on the preview function existing.
+Made in `xbox-clips-api` and recorded in its own plan. All four are
+done.
 
 - **B1 — Preview endpoint. Done.** Add `GET /api/v1/clips/:xuid/:clipId/preview`,
   returning clip metadata from the cache first, as the current `/share`
@@ -260,10 +260,9 @@ B4 waits on the preview function existing.
   more.
 - **B4 — Rate limiting over the service binding.** The API limits each
   client IP. Requests from the preview function arrive over the service
-  binding, not from the visitor, so every crawler would share one
-  bucket. The function forwards the visitor's IP. Exactly how the API
-  sees the IP of a service-binding request needs verifying when this is
-  built (§9, Q1).
+  binding, not from the visitor, so every crawler could share one
+  bucket. The function forwards the visitor's IP, and the API was
+  confirmed to receive it (§9, Q1). **Done; no API change needed.**
 
 An API custom domain such as `api.xboxclips.io` becomes possible once the
 zone is on Cloudflare. It is not needed for v1.
@@ -272,12 +271,16 @@ zone is on Cloudflare. It is not needed for v1.
 
 ## 9. Open questions
 
-- **Q1 — Client IP over a service binding.** What `CF-Connecting-IP`, if
-  any, the API sees on a request from the preview function, and whether
-  a forwarded value can be trusted. Determines B4.
+- **Q1 — Client IP over a service binding. Answered 2026-10-17:** the
+  API receives the visitor's own IP as `CF-Connecting-IP` on a preview
+  request, so its per-IP limit counts the visitor, not the function. The
+  value is trustworthy: Cloudflare sets that header on requests from the
+  internet, and over the binding only the function can set it. B4 needs
+  no API change.
 - **Q2 — Thumbnail as `og:image`.** Xbox serves thumbnails as
-  `application/octet-stream`, not `image/png`. Whether Discord, WhatsApp,
-  iMessage and Slack accept that is untested. If they reject it, previews
+  `application/octet-stream`, not `image/png`. **WhatsApp accepts it**
+  (confirmed 2026-10-17: the preview shows the thumbnail). Discord,
+  iMessage and Slack are untested. Where a service rejects it, previews
   have a title but no image.
 - **Q3 — Base HTML in the function. Settled by design:** the function
   fetches `/` from its `ASSETS` binding explicitly, so it does not depend
@@ -309,7 +312,11 @@ zone is on Cloudflare. It is not needed for v1.
 
 Updated 2026-10-16.
 
-**Scaffolded and tested locally; not yet deployed.** Every route in §4,
+**Live at `https://xboxclips.io`**, deployed through Pages' Git
+integration (also reachable at `https://xbox-clips-ui.pages.dev`). On the
+live site, a clip page served to a crawler carries that clip's own
+preview tags, fetched from the API over the service binding, with
+`og:url` on `xboxclips.io`. `www.xboxclips.io` is not set up yet. Every route in §4,
 playback with its retry (§5), sharing (§6) and the preview function (§7)
 are built. 34 tests run without touching the API: app tests in a
 simulated browser, function tests in the Workers runtime. The production
@@ -330,7 +337,6 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. Create the Pages project with Git integration and attach the custom
-   domain.
-2. With the function live, settle Q1 and B4, and check Q2 by pasting a
-   clip link into Discord and a messaging app.
+1. Add `www.xboxclips.io` to the Pages project and redirect it to the
+   apex.
+2. Finish Q2: check a clip link's preview in Discord, iMessage and Slack.
