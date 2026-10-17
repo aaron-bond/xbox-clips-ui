@@ -70,7 +70,7 @@ export function ClipPage() {
               </div>
             </div>
             <Link to={`/player/${data.xuid}`} className="btn-outline">
-              Watch the full reel
+              See more
             </Link>
           </section>
         )}

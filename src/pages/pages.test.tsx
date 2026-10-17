@@ -313,7 +313,7 @@ describe('clip page', () => {
     expect(screen.getByRole('button', { name: 'Copy link' })).toHaveClass('btn-primary');
     const card = await screen.findByRole('region', { name: 'From the reel of' });
     expect(within(card).getByText('TestPlayer')).toBeInTheDocument();
-    expect(within(card).getByRole('link', { name: 'Watch the full reel' })).toHaveAttribute('href', `/player/${XUID}`);
+    expect(within(card).getByRole('link', { name: 'See more' })).toHaveAttribute('href', `/player/${XUID}`);
     expect(await screen.findByRole('link', { name: /Other Game/ })).toBeInTheDocument();
   });
 

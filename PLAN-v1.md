@@ -615,7 +615,7 @@ real data). Built in this order; each step leaves the site working.
 5. **Clip page** (the share link). The same replay and strap, a line with
    duration and "On Xbox until about <date>", COPY LINK (solid) and share,
    a "FROM THE REEL OF" card (gamerpic, gamertag, gamerscore, clip count)
-   with WATCH THE FULL REEL, and UP NEXT. This adds the player's profile
+   with SEE MORE (to the player page), and UP NEXT. This adds the player's profile
    and clip list to the page: two cached API requests, the list usually
    already fresh because resolving the clip fetched it.
 6. **Game page.** The banner with "NO. 1 · MOST PLAYED ON XBOX" badges and
