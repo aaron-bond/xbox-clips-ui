@@ -65,6 +65,33 @@ export interface Game {
   boxArtUrl: string | null;
 }
 
+export interface CareerGame {
+  titleId: string;
+  name: string;
+  imageUrl: string | null;
+  gamerscore: number;
+  totalGamerscore: number;
+  percent: number;
+  lastPlayed: string | null;
+}
+
+/** Career facts from the player's title history. */
+export interface CareerStats {
+  nowPlaying: CareerGame | null;
+  biggestHaul: CareerGame | null;
+  onTheBrink: CareerGame | null;
+  platforms: { platform: string; games: number }[];
+  gamesCounted: number;
+  /** The history hit Xbox's 1,000-game limit. */
+  capped: boolean;
+}
+
+export interface PlayerCareer {
+  xuid: string;
+  /** Null when the player's history is hidden. */
+  stats: CareerStats | null;
+}
+
 /** Clip metadata without media or views, as used by link previews. */
 export type ClipPreview = Omit<Clip, 'views' | 'media'>;
 

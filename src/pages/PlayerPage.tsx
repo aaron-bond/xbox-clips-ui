@@ -1,12 +1,13 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router';
+import { CareerStats } from '../components/CareerStats';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { PlayerCard } from '../components/PlayerCard';
 import { Replay } from '../components/Replay';
 import { ShareButtons } from '../components/ShareButtons';
 import { UpNext } from '../components/UpNext';
 import { clipPath } from '../lib/format';
-import { clipQuery, clipsQuery, playerQuery } from '../lib/queries';
+import { careerQuery, clipQuery, clipsQuery, playerQuery } from '../lib/queries';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
 import styles from './PlayerPage.module.css';
@@ -26,6 +27,8 @@ export function PlayerPage() {
   // upstream search on a first visit.
   const xuid = profile.data?.xuid;
   const clips = useQuery({ ...clipsQuery(xuid ?? ''), enabled: !!xuid });
+  // In parallel with the clips: one cached request, a daily upstream call at most.
+  const career = useQuery({ ...careerQuery(xuid ?? ''), enabled: !!xuid });
   const latest = clips.data?.clips[0];
   // Seeded from the clip list, so the replay costs no request while its URL is fresh.
   const replay = useQuery({ ...clipQuery(queryClient, xuid ?? '', latest?.clipId ?? ''), enabled: !!latest });
@@ -38,18 +41,27 @@ export function PlayerPage() {
 
   const reel = clips.data.clips;
   const current = replay.data ?? latest;
+  // Secondary: if the history is hidden or fails to load, the section is left out.
+  const careerSection = career.data?.stats ? (
+    <div className={styles.gutter}>
+      <CareerStats stats={career.data.stats} clips={reel} />
+    </div>
+  ) : null;
 
   if (!current) {
     return (
-      <div className={styles.top}>
-        <div className={styles.empty}>
-          <p>
-            {clips.data.access === 'restricted'
-              ? "This player's clips aren't public."
-              : 'Nothing captured yet. Check back after their next session.'}
-          </p>
+      <div className={styles.page}>
+        <div className={styles.top}>
+          <div className={styles.empty}>
+            <p>
+              {clips.data.access === 'restricted'
+                ? "This player's clips aren't public."
+                : 'Nothing captured yet. Check back after their next session.'}
+            </p>
+          </div>
+          <PlayerCard profile={profile.data} clips={reel} />
         </div>
-        <PlayerCard profile={profile.data} clips={reel} />
+        {careerSection}
       </div>
     );
   }
@@ -65,6 +77,7 @@ export function PlayerPage() {
           </div>
         </PlayerCard>
       </div>
+      {careerSection}
       <div className={styles.gutter}>
         <UpNext clips={reel.filter((c) => c.clipId !== current.clipId)} total={reel.length} />
       </div>

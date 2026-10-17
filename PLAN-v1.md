@@ -479,38 +479,60 @@ players.
   exists under that name), and the preferred colour (a link to a colour
   file, for a design idea that was not taken up).
 
-### P4 — Profile trivia
+### P4 — Profile trivia (built 2026-10-17)
 
-A "player stats" panel on the shelf: fun facts about how someone plays,
-drawn from data the API can reach for any public player. Candidates,
-each with its source:
+**As built:** a "Career stats" section on the player page, between the
+player card and Up next, with five facts: **Now playing**, **Biggest
+haul**, **On the brink**, **Generations** and **Most clipped**. It was
+modelled on the design canvas first with real data. Library size, total
+achievements and peak year were drawn too, then dropped as the weaker
+facts: library reads "1,000+" for any heavy player, peak year needs a
+"last played" caveat, and the achievement total is dry. The API route is
+`GET /api/v1/players/:identifier/career`; the section is left out when the
+history is hidden or fails to load. On a player's first visit of the day,
+the facts arrive several seconds after the rest of the page, while the API
+downloads the history.
 
-| Fact | Source | Confidence |
-| :--- | :--- | :--- |
-| **Most clipped game** | The clip list already fetched for the shelf | Free; no extra call |
-| **Most played and recently played games** | Title history, `GET /v2/titles/{xuid}` | Endpoint confirmed; whether it carries playtime for other players, as it does for the key owner, is unknown |
-| **Completion stats**: overall completion, games at 100%, the game closest to completion | Title history with achievement progress, `GET /v2/achievements/player/{xuid}` | Confirmed: documented as per-game achievement progress |
-| **Favourite genres** | Each played game's catalog entry, `GET /v2/marketplace/title/{titleId}` | Endpoint confirmed; genre fields in the catalog payload to be checked |
-| **Achievement timeline**: first ever achievement, busiest day, most active hour or weekday ("night owl"), longest unlock streak | Every achievement with its unlock time, `GET /v3/achievements/player/{xuid}` | Confirmed: unlock timestamps are documented |
-| **Rarest achievement** | The same v3 records, if they carry rarity | Unknown; check the payload |
-| **Playtime per game** | `POST /v2/player/stats` with per-title stat names | Unknown: accepts any XUIDs, but which stat names work, and for whom, needs testing |
-| **Platform history**: Xbox 360 vs One vs Series | Title history | To check in the payload |
+A "career stats" panel on the player page: facts about how someone plays.
+Each source was sampled once on 2026-10-17 (a well-known public player),
+so the table records what the data actually holds.
 
-- **Budget:** trivia does not need to be fresh, so the API computes a
-  player's facts once and caches them for about a day. Facts derived from
-  data already on hand cost nothing. A full set costs a handful of calls
-  on first view: title history and achievement progress are one call
-  each, while the achievement timeline is paginated and genres need one
-  catalog lookup per game. So the API caps both, for example the 100
-  most recent achievements and the 10 most played games. Catalog entries
-  are the same for every player, so they are cached globally and the
-  cost falls as more players are viewed.
-- **Backend:** one route, e.g. `GET /api/v1/players/:identifier/trivia`,
-  that fetches, derives and caches the facts, so the UI makes a single
-  request. Each fact is optional: anything a payload turns out not to
-  support is simply left out.
-- **First step:** one sample payload from each source, to settle the
-  "unknown" rows before choosing which facts to build.
+| Source | Calls | What it holds | Verdict |
+| :--- | :--- | :--- | :--- |
+| Clip list (already loaded) | 0 | Games clipped, dates | **Usable** |
+| Title history, `GET /v2/titles/{xuid}` | 1 | Up to **1,000 games**, each with gamerscore earned and available, completion %, last played, platforms; plus totals of achievements and "mythics" unlocked | **Usable.** Capped at 1,000 games (the sample's 1,000 covered 97,614 of 145,766 gamerscore), so facts read "of their last 1,000 games" for heavy players. About 1 MB raw: the API keeps only the derived facts |
+| Per-game progress, `GET /v2/achievements/player/{xuid}` | 1 | The same data as title history | Redundant |
+| Achievement records, `GET /v3/achievements/player/{xuid}` | 1 per 100 | Every achievement, locked or not, unordered; unlock times; **no rarity** | **Not viable:** the sample player has 24,731 records, about 250 calls to read; rarity facts are impossible |
+| Player stats, `POST /v2/player/stats` | 1 | `MinutesPlayed` came back with **no value** | **Not viable:** no playtime |
+| Catalog, `GET /v2/marketplace/title/{titleId}` | 1 per game | `Category` / `Categories` (e.g. "Shooter") | **Usable but costly:** one call per game; cacheable for all players, since genres don't change |
+
+**Candidate facts** (from title history unless noted; sample values in
+brackets):
+
+- **Now playing:** the most recently played game [Assassin's Creed Black
+  Flag Resynced, 6 days ago].
+- **Library:** games played [1,000+].
+- **Biggest haul:** the game with the most gamerscore earned [Titanfall,
+  1,260 of 2,000].
+- **Completed:** games at 100% [5], and **on the brink**: the nearest to
+  100% [Hellblade: Senua's Sacrifice, 90%].
+- **Generations:** consoles played on [Xbox 360, Xbox One, Xbox Series
+  X|S, PC].
+- **Peak year:** the year in which most of their games were last played
+  [2018, 135 games]. Labelled carefully: it is last-played, not
+  first-played.
+- **Achievements unlocked** [7,372].
+- **Most clipped game** (clip list, free).
+- **Favourite genre** (optional): from the top five games' catalog
+  entries, up to five calls the first time, cached for everyone.
+
+**Budget:** one title-history call per player, cached for a day; the
+facts are computed in the API and only they are stored. Genre adds up to
+five calls per player at first, falling as titles are cached.
+
+**Left out:** playtime, an achievement timeline and rarity (above);
+"mythics" until what Xbox means by it is confirmed; Game Pass share,
+since the per-game flag's meaning is unclear.
 
 ### P5 — Installable app (PWA)
 

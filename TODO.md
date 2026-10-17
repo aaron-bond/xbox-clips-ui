@@ -11,8 +11,6 @@ any trade-off made.
 ## Proposed features (PLAN §11)
 
 - [ ] P2: achievement face-off between two gamertags.
-- [ ] P4: profile trivia (most clipped and most played games, completion,
-      genres, achievement timeline). Start with one sample payload per source.
 - [ ] P5: installable app: manifest, icons, Apple touch icon. No service
       worker needed to install; if one is added, it never caches API
       responses. Icons wait for the palette decision.
@@ -24,6 +22,12 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **P4: career stats** (2026-10-17). Five facts on the player page: now
+      playing, biggest haul, on the brink, generations (from the API's new
+      `/career` route) and most clipped (from the clip list). Weaker facts
+      (library size, achievement total, peak year) dropped after mocking them
+      with real data. Hidden histories leave the section out.
 
 - [x] **P3: gamercard** (2026-10-17). The player card shows reputation, years
       on Xbox, location and bio from the richer profile; the clip page's reel

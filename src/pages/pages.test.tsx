@@ -71,7 +71,9 @@ describe('player page', () => {
     const strap = screen.getByText('Battlefield', { selector: '.strap-title' });
     expect(strap).toBeInTheDocument();
     expect(screen.getByText(/TestPlayer ·/)).toBeInTheDocument();
-    expect(playerPaths(paths)).toEqual(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`]);
+    expect(new Set(playerPaths(paths))).toEqual(
+      new Set(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`, `/api/v1/players/${XUID}/career`]),
+    );
   });
 
   it('shows the player card stats from data already loaded', async () => {
@@ -121,6 +123,46 @@ describe('player page', () => {
     stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf([makeClip({ views: 1240 })]) } });
     renderAt('/player/TestPlayer');
     expect(await screen.findByText(/1\.2K views/)).toBeInTheDocument();
+  });
+
+  it('shows career stats: now playing, biggest haul, on the brink, generations, most clipped', async () => {
+    const game = (name: string, gs: number, total: number, pct: number, days: number) => ({
+      titleId: name, name, imageUrl: 'https://store-images.test/x', gamerscore: gs, totalGamerscore: total, percent: pct, lastPlayed: daysFromNow(-days),
+    });
+    const stats = {
+      nowPlaying: game('Recent Game', 330, 1000, 33, 6),
+      biggestHaul: game('Big Game', 1260, 2000, 63, 4000),
+      onTheBrink: game('Close Game', 900, 1000, 90, 1500),
+      platforms: [{ platform: 'Xbox 360', games: 85 }, { platform: 'PC', games: 290 }],
+      gamesCounted: 1000,
+      capped: true,
+    };
+    stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) },
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats } },
+    });
+    renderAt('/player/TestPlayer');
+    const section = await screen.findByRole('region', { name: 'Career stats' });
+    expect(within(section).getByText('From their last 1,000 games on Xbox')).toBeInTheDocument();
+    expect(within(section).getByText('Recent Game')).toBeInTheDocument();
+    expect(within(section).getByText(/Last played 6 days ago · 330 \/ 1,000 G/)).toBeInTheDocument();
+    expect(within(section).getByText('Big Game')).toBeInTheDocument();
+    expect(within(section).getByText(/100 G to go/)).toBeInTheDocument();
+    expect(within(section).getByText('Two platforms')).toBeInTheDocument();
+    expect(within(section).getByText('Battlefield')).toBeInTheDocument();
+    expect(within(section).getByText(/tied with Gears Beta/)).toBeInTheDocument();
+  });
+
+  it('leaves career stats out when the history is hidden', async () => {
+    stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) },
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats: null } },
+    });
+    renderAt('/player/TestPlayer');
+    await screen.findByRole('region', { name: 'Player card' });
+    expect(screen.queryByRole('region', { name: 'Career stats' })).toBeNull();
   });
 
   it('lists the rest of the reel and closes it', async () => {

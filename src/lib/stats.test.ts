@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { daysFromNow, makeClip } from '../test/helpers';
-import { daysAgo, latestRecordedAt, nextToExpire, reelLength, reputationLabel, tenureLabel, viewsWorthShowing } from './stats';
+import { daysAgo, latestRecordedAt, mostClipped, nextToExpire, reelLength, reputationLabel, tenureLabel, viewsWorthShowing } from './stats';
 
 describe('stats', () => {
   it('describes how long ago a clip was recorded', () => {
@@ -42,5 +42,12 @@ describe('stats', () => {
     expect(tenureLabel(undefined)).toBeNull();
     expect(reputationLabel('needs-work')).toBe('Needs work');
     expect(reputationLabel(null)).toBeNull();
+  });
+
+  it('finds the most clipped game, breaking ties by the latest clip', () => {
+    const c = (game: string, days: number) => makeClip({ gameTitle: game, recordedAt: daysFromNow(-days) });
+    expect(mostClipped([c('A', 5), c('B', 1), c('A', 9)])).toEqual({ game: 'A', count: 2, tiedWith: [] });
+    expect(mostClipped([c('Old', 40), c('New', 2)])).toEqual({ game: 'New', count: 1, tiedWith: ['Old'] });
+    expect(mostClipped([])).toBeNull();
   });
 });

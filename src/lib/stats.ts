@@ -48,3 +48,22 @@ export function tenureLabel(years: number | null | undefined): string | null {
   if (years === null || years === undefined || years < 1) return null;
   return `${years} ${years === 1 ? 'year' : 'years'} on Xbox`;
 }
+
+/**
+ * The game with the most clips in this reel. Ties go to the game clipped most
+ * recently, and the others it tied with are named.
+ */
+export function mostClipped(clips: Clip[]): { game: string; count: number; tiedWith: string[] } | null {
+  const byGame = new Map<string, { count: number; latest: string }>();
+  for (const c of clips) {
+    if (!c.gameTitle) continue;
+    const entry = byGame.get(c.gameTitle) ?? { count: 0, latest: '' };
+    entry.count++;
+    if (c.recordedAt > entry.latest) entry.latest = c.recordedAt;
+    byGame.set(c.gameTitle, entry);
+  }
+  const ranked = [...byGame.entries()].sort((a, b) => b[1].count - a[1].count || b[1].latest.localeCompare(a[1].latest));
+  const top = ranked[0];
+  if (!top) return null;
+  return { game: top[0], count: top[1].count, tiedWith: ranked.slice(1).filter((r) => r[1].count === top[1].count).map((r) => r[0]) };
+}

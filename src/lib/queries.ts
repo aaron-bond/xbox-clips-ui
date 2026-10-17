@@ -36,6 +36,7 @@ export const keys = {
   clips: (identifier: string) => ['clips', identifier.toLowerCase()] as const,
   clip: (xuid: string, clipId: string) => ['clip', xuid, clipId.toLowerCase()] as const,
   mostPlayed: () => ['games', 'most-played'] as const,
+  career: (identifier: string) => ['career', identifier.toLowerCase()] as const,
   game: (productId: string) => ['game', productId.toUpperCase()] as const,
 };
 
@@ -95,3 +96,7 @@ function findCachedGame(queryClient: QueryClient, productId: string): Game | und
   const id = productId.toUpperCase();
   return queryClient.getQueryData<{ games: Game[] }>(keys.mostPlayed())?.games.find((g) => g.productId === id);
 }
+
+/** Career facts change slowly; the API caches them for a day. */
+export const careerQuery = (identifier: string, client: ApiClient = api) =>
+  queryOptions({ queryKey: keys.career(identifier), queryFn: () => client.getCareer(identifier), staleTime: 60 * MINUTE });
