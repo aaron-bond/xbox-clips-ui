@@ -69,11 +69,10 @@
     left: 10px;
   }
 
-  /* Phones: below the video, overlapping its bottom edge, so it never covers the clip. */
+  /* Phones: the game-name strap sits flush below the video, so it never covers the clip. */
   .strap {
     position: relative;
     bottom: auto;
-    margin-top: -18px;
   }
 
   .strapDown {

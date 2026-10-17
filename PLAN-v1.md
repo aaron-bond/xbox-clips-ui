@@ -624,8 +624,8 @@ real data). Built in this order; each step leaves the site working.
    description, the find-clips panel, and ALSO MOST PLAYED (the next
    ranks, excluding this game).
 7. **Phones.** Below 720 px: the replay and banners run edge to edge; the
-   name strap moves below the video, overlapping its bottom edge, so it
-   never covers the clip; stats become a 2×2 grid; UP NEXT a list; most-
+   game-name strap sits flush below the video, so it never covers the
+   clip; stats become a 2×2 grid; UP NEXT a list; most-
    played rows scroll sideways; the header search shrinks to a compact box.
 8. **Docs and checks.** README, CLAUDE.md and TODO updated; tests cover the
    ticker, the stats, the expiry notice, views hidden at zero, and the
