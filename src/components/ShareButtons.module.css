@@ -4,23 +4,32 @@
   align-items: center;
 }
 
-.primary,
-.secondary {
-  padding: 8px 16px;
+.icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   border-radius: var(--radius);
-  font-weight: 600;
-}
-
-.primary {
-  border: 0;
-  background: var(--accent);
-  color: var(--accent-text);
-}
-
-.secondary {
   border: 1px solid var(--border);
   background: var(--surface-raised);
   color: var(--text);
+}
+
+.icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
 }
 
 .status {

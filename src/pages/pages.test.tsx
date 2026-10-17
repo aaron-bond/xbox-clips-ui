@@ -82,6 +82,16 @@ describe('clip page', () => {
     expect(paths).toHaveLength(2);
   });
 
+  it('copies the clip page URL from the copy icon', async () => {
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    stubApi(() => ({ body: makeClip() }));
+    renderAt(`/clip/${XUID}/${CLIP_ID}`);
+    await userEvent.click(await screen.findByRole('button', { name: 'Copy link' }));
+    expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/clip/${XUID}/${CLIP_ID}`);
+    expect(await screen.findByRole('status')).toHaveTextContent('Link copied');
+  });
+
   it('starts playing automatically, with sound when the browser allows it', async () => {
     stubApi(() => ({ body: makeClip() }));
     renderAt(`/clip/${XUID}/${CLIP_ID}`);
