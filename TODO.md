@@ -16,6 +16,14 @@ any trade-off made.
 - [ ] **Q4: visual design and component library.** Decide once the layout
       has been used for a while.
 
+## Proposed features (PLAN §11)
+
+- [ ] P1: front-page dashboard of most-played games.
+- [ ] P2: achievement face-off between two gamertags.
+- [ ] P3: gamercard on the clip page in place of "More from this player".
+- [ ] P4: profile trivia (most clipped and most played games, completion,
+      genres, achievement timeline). Start with one sample payload per source.
+
 ## Later (PLAN §10)
 
 - [ ] Recent gamertags and favourites, on the device.
@@ -23,6 +31,11 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **Orange theme and autoplay** (2026-10-17). Accent changed to the old
+      Xbox Live Gold orange. Clips autoplay: with sound after an in-site
+      navigation, muted when the browser refuses sound (arriving from a
+      shared link).
 
 - [x] **Pages project and first deploy** (2026-10-17). Project
       `xbox-clips-ui` with Git integration, live at
@@ -37,7 +50,7 @@ any trade-off made.
       `CF-Connecting-IP` on preview requests over the binding, so its per-IP
       limit needs no change.
 
-- [x] **Scaffold per PLAN §11** (2026-10-16). Search, player shelf, clip
+- [x] **Scaffold per PLAN §12** (2026-10-16). Search, player shelf, clip
       page with playback and one automatic retry, copy and native share, the
       `/clip/*` preview function, CI. 34 tests.
       Trade-offs and choices:

@@ -6,8 +6,9 @@
   --border: #2a2f34;
   --text: #e8eaed;
   --text-muted: #9aa0a6;
-  --accent: #3ddc84;
-  --accent-text: #0b0d0e;
+  /* The orange of the old Xbox Live Gold badge. Dark text on it for contrast. */
+  --accent: #f7a21b;
+  --accent-text: #120c02;
   --danger: #ff6b6b;
   --radius: 10px;
   --gap: 16px;

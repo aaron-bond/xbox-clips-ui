@@ -1,6 +1,6 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { apiError, CLIP_ID, clipsOf, makeClip, profile, renderAt, stubApi, XUID } from '../test/helpers';
 
 describe('search', () => {
@@ -80,6 +80,24 @@ describe('clip page', () => {
     fireEvent.error(screen.getByTestId('clip-video'));
     expect(await screen.findByText('This clip failed to play.')).toBeInTheDocument();
     expect(paths).toHaveLength(2);
+  });
+
+  it('starts playing automatically, with sound when the browser allows it', async () => {
+    stubApi(() => ({ body: makeClip() }));
+    renderAt(`/clip/${XUID}/${CLIP_ID}`);
+    const video = (await screen.findByTestId('clip-video')) as HTMLVideoElement;
+    await waitFor(() => expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1));
+    expect(video.muted).toBe(false);
+  });
+
+  it('falls back to muted autoplay when sound is not allowed yet', async () => {
+    const play = vi.fn().mockRejectedValueOnce(new DOMException('blocked', 'NotAllowedError')).mockResolvedValue(undefined);
+    HTMLMediaElement.prototype.play = play;
+    stubApi(() => ({ body: makeClip() }));
+    renderAt(`/clip/${XUID}/${CLIP_ID}`);
+    const video = (await screen.findByTestId('clip-video')) as HTMLVideoElement;
+    await waitFor(() => expect(play).toHaveBeenCalledTimes(2));
+    expect(video.muted).toBe(true);
   });
 
   it('shows an unavailable state when the API holds no media URL', async () => {

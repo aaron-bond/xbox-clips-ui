@@ -44,7 +44,7 @@ browser over CORS, and from the function over a service binding.
   tests use fake `ASSETS` and `API` bindings.
 - Local `npm run dev` uses the production API and the shared budget. One
   lookup at a time.
-- Open items are in [TODO.md](TODO.md) and PLAN §9/§11. Code marker:
+- Open items are in [TODO.md](TODO.md) and PLAN §9/§12. Proposed features: PLAN §11. Code marker:
   `TODO(Q1)` for client-IP forwarding over the service binding.
 
 ## Commands

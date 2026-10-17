@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Clip } from '../api/types';
 import styles from './ClipPlayer.module.css';
 
@@ -18,6 +18,23 @@ type State = 'playing' | 'retrying' | 'failed';
 export function ClipPlayer({ clip, refresh }: Props) {
   const [state, setState] = useState<State>('playing');
   const [retried, setRetried] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaUrl = clip.media?.url;
+
+  // Starts playback automatically. Browsers allow sound only after the visitor has
+  // interacted with the site, which arriving from a shelf counts as. Arriving cold
+  // from a shared link, the unmuted attempt is refused, so play muted instead: the
+  // visitor unmutes with one tap (PLAN-v1.md §5).
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !mediaUrl) return;
+    tryPlay(video).catch((err: unknown) => {
+      if (err instanceof DOMException && err.name === 'NotAllowedError') {
+        video.muted = true;
+        void tryPlay(video).catch(() => {});
+      }
+    });
+  }, [mediaUrl]);
 
   async function recover(automatic: boolean) {
     if (automatic && retried) {
@@ -56,6 +73,7 @@ export function ClipPlayer({ clip, refresh }: Props) {
       <video
         // A new URL remounts the element, so it loads the fresh source.
         key={clip.media.url}
+        ref={videoRef}
         src={clip.media.url}
         poster={clip.thumbnailUrl ?? undefined}
         controls
@@ -68,6 +86,11 @@ export function ClipPlayer({ clip, refresh }: Props) {
       {state === 'retrying' && <div className={styles.overlay}>Reconnecting…</div>}
     </div>
   );
+}
+
+/** `play()` returns a promise in modern browsers; normalise the rare older case. */
+function tryPlay(video: HTMLVideoElement): Promise<void> {
+  return Promise.resolve(video.play());
 }
 
 function Panel({ clip, message, children }: { clip: Clip; message: string; children: ReactNode }) {
