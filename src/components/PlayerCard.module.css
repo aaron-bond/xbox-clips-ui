@@ -98,15 +98,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.notice {
-  margin: 0;
-  padding: 10px 14px;
-  background: var(--notice-bg);
-  border-left: 3px solid var(--badge);
-  font-size: 0.9rem;
-  line-height: 1.45;
-}
-
 @media (max-width: 720px) {
   .name {
     font-size: 1.9rem;

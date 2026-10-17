@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import type { PlayerClips, PlayerProfile } from '../api/types';
 import { CareerStats, CareerStatsPlaceholder } from '../components/CareerStats';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { ExpiryNotice } from '../components/ExpiryNotice';
 import { PlayerCard } from '../components/PlayerCard';
 import { PlayerIntro } from '../components/PlayerIntro';
 import { Replay } from '../components/Replay';
@@ -117,6 +118,9 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
           </div>
         )}
         {careerSection}
+        <div className={styles.gutter}>
+          <ExpiryNotice clips={reel} />
+        </div>
       </div>
     );
   }

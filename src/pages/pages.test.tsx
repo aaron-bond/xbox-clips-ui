@@ -134,10 +134,13 @@ describe('player page', () => {
     expect(within(card).queryByText('Good player')).toBeNull();
   });
 
-  it('warns when a clip leaves Xbox within 30 days', async () => {
+  it('warns at the foot of the page when a clip leaves Xbox within 30 days', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
     renderAt('/player/TestPlayer');
-    expect(await screen.findByText(/Gears Beta leaves Xbox around/)).toBeInTheDocument();
+    const notice = await screen.findByText(/Gears Beta leaves Xbox around/);
+    expect(within(screen.getByRole('region', { name: 'Player card' })).queryByText(/leaves Xbox/)).toBeNull();
+    const upNext = screen.getByRole('region', { name: 'Up next' });
+    expect(upNext.compareDocumentPosition(notice) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('hides a zero view count and shows a real one', async () => {

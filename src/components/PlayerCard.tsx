@@ -1,18 +1,16 @@
 import type { ReactNode } from 'react';
 import type { Clip, PlayerProfile } from '../api/types';
-import { formatDate } from '../lib/format';
-import { daysAgo, latestRecordedAt, nextToExpire, reelLength, reputationLabel, tenureLabel } from '../lib/stats';
+import { daysAgo, latestRecordedAt, reelLength, reputationLabel, tenureLabel } from '../lib/stats';
 import styles from './PlayerCard.module.css';
 
 /**
  * The player's card beside the replay: four stats chosen to read well with
- * real numbers (PLAN-v1.md §3), and a notice when a clip is about to leave Xbox.
+ * real numbers (PLAN-v1.md §3).
  */
 export function PlayerCard({ profile, clips, children }: { profile: PlayerProfile; clips: Clip[]; children?: ReactNode }) {
   const last = latestRecordedAt(clips);
   const identity = [tenureLabel(profile.tenureYears), profile.location].filter(Boolean);
   const reputation = reputationLabel(profile.reputation);
-  const expiring = nextToExpire(clips);
   const stats = [
     { label: 'Gamerscore', value: profile.gamerscore.toLocaleString() },
     { label: 'Clips', value: String(clips.length) },
@@ -45,12 +43,6 @@ export function PlayerCard({ profile, clips, children }: { profile: PlayerProfil
           </div>
         ))}
       </dl>
-      {expiring && (
-        <p className={styles.notice}>
-          {expiring.gameTitle || 'A clip'} leaves Xbox around {formatDate(expiring.availableUntil)}. Clips are deleted
-          about 90 days after upload.
-        </p>
-      )}
       {children}
     </section>
   );

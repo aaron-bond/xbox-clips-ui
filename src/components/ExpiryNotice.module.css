@@ -1,0 +1,8 @@
+.notice {
+  margin: 0;
+  padding: 10px 14px;
+  background: var(--notice-bg);
+  border-left: 3px solid var(--badge);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}

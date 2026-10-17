@@ -608,8 +608,9 @@ real data). Built in this order; each step leaves the site working.
    replay, with REPLAY and duration badges and the name strap. Beside it
    (below on phones) the player card: gamerpic, gamertag, and four stats
    (gamerscore, clips, last clip as "N days ago", reel length as total
-   duration). If a clip leaves Xbox within 30 days, a notice says which and
-   when. "COPY REPLAY LINK" and share act on the replay. UP NEXT lists the
+   duration). If a clip leaves Xbox within 30 days, a notice at the foot of
+   the page says which and when; it is kept out of the space above the
+   fold. "COPY REPLAY LINK" and share act on the replay. UP NEXT lists the
    other clips, and is left out when there are none. No new
    requests: the profile and clip list are already fetched.
 5. **Clip page** (the share link). The same replay and strap, a line with

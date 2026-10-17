@@ -21,7 +21,7 @@ browser over CORS, and from the function over a service binding.
 | `src/pages/`, `src/components/` | Pages and components, each with a CSS module. |
 | `src/components/Replay.tsx` | A clip as a broadcast replay: badges, name strap, autoplay, one-retry playback. |
 | `src/components/Ticker.tsx`, `MostPlayed.tsx` | The most-played band on every page; the home page's ranking. |
-| `src/components/PlayerCard.tsx`, `UpNext.tsx` | Player stats and expiry notice; the rest of a reel. |
+| `src/components/PlayerCard.tsx`, `UpNext.tsx`, `ExpiryNotice.tsx` | Player stats; the rest of a reel; the clip-deletion notice at the foot of the player page. |
 | `src/components/CareerStats.tsx` | Career facts from the API's `/career` route, plus most clipped. |
 | `src/components/PlayerIntro.tsx`, `src/lib/useIntroGate.ts` | The name-strap intro over a slow player load, and its timing. |
 | `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |
