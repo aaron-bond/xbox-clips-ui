@@ -23,6 +23,7 @@ browser over CORS, and from the function over a service binding.
 | `src/components/Ticker.tsx`, `MostPlayed.tsx` | The most-played band on every page; the home page's ranking. |
 | `src/components/PlayerCard.tsx`, `UpNext.tsx` | Player stats and expiry notice; the rest of a reel. |
 | `src/components/CareerStats.tsx` | Career facts from the API's `/career` route, plus most clipped. |
+| `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |
 | `src/lib/stats.ts` | Stats derived from data already loaded (last clip, reel length, expiry). |
 | `src/styles/global.css` | Kingfisher tokens and the shared broadcast pieces (`.strap`, `.badge`, `.btn-primary`). |
 | `functions/clip/[xuid]/[clipId].ts` | Pages Function: adds the clip's preview tags to the app page. |

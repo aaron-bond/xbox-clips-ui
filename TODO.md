@@ -23,6 +23,13 @@ any trade-off made.
 
 ## Done
 
+- [x] **Career stats load on scroll** (2026-10-17). Moved below Up next, with a
+      same-sized placeholder; the `/career` request starts only when the section
+      comes into view. Measured on the live site, career never delayed the
+      replay, but arrived ~4 s later and pushed content down. A first version of
+      the viewport hook never fired, because the section renders after the
+      page's loading state; it now observes the element whenever it appears.
+
 - [x] **Career stats from the last 100 games** (2026-10-17). Generations
       dropped; the note reads "From their last 100 games" when a player has
       more. Follows the API change that keeps `/career` within the free plan's

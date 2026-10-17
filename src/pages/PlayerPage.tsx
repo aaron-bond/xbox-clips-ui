@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'react-router';
-import { CareerStats } from '../components/CareerStats';
+import { CareerStats, CareerStatsPlaceholder } from '../components/CareerStats';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { PlayerCard } from '../components/PlayerCard';
 import { Replay } from '../components/Replay';
@@ -8,6 +8,7 @@ import { ShareButtons } from '../components/ShareButtons';
 import { UpNext } from '../components/UpNext';
 import { clipPath } from '../lib/format';
 import { careerQuery, clipQuery, clipsQuery, playerQuery } from '../lib/queries';
+import { useNearViewport } from '../lib/useNearViewport';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
 import styles from './PlayerPage.module.css';
@@ -27,8 +28,10 @@ export function PlayerPage() {
   // upstream search on a first visit.
   const xuid = profile.data?.xuid;
   const clips = useQuery({ ...clipsQuery(xuid ?? ''), enabled: !!xuid });
-  // In parallel with the clips: one cached request, a daily upstream call at most.
-  const career = useQuery({ ...careerQuery(xuid ?? ''), enabled: !!xuid });
+  // Career stats sit below Up next and load only when scrolled near, so visitors
+  // who watch and leave never spend the title-history call (PLAN-v1.md §12).
+  const careerSlot = useNearViewport<HTMLDivElement>('0px');
+  const career = useQuery({ ...careerQuery(xuid ?? ''), enabled: !!xuid && careerSlot.near });
   const latest = clips.data?.clips[0];
   // Seeded from the clip list, so the replay costs no request while its URL is fresh.
   const replay = useQuery({ ...clipQuery(queryClient, xuid ?? '', latest?.clipId ?? ''), enabled: !!latest });
@@ -41,12 +44,14 @@ export function PlayerPage() {
 
   const reel = clips.data.clips;
   const current = replay.data ?? latest;
-  // Secondary: if the history is hidden or fails to load, the section is left out.
-  const careerSection = career.data?.stats ? (
-    <div className={styles.gutter}>
-      <CareerStats stats={career.data.stats} clips={reel} />
+  // Secondary: a placeholder holds its place while loading; if the history is
+  // hidden or fails to load, the section is left out.
+  const careerGone = career.isError || (career.isSuccess && !career.data.stats);
+  const careerSection = careerGone ? null : (
+    <div className={styles.gutter} ref={careerSlot.ref}>
+      {career.data?.stats ? <CareerStats stats={career.data.stats} clips={reel} /> : <CareerStatsPlaceholder />}
     </div>
-  ) : null;
+  );
 
   if (!current) {
     return (
@@ -77,10 +82,10 @@ export function PlayerPage() {
           </div>
         </PlayerCard>
       </div>
-      {careerSection}
       <div className={styles.gutter}>
         <UpNext clips={reel.filter((c) => c.clipId !== current.clipId)} total={reel.length} />
       </div>
+      {careerSection}
     </div>
   );
 }

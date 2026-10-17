@@ -481,8 +481,8 @@ players.
 
 ### P4 — Profile trivia (built 2026-10-17)
 
-**As built:** a "Career stats" section on the player page, between the
-player card and Up next, with four facts: **Now playing**, **Biggest
+**As built:** a "Career stats" section on the player page, **below Up
+next**, with four facts: **Now playing**, **Biggest
 haul** and **On the brink** from the player's **last 100 games**, and
 **Most clipped** from the clip list. When the player has more than 100
 games, the section says "From their last 100 games". The facts are drawn
@@ -490,7 +490,16 @@ from recent games only because parsing a heavy player's whole history
 exceeded the Workers free plan's CPU limit in production (13 ms against
 10 ms); reading the newest 100 parses about a tenth of it. A
 **Generations** fact (games per platform) was built and then dropped: it
-needs the whole history, and recent games can't stand in for it. It was
+needs the whole history, and recent games can't stand in for it.
+
+**Loaded on scroll.** The section is the slowest thing on the page: a heavy
+player's history can take several seconds upstream on the first visit of
+the day. Measured on the live site, it never delayed the replay (clips
+arrived about four seconds before it), but arriving late and pushing Up next
+down made the page feel slow. So it sits below Up next, holds its place with
+a same-sized placeholder, and is only requested once the section starts to
+come into view. A visitor who watches the replay and leaves never spends the
+title-history call, and never risks its CPU cost. It was
 modelled on the design canvas first with real data. Library size, total
 achievements and peak year were drawn too, then dropped as the weaker
 facts: library reads "1,000+" for any heavy player, peak year needs a

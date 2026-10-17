@@ -137,3 +137,15 @@
     gap: 12px;
   }
 }
+
+/* Loading placeholder: a gentle pulse in the panel colour. */
+.skeleton {
+  border-color: var(--line);
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}

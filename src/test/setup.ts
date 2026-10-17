@@ -5,6 +5,21 @@ import { afterEach, beforeEach, vi } from 'vitest';
 // jsdom has no media playback. Each test starts with play() succeeding; tests that
 // need it to be refused override it.
 afterEach(() => cleanup());
+
+// jsdom has no IntersectionObserver: report every observed element as on screen,
+// so content that loads on scroll loads in tests.
+class OnScreenObserver {
+  constructor(private readonly callback: IntersectionObserverCallback) {}
+  observe(target: Element) {
+    queueMicrotask(() => this.callback([{ isIntersecting: true, target } as IntersectionObserverEntry], this as unknown as IntersectionObserver));
+  }
+  disconnect() {}
+  unobserve() {}
+  takeRecords() {
+    return [];
+  }
+}
+globalThis.IntersectionObserver = OnScreenObserver as unknown as typeof IntersectionObserver;
 beforeEach(() => {
   HTMLMediaElement.prototype.play = vi.fn(() => Promise.resolve());
 });

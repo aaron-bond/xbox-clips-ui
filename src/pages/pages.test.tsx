@@ -71,8 +71,10 @@ describe('player page', () => {
     const strap = screen.getByText('Battlefield', { selector: '.strap-title' });
     expect(strap).toBeInTheDocument();
     expect(screen.getByText(/TestPlayer ·/)).toBeInTheDocument();
-    expect(new Set(playerPaths(paths))).toEqual(
-      new Set(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`, `/api/v1/players/${XUID}/career`]),
+    await waitFor(() =>
+      expect(new Set(playerPaths(paths))).toEqual(
+        new Set(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`, `/api/v1/players/${XUID}/career`]),
+      ),
     );
   });
 
@@ -142,7 +144,8 @@ describe('player page', () => {
       [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats } },
     });
     renderAt('/player/TestPlayer');
-    const section = await screen.findByRole('region', { name: 'Career stats' });
+    await screen.findByText('Recent Game');
+    const section = screen.getByRole('region', { name: 'Career stats' });
     expect(within(section).getByText('From their last 100 games')).toBeInTheDocument();
     expect(within(section).getByText('Recent Game')).toBeInTheDocument();
     expect(within(section).getByText(/Last played 6 days ago · 330 \/ 1,000 G/)).toBeInTheDocument();
@@ -161,8 +164,8 @@ describe('player page', () => {
       [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats } },
     });
     renderAt('/player/TestPlayer');
-    const section = await screen.findByRole('region', { name: 'Career stats' });
-    expect(within(section).getByText('Close Game')).toBeInTheDocument();
+    await screen.findByText('Close Game');
+    const section = screen.getByRole('region', { name: 'Career stats' });
     expect(within(section).queryByText(/From their last/)).toBeNull();
   });
 
@@ -174,7 +177,40 @@ describe('player page', () => {
     });
     renderAt('/player/TestPlayer');
     await screen.findByRole('region', { name: 'Player card' });
-    expect(screen.queryByRole('region', { name: 'Career stats' })).toBeNull();
+    await waitFor(() => expect(screen.queryByRole('region', { name: 'Career stats' })).toBeNull());
+  });
+
+  it('does not request career stats until the section scrolls near, and holds its place meanwhile', async () => {
+    const offScreen = class {
+      observe() {}
+      disconnect() {}
+      unobserve() {}
+      takeRecords() {
+        return [];
+      }
+    };
+    vi.stubGlobal('IntersectionObserver', offScreen);
+    const paths = stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) },
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats: null } },
+    });
+    renderAt('/player/TestPlayer');
+    await screen.findByTestId('clip-video');
+    expect(screen.getByRole('region', { name: 'Career stats' })).toHaveAttribute('aria-busy', 'true');
+    expect(paths.some((p) => p.endsWith('/career'))).toBe(false);
+  });
+
+  it('places career stats after up next', async () => {
+    stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) },
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats: null } },
+    });
+    renderAt('/player/TestPlayer');
+    const upNext = await screen.findByRole('region', { name: 'Up next' });
+    const career = screen.getByRole('region', { name: 'Career stats' });
+    expect(upNext.compareDocumentPosition(career) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('lists the rest of the reel and closes it', async () => {

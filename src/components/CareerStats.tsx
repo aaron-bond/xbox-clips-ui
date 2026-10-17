@@ -65,6 +65,25 @@ export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
   );
 }
 
+/** Holds the section's place while the facts load, so the page doesn't jump. */
+export function CareerStatsPlaceholder() {
+  return (
+    <section className={styles.section} aria-labelledby="career-heading" aria-busy="true">
+      <div className={styles.head}>
+        <h2 id="career-heading" className="section-title">
+          Career stats
+        </h2>
+      </div>
+      <div className={`${styles.now} ${styles.skeleton}`} style={{ height: 170 }} />
+      <div className={styles.cards}>
+        {[0, 1, 2].map((i) => (
+          <div key={i} className={`${styles.card} ${styles.skeleton}`} style={{ height: 180 }} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function GameArt({ game, size }: { game: CareerGame; size: number }) {
   return game.imageUrl ? (
     <img src={storeImage(game.imageUrl, size * 2)} alt="" width={size} height={size} className={styles.art} />
