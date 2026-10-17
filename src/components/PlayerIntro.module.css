@@ -1,0 +1,347 @@
+/* Exit durations match INTRO_TIMING in src/lib/useIntroGate.ts. */
+
+.intro {
+  --intro-height: min(70vh, 560px);
+  position: relative;
+  height: var(--intro-height);
+  overflow: hidden;
+}
+
+/* Leaving: laid over the page that is being revealed. */
+.leaving {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  z-index: 2;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+}
+
+.stage {
+  position: relative;
+  height: var(--intro-height);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  padding: 0 var(--gutter);
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.pic,
+.slot {
+  flex: none;
+  width: 132px;
+  height: 132px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.pic {
+  border: 3px solid var(--accent);
+  animation: flip-in 450ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.slot {
+  border: 3px dashed var(--line);
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.strap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.title {
+  max-width: 100%;
+  padding: 10px 30px 10px 28px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  animation: strap-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.sub {
+  padding: 8px 30px 8px 28px;
+  background: var(--bg-deep);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  animation: sub-in 380ms 140ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.loading::after {
+  content: '';
+  animation: dots 1s steps(1) infinite;
+}
+
+.rep {
+  margin-right: 10px;
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-deep);
+  font-family: var(--font-display);
+  font-weight: 800;
+}
+
+.scoreRow {
+  min-height: clamp(3rem, 8vw, 4.75rem);
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: pop-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.g {
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2rem;
+}
+
+.number {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(3rem, 8vw, 4.75rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.scoreLabel {
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* The exit: orange and blue bars sweep across; the intro drops out behind them. */
+.wipeBlue,
+.wipeOrange {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+}
+
+.wipeBlue {
+  width: 70%;
+  background: var(--badge);
+  animation: wipe-blue 520ms cubic-bezier(0.6, 0.05, 0.3, 1) forwards;
+}
+
+.wipeOrange {
+  width: 55%;
+  background: var(--accent);
+  animation: wipe-orange 520ms cubic-bezier(0.6, 0.05, 0.3, 1) forwards;
+}
+
+.leaving .backdrop,
+.leaving .stage {
+  animation: drop-out 520ms both;
+}
+
+@media (max-width: 720px) {
+  .who {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .pic,
+  .slot {
+    width: 84px;
+    height: 84px;
+  }
+
+  .title,
+  .sub {
+    padding-left: 16px;
+    padding-right: 14px;
+  }
+
+  .sub {
+    font-size: 0.95rem;
+  }
+
+  .g {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+
+  .scoreLabel {
+    font-size: 0.8rem;
+  }
+}
+
+/* Reduced motion: no slides, flips or sweeps, just short fades. */
+@media (prefers-reduced-motion: reduce) {
+  .pic,
+  .title,
+  .sub,
+  .score {
+    animation: fade-in 200ms ease both;
+  }
+
+  .slot,
+  .loading::after {
+    animation: none;
+  }
+
+  .loading::after {
+    content: '…';
+  }
+
+  .wipeBlue,
+  .wipeOrange {
+    display: none;
+  }
+
+  .leaving .backdrop,
+  .leaving .stage {
+    animation: fade-out 250ms ease both;
+  }
+}
+
+@keyframes strap-in {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes sub-in {
+  from {
+    transform: translateX(-110%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes flip-in {
+  from {
+    transform: perspective(600px) rotateY(90deg);
+    opacity: 0;
+  }
+  to {
+    transform: perspective(600px) rotateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pop-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  33% {
+    content: '.';
+  }
+  66% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}
+
+@keyframes wipe-orange {
+  from {
+    transform: translateX(-130%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(200%) skewX(-18deg);
+  }
+}
+
+@keyframes wipe-blue {
+  from {
+    transform: translateX(-150%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(160%) skewX(-18deg);
+  }
+}
+
+@keyframes drop-out {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

@@ -64,6 +64,31 @@ describe('player page', () => {
     makeClip({ clipId: CLIP_B, gameTitle: 'Gears Beta', durationSeconds: 59, recordedAt: daysFromNow(-69), availableUntil: daysFromNow(21), media: { url: 'https://cdn.test/b.mp4', expiresAt: daysFromNow(0.04) } }),
   ];
 
+  it('plays the intro over a slow load, then reveals the reel', async () => {
+    let release = () => {};
+    const clipsHeld = new Promise<void>((resolve) => (release = resolve));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const path = new URL(String(input)).pathname;
+        const json = (status: number, body: unknown) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+        if (path === '/api/v1/players/TestPlayer') return json(200, profile);
+        if (path === `/api/v1/players/${XUID}/clips`) {
+          await clipsHeld;
+          return json(200, clipsOf(twoClips));
+        }
+        const err = apiError('NOT_FOUND', 404);
+        return json(err.status, err.body);
+      }),
+    );
+    renderAt('/player/TestPlayer');
+    expect(await screen.findByText("Loading TestPlayer's reel", {}, { timeout: 1500 })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Player card' })).toBeNull();
+    release();
+    await screen.findByRole('region', { name: 'Player card' });
+    await waitFor(() => expect(screen.queryByText("Loading TestPlayer's reel")).toBeNull(), { timeout: 1500 });
+  });
+
   it('plays the latest clip as the replay, strap leading with the game, clips requested by XUID', async () => {
     const paths = stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
     renderAt('/player/TestPlayer');

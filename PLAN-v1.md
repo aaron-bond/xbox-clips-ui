@@ -629,13 +629,30 @@ real data). Built in this order; each step leaves the site working.
 8. **Docs and checks.** README, CLAUDE.md and TODO updated; tests cover the
    ticker, the stats, the expiry notice, views hidden at zero, and the
    merged player page.
+9. **Player intro.** A cold player load takes about two seconds: the
+   profile (about 1.0 s), then the clip list, which needs the profile's
+   XUID (about 0.8 s more). Instead of "Loading…" text, the wait plays as
+   a broadcast intro. The orange name strap slides in with the gamertag
+   from the URL over "NOW LOADING THE REEL"; when the profile lands, the
+   gamerpic flips in, "GOOD PLAYER · 22 YEARS ON XBOX" replaces the
+   loading line and the gamerscore counts up; when the clips land, an
+   orange and blue diagonal wipe reveals the page with the replay
+   starting. Rules: no intro if the data is ready within 600 ms, so cached
+   players never see it; once shown it stays at least 700 ms, so it never
+   flashes; it never waits for anything but the data. A URL holding an
+   XUID has no name for the strap until the profile lands. With the
+   system's reduced-motion setting, every slide, flip and wipe becomes a
+   short fade and the gamerscore shows at once. If a request fails, the
+   wipe reveals the error. This changes only the UI; the requests are
+   unchanged.
 
 ## 13. Current status
 
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone. 56 tests run without touching the API.
+desktop and phone, with the player intro over slow loads. 70 tests run
+without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
 integration (also reachable at `https://xbox-clips-ui.pages.dev`). On the

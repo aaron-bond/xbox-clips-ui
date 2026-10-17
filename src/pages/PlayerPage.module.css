@@ -36,10 +36,15 @@
   max-width: 28ch;
 }
 
-.loading {
-  padding: 32px var(--gutter);
-  color: var(--muted);
-  text-align: center;
+/* Holds the intro's space for the first moments of a load, so nothing jumps. */
+.holding {
+  height: min(70vh, 560px);
+}
+
+/* The page as the intro's exit wipe plays over it. */
+.revealing {
+  position: relative;
+  overflow: hidden;
 }
 
 @media (max-width: 960px) {
