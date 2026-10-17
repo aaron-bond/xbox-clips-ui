@@ -125,7 +125,7 @@ describe('player page', () => {
     expect(await screen.findByText(/1\.2K views/)).toBeInTheDocument();
   });
 
-  it('shows career stats: now playing, biggest haul, on the brink, generations, most clipped', async () => {
+  it('shows career stats: now playing, biggest haul, on the brink, most clipped', async () => {
     const game = (name: string, gs: number, total: number, pct: number, days: number) => ({
       titleId: name, name, imageUrl: 'https://store-images.test/x', gamerscore: gs, totalGamerscore: total, percent: pct, lastPlayed: daysFromNow(-days),
     });
@@ -133,9 +133,8 @@ describe('player page', () => {
       nowPlaying: game('Recent Game', 330, 1000, 33, 6),
       biggestHaul: game('Big Game', 1260, 2000, 63, 4000),
       onTheBrink: game('Close Game', 900, 1000, 90, 1500),
-      platforms: [{ platform: 'Xbox 360', games: 85 }, { platform: 'PC', games: 290 }],
-      gamesCounted: 1000,
-      capped: true,
+      gamesCounted: 100,
+      limited: true,
     };
     stubRoutes({
       '/api/v1/players/TestPlayer': { body: profile },
@@ -144,14 +143,27 @@ describe('player page', () => {
     });
     renderAt('/player/TestPlayer');
     const section = await screen.findByRole('region', { name: 'Career stats' });
-    expect(within(section).getByText('From their last 1,000 games on Xbox')).toBeInTheDocument();
+    expect(within(section).getByText('From their last 100 games')).toBeInTheDocument();
     expect(within(section).getByText('Recent Game')).toBeInTheDocument();
     expect(within(section).getByText(/Last played 6 days ago · 330 \/ 1,000 G/)).toBeInTheDocument();
     expect(within(section).getByText('Big Game')).toBeInTheDocument();
     expect(within(section).getByText(/100 G to go/)).toBeInTheDocument();
-    expect(within(section).getByText('Two platforms')).toBeInTheDocument();
+    expect(within(section).queryByText(/platforms/i)).toBeNull();
     expect(within(section).getByText('Battlefield')).toBeInTheDocument();
     expect(within(section).getByText(/tied with Gears Beta/)).toBeInTheDocument();
+  });
+
+  it('notes the 100-game window only when the player has more games', async () => {
+    const stats = { nowPlaying: null, biggestHaul: null, onTheBrink: { titleId: 'x', name: 'Close Game', imageUrl: null, gamerscore: 9, totalGamerscore: 10, percent: 90, lastPlayed: null }, gamesCounted: 40, limited: false };
+    stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) },
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats } },
+    });
+    renderAt('/player/TestPlayer');
+    const section = await screen.findByRole('region', { name: 'Career stats' });
+    expect(within(section).getByText('Close Game')).toBeInTheDocument();
+    expect(within(section).queryByText(/From their last/)).toBeNull();
   });
 
   it('leaves career stats out when the history is hidden', async () => {

@@ -5,13 +5,13 @@ import { daysAgo, mostClipped } from '../lib/stats';
 import styles from './CareerStats.module.css';
 
 /**
- * The player page's stat sheet (PLAN-v1.md §11, P4): four facts from the title
- * history and one from the clips already on the page.
+ * The player page's stat sheet (PLAN-v1.md §11, P4): three facts from the
+ * player's most recent games and one from the clips already on the page.
  */
 export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
   const clipped = mostClipped(clips);
-  const { nowPlaying, biggestHaul, onTheBrink, platforms } = stats;
-  if (!nowPlaying && !biggestHaul && !onTheBrink && platforms.length === 0) return null;
+  const { nowPlaying, biggestHaul, onTheBrink } = stats;
+  if (!nowPlaying && !biggestHaul && !onTheBrink) return null;
 
   return (
     <section className={styles.section} aria-labelledby="career-heading">
@@ -19,7 +19,7 @@ export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
         <h2 id="career-heading" className="section-title">
           Career stats
         </h2>
-        {stats.capped && <span className={styles.note}>From their last 1,000 games on Xbox</span>}
+        {stats.limited && <span className={styles.note}>From their last {stats.gamesCounted} games</span>}
       </div>
 
       {nowPlaying && (
@@ -49,24 +49,6 @@ export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
             {onTheBrink.percent}% complete · {(onTheBrink.totalGamerscore - onTheBrink.gamerscore).toLocaleString()} G to
             go
           </GameCard>
-        )}
-        {platforms.length > 0 && (
-          <div className={styles.card}>
-            <span className={styles.label}>Generations</span>
-            <strong className={styles.cardTitle}>
-              {platforms.length === 1 ? 'One platform' : `${['', '', 'Two', 'Three', 'Four'][platforms.length]} platforms`}
-            </strong>
-            <ul className={styles.platforms}>
-              {platforms.map((p) => (
-                <li key={p.platform}>
-                  <span>{p.platform}</span>
-                  <span>
-                    {p.games.toLocaleString()} {p.games === 1 ? 'game' : 'games'}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
         )}
         {clipped && (
           <div className={styles.card}>

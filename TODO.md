@@ -23,6 +23,10 @@ any trade-off made.
 
 ## Done
 
+- [x] **Career stats from the last 100 games** (2026-10-17). Generations
+      dropped; the note reads "From their last 100 games" when a player has
+      more. Follows the API change that keeps `/career` within the free plan's
+      CPU limit.
 - [x] **P4: career stats** (2026-10-17). Five facts on the player page: now
       playing, biggest haul, on the brink, generations (from the API's new
       `/career` route) and most clipped (from the clip list). Weaker facts

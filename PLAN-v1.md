@@ -482,8 +482,15 @@ players.
 ### P4 — Profile trivia (built 2026-10-17)
 
 **As built:** a "Career stats" section on the player page, between the
-player card and Up next, with five facts: **Now playing**, **Biggest
-haul**, **On the brink**, **Generations** and **Most clipped**. It was
+player card and Up next, with four facts: **Now playing**, **Biggest
+haul** and **On the brink** from the player's **last 100 games**, and
+**Most clipped** from the clip list. When the player has more than 100
+games, the section says "From their last 100 games". The facts are drawn
+from recent games only because parsing a heavy player's whole history
+exceeded the Workers free plan's CPU limit in production (13 ms against
+10 ms); reading the newest 100 parses about a tenth of it. A
+**Generations** fact (games per platform) was built and then dropped: it
+needs the whole history, and recent games can't stand in for it. It was
 modelled on the design canvas first with real data. Library size, total
 achievements and peak year were drawn too, then dropped as the weaker
 facts: library reads "1,000+" for any heavy player, peak year needs a

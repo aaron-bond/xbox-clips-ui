@@ -54,7 +54,7 @@
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
@@ -109,34 +109,6 @@
   display: block;
   height: 100%;
   background: var(--accent);
-}
-
-.platforms {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.platforms li {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 10px;
-  background: var(--bg-deep);
-  font-size: 0.9rem;
-}
-
-.platforms li span:first-child {
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-
-.platforms li span:last-child {
-  color: var(--muted);
 }
 
 @media (max-width: 1000px) {

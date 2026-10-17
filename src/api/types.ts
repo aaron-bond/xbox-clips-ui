@@ -75,15 +75,14 @@ export interface CareerGame {
   lastPlayed: string | null;
 }
 
-/** Career facts from the player's title history. */
+/** Career facts from the player's most recent games. */
 export interface CareerStats {
   nowPlaying: CareerGame | null;
   biggestHaul: CareerGame | null;
   onTheBrink: CareerGame | null;
-  platforms: { platform: string; games: number }[];
   gamesCounted: number;
-  /** The history hit Xbox's 1,000-game limit. */
-  capped: boolean;
+  /** The player has more games than were read; the facts cover only the most recent. */
+  limited: boolean;
 }
 
 export interface PlayerCareer {
