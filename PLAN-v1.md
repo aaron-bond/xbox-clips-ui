@@ -583,6 +583,28 @@ app.
   so sharing a clip link from another app opens it here (Web Share Target,
   Chromium only).
 
+### P6 — Game screenshots
+
+Noted for later; not yet scoped. Screenshots were left out of v1 (§10).
+"Game screenshots" covers two different things, and either or both could
+be built:
+
+- **Players' own screenshots,** alongside their clips. The live spec has
+  `GET /v2/dvr/screenshots/{xuid}` ("Get screenshots by XUID"), the
+  sibling of the game clips endpoint the site already uses. Unknown until
+  one real response is inspected: the payload shape, whether image URLs
+  are signed and expire like clip media or are stable like clip
+  thumbnails, how long Xbox keeps screenshots, and whether capture
+  privacy hides them the same way. **Budget:** one more upstream call per
+  player, cached on the same terms as the clip list; it would be worth
+  fetching only when a visitor asks for screenshots, not on every player
+  page.
+- **Store screenshots of a game,** on the game page. The most-played
+  payload already carries store images (box art, hero art); whether it
+  also carries screenshots needs checking in that payload. **Budget:**
+  none if it does, since the ranking is one cached call shared by every
+  visitor.
+
 ---
 
 ## 12. Redesign: Broadcast in kingfisher

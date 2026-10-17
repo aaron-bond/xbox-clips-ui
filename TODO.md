@@ -14,6 +14,9 @@ any trade-off made.
 - [ ] P5: installable app: manifest, icons, Apple touch icon. No service
       worker needed to install; if one is added, it never caches API
       responses. Icons wait for the palette decision.
+- [ ] P6: game screenshots, not yet scoped: players' own captures
+      (`/v2/dvr/screenshots/{xuid}`, payload to inspect first) and/or store
+      screenshots on the game page.
 
 ## Later (PLAN §10)
 
