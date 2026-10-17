@@ -1,9 +1,10 @@
 .frame {
   position: relative;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) + 4px);
   overflow: hidden;
   background: #000;
+  box-shadow: 0 0 0 1px var(--border), 0 18px 60px var(--glow), 0 0 80px var(--glow-2);
 }
 
 .video {
@@ -32,9 +33,5 @@
 
 .button {
   padding: 8px 16px;
-  border: 0;
   border-radius: var(--radius);
-  background: var(--accent);
-  color: var(--accent-text);
-  font-weight: 700;
 }

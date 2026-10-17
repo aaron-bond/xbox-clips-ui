@@ -7,7 +7,7 @@ describe('search', () => {
   it('rejects an invalid gamertag without a request', async () => {
     const paths = stubApi(() => ({ body: {} }));
     const { router } = renderAt('/');
-    await userEvent.type(screen.getAllByLabelText('Gamertag')[1]!, 'bad/tag{Enter}');
+    await userEvent.type(screen.getByLabelText('Gamertag'), 'bad/tag{Enter}');
     expect(screen.getByRole('alert')).toHaveTextContent("isn't a valid gamertag");
     expect(router.state.location.pathname).toBe('/');
     expect(paths).toEqual([]);
@@ -16,7 +16,7 @@ describe('search', () => {
   it('navigates to the player page', async () => {
     stubApi(() => ({ body: profile }));
     const { router } = renderAt('/');
-    await userEvent.type(screen.getAllByLabelText('Gamertag')[1]!, 'Major Nelson{Enter}');
+    await userEvent.type(screen.getByLabelText('Gamertag'), 'Major Nelson{Enter}');
     expect(router.state.location.pathname).toBe('/player/Major%20Nelson');
   });
 });
@@ -28,6 +28,15 @@ describe('player page', () => {
     expect(await screen.findByRole('heading', { name: 'TestPlayer' })).toBeInTheDocument();
     expect(await screen.findByText('Big win')).toBeInTheDocument();
     expect(paths).toEqual(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`]);
+  });
+
+  it('shows view counts on clip cards from the list data, with no extra request', async () => {
+    const paths = stubApi((p) =>
+      p.includes('/clips') ? { body: clipsOf([makeClip({ caption: 'Big win', views: 1240 })]) } : { body: profile },
+    );
+    renderAt('/player/TestPlayer');
+    expect(await screen.findByText(/1\.2K views/)).toBeInTheDocument();
+    expect(paths).toHaveLength(2);
   });
 
   it('distinguishes restricted access from no clips', async () => {

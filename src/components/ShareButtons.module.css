@@ -26,10 +26,8 @@
   stroke-linejoin: round;
 }
 
-.primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-text);
+.icon:not(:global(.btn)):hover {
+  border-color: var(--btn-border);
 }
 
 .status {

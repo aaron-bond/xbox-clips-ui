@@ -13,8 +13,8 @@ any trade-off made.
 
 - [ ] **Q2: thumbnail as `og:image`.** WhatsApp renders it. Still to check:
       Discord, iMessage, Slack.
-- [ ] **Q4: visual design and component library.** Decide once the layout
-      has been used for a while.
+- [ ] **Q4: component library.** Palette settled (Midnight Violet); decide
+      on a library once the layout has been used for a while.
 
 ## Proposed features (PLAN §11)
 
@@ -34,6 +34,15 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **Midnight Violet and a bolder UI** (2026-10-17). Chosen from six
+      palettes screenshotted on the real app. Gradient brand and headline;
+      buttons are a light violet outline on a soft tint (a gradient fill was
+      too busy, and no text colour reads across it); ambient violet and cyan
+      glow; profile banner with a gradient ring; clip cards that lift, glow
+      and show a play badge on hover.
+      View counts on cards, from the list data (no extra request). The
+      header search hides on the home page, which has its own.
 
 - [x] **Orange theme and autoplay** (2026-10-17). Accent changed to the old
       Xbox Live Gold orange. Clips autoplay: with sound after an in-site

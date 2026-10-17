@@ -3,6 +3,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+  border-left: 3px solid var(--danger);
   text-align: center;
 }
 
@@ -16,8 +17,5 @@
 
 .retry {
   padding: 8px 16px;
-  border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: var(--surface-raised);
-  color: var(--text);
 }

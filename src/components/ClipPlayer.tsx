@@ -51,7 +51,7 @@ export function ClipPlayer({ clip, refresh }: Props) {
   if (!clip.media) {
     return (
       <Panel clip={clip} message="This clip can't be played right now.">
-        <button type="button" onClick={() => void recover(false)} className={styles.button}>
+        <button type="button" onClick={() => void recover(false)} className={`btn ${styles.button}`}>
           Try again
         </button>
       </Panel>
@@ -61,7 +61,7 @@ export function ClipPlayer({ clip, refresh }: Props) {
   if (state === 'failed') {
     return (
       <Panel clip={clip} message="This clip failed to play.">
-        <button type="button" onClick={() => void recover(false)} className={styles.button}>
+        <button type="button" onClick={() => void recover(false)} className={`btn ${styles.button}`}>
           Try again
         </button>
       </Panel>

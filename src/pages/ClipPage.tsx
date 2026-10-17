@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router';
 import { ClipPlayer } from '../components/ClipPlayer';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ShareButtons } from '../components/ShareButtons';
-import { clipPath, clipTitle, formatDate, formatDuration } from '../lib/format';
+import { clipPath, clipTitle, formatDate, formatDuration, formatViews } from '../lib/format';
 import { clipQuery } from '../lib/queries';
 import { isClipId, isXuid } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
@@ -31,8 +31,7 @@ export function ClipPage() {
           <h1 className={styles.title}>{title}</h1>
           <p className={styles.meta}>
             {data.caption && data.gameTitle ? `${data.gameTitle} · ` : ''}
-            {formatDuration(data.durationSeconds)} · {formatDate(data.recordedAt)} · {data.views.toLocaleString()}{' '}
-            views
+            {formatDuration(data.durationSeconds)} · {formatDate(data.recordedAt)} · {formatViews(data.views)}
           </p>
           <Link to={`/player/${data.xuid}`} className={styles.more}>
             More from this player

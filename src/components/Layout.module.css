@@ -3,27 +3,36 @@
 }
 
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   gap: var(--gap);
   padding: 12px var(--gap);
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: rgb(24 21 42 / 78%);
+  backdrop-filter: blur(12px);
+}
+
+/* A gradient hairline instead of a flat border. */
+.header::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--gradient);
+  opacity: 0.6;
 }
 
 .brand {
-  font-weight: 800;
-  font-size: 1.2rem;
+  font-weight: 900;
+  font-size: 1.3rem;
   text-decoration: none;
-  letter-spacing: -0.02em;
-}
-
-.brand span {
-  color: var(--accent);
+  letter-spacing: -0.03em;
 }
 
 .main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 24px var(--gap) 48px;
+  padding: 28px var(--gap) 56px;
 }

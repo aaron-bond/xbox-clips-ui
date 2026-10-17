@@ -35,7 +35,7 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
         }}
         className={styles.input}
       />
-      <button type="submit" className={styles.button}>
+      <button type="submit" className={`btn ${styles.button}`}>
         Search
       </button>
       {invalid && (

@@ -4,18 +4,20 @@
 }
 
 .details {
+  margin-top: 22px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--gap);
-  margin-top: var(--gap);
 }
 
 .title {
   margin: 0;
-  font-size: 1.4rem;
-  line-height: 1.25;
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 .meta {
@@ -24,9 +26,13 @@
 }
 
 .more {
-  color: var(--accent);
+  color: var(--accent-2);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+}
+
+.more:hover {
+  text-decoration: underline;
 }
 
 .loading {

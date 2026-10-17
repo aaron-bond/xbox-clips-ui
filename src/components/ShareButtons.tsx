@@ -45,7 +45,7 @@ export function ShareButtons({ url, title }: { url: string; title: string }) {
       <button
         type="button"
         onClick={() => void copy()}
-        className={`${styles.icon} ${styles.primary}`}
+        className={`btn ${styles.icon}`}
         aria-label="Copy link"
         title={copied ? 'Link copied' : 'Copy link'}
       >

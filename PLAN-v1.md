@@ -135,10 +135,20 @@ deferred.** CSS Modules are built into Vite and need no dependency, which
 is enough to start. A component library may be brought in if it proves
 useful. The look is a dark, media-first clip site: a player header
 above a grid of clip thumbnails, the layout pattern sites like
-[GamerDVR](https://gamerdvr.com/gamer/major-nelson/videos) use. Its own
-identity comes from the accent colour, the orange of the old Xbox Live
-Gold badge (`#f7a21b`), with dark text on orange surfaces for contrast.
-The choice of library, if any, is Q4 (§9).
+[GamerDVR](https://gamerdvr.com/gamer/major-nelson/videos) use. **Palette:
+Midnight Violet**, chosen 2026-10-17 from six proposals rendered on the
+real app: inky indigo neutrals, a violet accent (`#a78bfa`) and a cyan
+second accent (`#22d3ee`), joined in a violet-to-cyan gradient. The
+treatment is deliberately bold: soft violet and cyan light behind the
+page, gradient text on the brand and headline, a banner behind the player profile with a gradient ring around the
+gamerpic, and clip cards that lift, glow and show a play badge on hover.
+**Buttons are not gradient:** every filled control (search, copy, the
+card play badge, retry) is a light violet outline (`#c4b5fd`) with
+near-white text on a soft violet tint, at 11.9:1 contrast; on hover the
+tint brightens and a violet glow appears. A gradient fill was tried and
+read as too busy for small controls, and no text colour reads across its
+whole range. The gradient is kept for flourishes. The choice of component
+library, if any, is Q4 (§9).
 
 **A share link is the clip page's own URL.**
 `https://xboxclips.io/clip/:xuid/:clipId` is both what people share and
@@ -298,10 +308,9 @@ zone is on Cloudflare. It is not needed for v1.
 - **Q3 — Base HTML in the function. Settled by design:** the function
   fetches `/` from its `ASSETS` binding explicitly, so it does not depend
   on how the single-page-app fallback resolves `/clip/*`.
-- **Q4 — Visual design and component library.** No design yet. The
-  reference is the layout style of GamerDVR's player video pages (§3).
-  Whether a component library helps reach it is decided when the UI
-  takes shape; v1 can start with CSS Modules alone.
+- **Q4 — Component library.** The palette and treatment are settled
+  (§3). Whether a component library is worth adding is still open; the
+  UI is built with CSS Modules alone so far.
 
 ---
 
@@ -313,6 +322,8 @@ zone is on Cloudflare. It is not needed for v1.
   message. A designed state for `CLIP_EXPIRED` and `restricted` access
   comes later.
 - **`availableUntil` display.** The data is there; showing it is later.
+  (View counts are shown on clip cards and the clip page; they come with
+  the clip list, at no extra request.)
 - **Pagination** beyond the first page of clips.
 - **Short share links.** Possible without stored state by packing both
   identifiers into one code; not needed yet.
