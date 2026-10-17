@@ -301,11 +301,10 @@ zone is on Cloudflare. It is not needed for v1.
   value is trustworthy: Cloudflare sets that header on requests from the
   internet, and over the binding only the function can set it. B4 needs
   no API change.
-- **Q2 — Thumbnail as `og:image`.** Xbox serves thumbnails as
-  `application/octet-stream`, not `image/png`. **WhatsApp accepts it**
-  (confirmed 2026-10-17: the preview shows the thumbnail). Discord,
-  iMessage and Slack are untested. Where a service rejects it, previews
-  have a title but no image.
+- **Q2 — Thumbnail as `og:image`. Settled 2026-10-17:** Xbox serves
+  thumbnails as `application/octet-stream`, not `image/png`, but WhatsApp
+  and Discord both show the thumbnail in clip link previews. That is
+  enough confidence; other apps are not being tested individually.
 - **Q3 — Base HTML in the function. Settled by design:** the function
   fetches `/` from its `ASSETS` binding explicitly, so it does not depend
   on how the single-page-app fallback resolves `/clip/*`.
@@ -470,7 +469,10 @@ Updated 2026-10-16.
 integration (also reachable at `https://xbox-clips-ui.pages.dev`). On the
 live site, a clip page served to a crawler carries that clip's own
 preview tags, fetched from the API over the service binding, with
-`og:url` on `xboxclips.io`. `www.xboxclips.io` is not set up yet. Every route in §4,
+`og:url` on `xboxclips.io`. `www.xboxclips.io` redirects to the apex with a 301 that keeps the path
+and query: a Bulk Redirect plus a proxied placeholder `A` record for
+`www`, per Cloudflare's "Redirecting www to domain apex" guide. `www` is
+not a custom domain on the Pages project. Every route in §4,
 playback with its retry (§5), sharing (§6) and the preview function (§7)
 are built. 34 tests run without touching the API: app tests in a
 simulated browser, function tests in the Workers runtime. The production
@@ -491,6 +493,5 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. Add `www.xboxclips.io` to the Pages project and redirect it to the
-   apex.
-2. Finish Q2: check a clip link's preview in Discord, iMessage and Slack.
+1. Choose the next proposed feature (§11). P5 (installable app) is
+   unblocked now that the visual identity is settled.

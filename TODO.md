@@ -3,16 +3,8 @@
 Live backlog. Finished items keep a short note on what was actually built and
 any trade-off made.
 
-## Deployment
-
-- [ ] Check the Pages build uses Node 24 from `.node-version`.
-- [ ] Add `www.xboxclips.io` as a Pages custom domain, and a 301 redirect
-      rule from `www` to the apex that keeps path and query.
-
 ## Open questions (PLAN §9)
 
-- [ ] **Q2: thumbnail as `og:image`.** WhatsApp renders it. Still to check:
-      Discord, iMessage, Slack.
 - [ ] **Q4: component library.** Palette settled (Midnight Violet); decide
       on a library once the layout has been used for a while.
 
@@ -34,6 +26,19 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **Pages build uses Node 24** (2026-10-17). The build log shows it read
+      `.node-version` and installed Node 24.13.1.
+
+- [x] **`www.xboxclips.io` redirect** (2026-10-17). 301 to the apex,
+      keeping path and query: a Bulk Redirect list and rule (preserve query
+      string, subpath matching, preserve path suffix, include subdomains)
+      plus a proxied `A www 192.0.2.1` placeholder record. Not a Pages
+      custom domain.
+
+- [x] **Q2: thumbnail as `og:image`** (2026-10-17). Previews show the
+      thumbnail in WhatsApp and Discord despite the octet-stream type.
+      Enough confidence to stop testing apps individually.
 
 - [x] **Midnight Violet and a bolder UI** (2026-10-17). Chosen from six
       palettes screenshotted on the real app. Gradient headline; logo in
