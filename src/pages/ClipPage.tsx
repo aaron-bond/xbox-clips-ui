@@ -74,7 +74,7 @@ export function ClipPage() {
             </Link>
           </section>
         )}
-        {others.length > 0 && <UpNext clips={others} total={reel.data?.clips.length ?? 0} layout="list" />}
+        {others.length > 0 && <UpNext clips={others} layout="list" />}
       </aside>
     </div>
   );

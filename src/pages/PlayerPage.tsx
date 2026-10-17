@@ -100,6 +100,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
     }
 
     const shareUrl = `${window.location.origin}${clipPath(current.xuid, current.clipId)}`;
+    const others = reel.filter((c) => c.clipId !== current.clipId);
     return (
       <div className={styles.page}>
         <div className={styles.top}>
@@ -110,9 +111,11 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
             </div>
           </PlayerCard>
         </div>
-        <div className={styles.gutter}>
-          <UpNext clips={reel.filter((c) => c.clipId !== current.clipId)} total={reel.length} />
-        </div>
+        {others.length > 0 && (
+          <div className={styles.gutter}>
+            <UpNext clips={others} />
+          </div>
+        )}
         {careerSection}
       </div>
     );

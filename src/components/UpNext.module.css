@@ -94,27 +94,6 @@
   font-size: 0.85rem;
 }
 
-.end {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
-  padding: 20px;
-  border: 2px dashed var(--line);
-  border-radius: var(--radius);
-  text-align: center;
-}
-
-.end p {
-  margin: 0;
-  color: var(--muted);
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 800;
-  font-size: 1.5rem;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-}
 
 @media (max-width: 720px) {
   .grid {
@@ -131,14 +110,5 @@
   .grid .thumb {
     width: 136px;
     flex: none;
-  }
-
-  .end {
-    min-height: 0;
-    padding: 14px;
-  }
-
-  .end p {
-    font-size: 1.15rem;
   }
 }

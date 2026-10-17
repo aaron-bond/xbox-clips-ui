@@ -163,8 +163,8 @@ on a real player, it showed captions are almost always empty, view
 counts are near zero and reels can be two clips long. So straps lead
 with the game name, a caption shows only when one exists, views appear
 only when above zero, stats are ones that read well at small numbers
-(gamerscore, clip count, last clip, reel length), and a short reel ends
-with a deliberate "END OF REEL" rather than an empty grid. The 90-day
+(gamerscore, clip count, last clip, reel length), and a one-clip reel
+has no "Up next" section rather than an empty one. The 90-day
 deletion is shown as information: a clip about to leave Xbox says so.
 
 **A share link is the clip page's own URL.**
@@ -610,7 +610,7 @@ real data). Built in this order; each step leaves the site working.
    (gamerscore, clips, last clip as "N days ago", reel length as total
    duration). If a clip leaves Xbox within 30 days, a notice says which and
    when. "COPY REPLAY LINK" and share act on the replay. UP NEXT lists the
-   other clips; a reel ends with "END OF REEL · THAT'S ALL N CLIPS". No new
+   other clips, and is left out when there are none. No new
    requests: the profile and clip list are already fetched.
 5. **Clip page** (the share link). The same replay and strap, a line with
    duration and "On Xbox until about <date>", COPY LINK (solid) and share,
@@ -651,7 +651,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads. 70 tests run
+desktop and phone, with the player intro over slow loads. 71 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git

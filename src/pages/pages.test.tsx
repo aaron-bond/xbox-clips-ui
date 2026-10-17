@@ -238,12 +238,19 @@ describe('player page', () => {
     expect(upNext.compareDocumentPosition(career) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('lists the rest of the reel and closes it', async () => {
+  it('lists the rest of the reel', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
     renderAt('/player/TestPlayer');
     const upNext = await screen.findByRole('region', { name: 'Up next' });
+    expect(within(upNext).getAllByRole('listitem')).toHaveLength(1);
     expect(within(upNext).getByRole('link', { name: /Gears Beta/ })).toHaveAttribute('href', `/clip/${XUID}/${CLIP_B}`);
-    expect(within(upNext).getByText(/That's all 2 clips/)).toBeInTheDocument();
+  });
+
+  it('leaves out up next when the reel is one clip', async () => {
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf([twoClips[0]!]) } });
+    renderAt('/player/TestPlayer');
+    await screen.findByRole('region', { name: 'Player card' });
+    expect(screen.queryByRole('region', { name: 'Up next' })).toBeNull();
   });
 
   it('copies the replay link', async () => {
