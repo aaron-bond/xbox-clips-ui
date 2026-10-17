@@ -26,6 +26,13 @@ any trade-off made.
 
 ## Done
 
+- [x] **Own copy and disclaimer** (2026-10-17). Home headline "Every gamertag
+      has a highlight reel" with no lede; search placeholder "Gamertag"; new
+      empty-shelf and game-page wording; meta description rewritten; footer
+      disclaimer on every page. The Xbox Clips name and domain are kept
+      deliberately, despite Microsoft's trademark guidelines on brand names
+      (PLAN §3).
+
 - [x] **P1: most-played games** (2026-10-17). Front-page panel (#1 as a
       hero, then 11 tiles) and an in-app game page at `/game/:productId`,
       seeded from the cached list. No store links: the aim is to keep

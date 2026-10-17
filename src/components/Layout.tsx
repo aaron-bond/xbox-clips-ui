@@ -17,6 +17,9 @@ export function Layout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+      <footer className={styles.footer}>
+        <p>Not affiliated with or endorsed by Microsoft. Xbox is a trademark of the Microsoft group of companies.</p>
+      </footer>
       {/* New pages open at the top; Back returns to where the visitor was. */}
       <ScrollRestoration />
     </div>

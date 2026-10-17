@@ -27,7 +27,7 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
         aria-label="Gamertag"
         aria-invalid={invalid}
         aria-describedby={invalid ? 'search-error' : undefined}
-        placeholder="Search a gamertag"
+        placeholder="Gamertag"
         value={value}
         onChange={(e) => {
           setValue(e.target.value);

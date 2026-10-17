@@ -7,9 +7,8 @@ export function SearchPage() {
     <>
       <section className={styles.hero}>
         <h1>
-          Watch and share <span className="gradient-text">the best plays</span>
+          Every gamertag has a <span className="gradient-text">highlight reel</span>
         </h1>
-        <p className={styles.lede}>Enter any gamertag to see their latest clips. No sign-in needed.</p>
         <SearchBox />
       </section>
       <MostPlayed />

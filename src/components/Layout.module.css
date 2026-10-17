@@ -45,3 +45,17 @@
   margin: 0 auto;
   padding: 28px var(--gap) 56px;
 }
+
+.footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px var(--gap) 32px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0;
+}

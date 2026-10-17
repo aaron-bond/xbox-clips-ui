@@ -33,7 +33,7 @@ export function PlayerPage() {
       ) : clips.data.access === 'restricted' ? (
         <p className={styles.empty}>This player's clips aren't public.</p>
       ) : clips.data.clips.length === 0 ? (
-        <p className={styles.empty}>No clips yet.</p>
+        <p className={styles.empty}>Nothing captured yet. Check back after their next session.</p>
       ) : (
         <ClipGrid clips={clips.data.clips} />
       )}

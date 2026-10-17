@@ -70,7 +70,7 @@ export function GamePage() {
 
         <aside className={styles.cta}>
           <h2>Find clips from this game</h2>
-          <p>Search a player to see their latest clips.</p>
+          <p>Look up a player to browse their clips.</p>
           <SearchBox />
         </aside>
       </div>

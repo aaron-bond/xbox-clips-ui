@@ -174,6 +174,18 @@ not.
 **Playback is a plain `<video>` element** pointed at the upstream media
 URL, so the browser streams straight from the Xbox CDN.
 
+**Our own voice, and an honest relationship with Microsoft's brand.** The
+copy is written for this site, not borrowed: the home page has a single
+headline, "Every gamertag has a highlight reel", with no lede; the search
+box is labelled "Gamertag"; an empty shelf says "Nothing captured yet.
+Check back after their next session." Every page carries a footer: "Not
+affiliated with or endorsed by Microsoft. Xbox is a trademark of the
+Microsoft group of companies." The name stays Xbox Clips on the
+`xboxclips.io` domain by deliberate choice. Microsoft's trademark
+guidelines ask third parties not to use its brands in product or domain
+names, so this is a known risk, accepted for now; the disclaimer and
+descriptive use elsewhere keep any implied endorsement out of the copy.
+
 **No visitor state in v1.** Recent gamertags and favourites are out of
 scope (§10).
 
