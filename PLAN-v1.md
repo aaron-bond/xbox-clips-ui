@@ -1,7 +1,7 @@
 # UI Plan — v1
 
 **Status:** live at `https://xboxclips.io`. Written 2026-10-16.
-**Where this stands right now, and what to do next: §12. Proposed features: §11.**
+**Where this stands right now, and what to do next: §13. Proposed features: §11. Redesign: §12.**
 
 This is the plan for `xbox-clips-ui`, the frontend of a social hub for
 sharing Xbox game clips. It is the authoritative reference for the v1 UI:
@@ -133,25 +133,39 @@ seeded from the cached list, so it costs no request while the clip's
 media URL is still fresh.
 
 **CSS Modules for styling; a component library is optional and
-deferred.** CSS Modules are built into Vite and need no dependency, which
-is enough to start. A component library may be brought in if it proves
-useful. The look is a dark, media-first clip site: a player header
-above a grid of clip thumbnails, the layout pattern sites like
-[GamerDVR](https://gamerdvr.com/gamer/major-nelson/videos) use. **Palette:
-Midnight Violet**, chosen 2026-10-17 from six proposals rendered on the
-real app: inky indigo neutrals, a violet accent (`#a78bfa`) and a cyan
-second accent (`#22d3ee`), joined in a violet-to-cyan gradient. The
-treatment is deliberately bold: soft violet and cyan light behind the
-page, gradient text on the home headline, the logo in the two colours
-solid ("xbox" violet, "clips" cyan), a banner behind the player profile with a gradient ring around the
-gamerpic, and clip cards that lift, glow and show a play badge on hover.
-**Buttons are not gradient:** every filled control (search, copy, the
-card play badge, retry) is a light violet outline (`#c4b5fd`) with
-near-white text on a soft violet tint, at 11.9:1 contrast; on hover the
-tint brightens and a violet glow appears. A gradient fill was tried and
-read as too busy for small controls, and no text colour reads across its
-whole range. The gradient is kept for flourishes. The choice of component
-library, if any, is Q4 (§9).
+deferred.** CSS Modules are built into Vite and need no dependency. The
+choice of component library, if any, is Q4 (§9).
+
+**The look: Broadcast, in kingfisher colours** (chosen 2026-10-17; §12).
+Generic clip sites share one layout, a profile header over a grid of
+thumbnails, and this site set out to look like none of them. Four
+directions were drawn on a design canvas (an editing-suite reel, trading
+cards, sports broadcast, arcade attract mode). Broadcast was taken
+forward and modelled on every page with real data before any code
+changed. It presents clips the way sports TV presents a replay:
+
+- a **most-played ticker** across the top of every page;
+- the clip as a **REPLAY**, with a **name strap**: the game name on an
+  orange bar, the gamertag and date on a dark bar beneath;
+- a **player card** of stats, and **UP NEXT** instead of a grid.
+
+**Kingfisher palette:** deep teal-navy ground (`#06192b`), blue-teal
+panels and rules (`#0b2a40`, `#18405c`), kingfisher orange (`#f5862b`)
+for straps, rank chips and primary buttons, with dark text on it (7:1),
+and kingfisher blue (`#0b6aa3`) for REPLAY and other badges, with white
+text (5.8:1). An earlier navy-and-yellow version and a violet palette
+were both considered; kingfisher keeps to two hues. **Type:** Barlow
+Condensed (800, often italic) for straps, headings and the logo; Barlow
+for text. The primary button reads **GO**.
+
+**The design is built for real data, not flattering samples.** Modelled
+on a real player, it showed captions are almost always empty, view
+counts are near zero and reels can be two clips long. So straps lead
+with the game name, a caption shows only when one exists, views appear
+only when above zero, stats are ones that read well at small numbers
+(gamerscore, clip count, last clip, reel length), and a short reel ends
+with a deliberate "END OF REEL" rather than an empty grid. The 90-day
+deletion is shown as information: a clip about to leave Xbox says so.
 
 **A share link is the clip page's own URL.**
 `https://xboxclips.io/clip/:xuid/:clipId` is both what people share and
@@ -526,9 +540,60 @@ app.
 
 ---
 
-## 12. Current status
+## 12. Redesign: Broadcast in kingfisher
 
-Updated 2026-10-16.
+The design in §3, as modelled on the design canvas (desktop and phone, with
+real data). Built in this order; each step leaves the site working.
+
+1. **Theme.** Replace the colour and type tokens with the kingfisher
+   palette and Barlow / Barlow Condensed (Google Fonts). Primary buttons
+   become solid orange with dark text ("GO"); secondary buttons an orange
+   outline. Drop the gradient flourishes and ambient glow. The logo
+   becomes "XBOX**CLIPS**" in condensed italic, "CLIPS" in orange. Set
+   `theme-color` for mobile browser chrome.
+2. **Ticker and header.** A most-played band on every page: an orange
+   "MOST PLAYED" label ("TOP" on phones), then ranks and titles, each
+   linking to its game page. It reads the cached ranking the front page
+   already uses, so it costs no extra request once loaded. Static, not
+   animated; it scrolls sideways if it overflows. If the ranking cannot
+   load, the band is left out.
+3. **Home.** A condensed headline, "EVERY GAMERTAG HAS A **HIGHLIGHT
+   REEL**", and the search with GO. Most played: the #1 game as a feature
+   with a "NO. 1 THIS WEEK" badge and name strap, then ranks 2–12 as box
+   art with orange rank chips (a grid on desktop, a sideways-scrolling
+   row on phones).
+4. **Player page.** The player's latest clip plays at the top as the
+   replay, with REPLAY and duration badges and the name strap. Beside it
+   (below on phones) the player card: gamerpic, gamertag, and four stats
+   (gamerscore, clips, last clip as "N days ago", reel length as total
+   duration). If a clip leaves Xbox within 30 days, a notice says which and
+   when. "COPY REPLAY LINK" and share act on the replay. UP NEXT lists the
+   other clips; a reel ends with "END OF REEL · THAT'S ALL N CLIPS". No new
+   requests: the profile and clip list are already fetched.
+5. **Clip page** (the share link). The same replay and strap, a line with
+   duration and "On Xbox until about <date>", COPY LINK (solid) and share,
+   a "FROM THE REEL OF" card (gamerpic, gamertag, gamerscore, clip count)
+   with WATCH THE FULL REEL, and UP NEXT. This adds the player's profile
+   and clip list to the page: two cached API requests, the list usually
+   already fresh because resolving the clip fetched it.
+6. **Game page.** The banner with "NO. 1 · MOST PLAYED ON XBOX" badges and
+   the name strap, a stats bar (released, rating, genre, plays on), the
+   description, the find-clips panel, and ALSO MOST PLAYED (the next
+   ranks, excluding this game).
+7. **Phones.** Below 720 px: the replay and banners run edge to edge; the
+   name strap moves below the video, overlapping its bottom edge, so it
+   never covers the clip; stats become a 2×2 grid; UP NEXT a list; most-
+   played rows scroll sideways; the header search shrinks to a compact box.
+8. **Docs and checks.** README, CLAUDE.md and TODO updated; tests cover the
+   ticker, the stats, the expiry notice, views hidden at zero, and the
+   merged player page.
+
+## 13. Current status
+
+Updated 2026-10-17.
+
+**Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
+desktop and phone. 56 tests run without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
 integration (also reachable at `https://xbox-clips-ui.pages.dev`). On the
@@ -539,8 +604,8 @@ and query: a Bulk Redirect plus a proxied placeholder `A` record for
 `www`, per Cloudflare's "Redirecting www to domain apex" guide. `www` is
 not a custom domain on the Pages project. Every route in §4,
 playback with its retry (§5), sharing (§6) and the preview function (§7)
-are built. 34 tests run without touching the API: app tests in a
-simulated browser, function tests in the Workers runtime. The production
+are built. App tests run in a simulated browser and function tests in
+the Workers runtime. The production
 build and the function bundle both build, and a local Pages run confirmed
 routing and the function's fallback path. The backend serves every route
 in §2 and already allows this project's origins (§8). `TODO.md` is the
@@ -555,6 +620,8 @@ working backlog; `CLAUDE.md` is the map of the code.
 - v1 scope: search and shelf; clip page with playback and sharing (§1).
 - The share link is the clip page URL, with previews from a Pages
   Function on `/clip/*` (§3, §7).
+- The Broadcast look in kingfisher colours, with the player page merged
+  with the replay (§3, §12).
 
 ### Next steps, in order
 
