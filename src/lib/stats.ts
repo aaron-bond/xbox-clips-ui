@@ -50,20 +50,30 @@ export function tenureLabel(years: number | null | undefined): string | null {
 }
 
 /**
- * The game with the most clips in this reel. Ties go to the game clipped most
+ * The game with the most clips in this reel, with its latest clip (whose
+ * thumbnail can stand in for game art). Ties go to the game clipped most
  * recently, and the others it tied with are named.
  */
-export function mostClipped(clips: Clip[]): { game: string; count: number; tiedWith: string[] } | null {
-  const byGame = new Map<string, { count: number; latest: string }>();
+export function mostClipped(clips: Clip[]): { game: string; count: number; tiedWith: string[]; latest: Clip } | null {
+  const byGame = new Map<string, { count: number; latest: Clip }>();
   for (const c of clips) {
     if (!c.gameTitle) continue;
-    const entry = byGame.get(c.gameTitle) ?? { count: 0, latest: '' };
-    entry.count++;
-    if (c.recordedAt > entry.latest) entry.latest = c.recordedAt;
-    byGame.set(c.gameTitle, entry);
+    const entry = byGame.get(c.gameTitle);
+    if (!entry) byGame.set(c.gameTitle, { count: 1, latest: c });
+    else {
+      entry.count++;
+      if (c.recordedAt > entry.latest.recordedAt) entry.latest = c;
+    }
   }
-  const ranked = [...byGame.entries()].sort((a, b) => b[1].count - a[1].count || b[1].latest.localeCompare(a[1].latest));
+  const ranked = [...byGame.entries()].sort(
+    (a, b) => b[1].count - a[1].count || b[1].latest.recordedAt.localeCompare(a[1].latest.recordedAt),
+  );
   const top = ranked[0];
   if (!top) return null;
-  return { game: top[0], count: top[1].count, tiedWith: ranked.slice(1).filter((r) => r[1].count === top[1].count).map((r) => r[0]) };
+  return {
+    game: top[0],
+    count: top[1].count,
+    tiedWith: ranked.slice(1).filter((r) => r[1].count === top[1].count).map((r) => r[0]),
+    latest: top[1].latest,
+  };
 }

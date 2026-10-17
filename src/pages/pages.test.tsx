@@ -184,6 +184,33 @@ describe('player page', () => {
     expect(within(section).getByText(/tied with Gears Beta/)).toBeInTheDocument();
   });
 
+  it('gives most clipped box art when it is a career game, or a clip frame otherwise', async () => {
+    const career = (titleId: string) => ({
+      xuid: XUID,
+      stats: {
+        nowPlaying: { titleId, name: 'Battlefield', imageUrl: 'https://store-images.test/bf', gamerscore: 1, totalGamerscore: 10, percent: 10, lastPlayed: null },
+        biggestHaul: null,
+        onTheBrink: null,
+        gamesCounted: 40,
+        limited: false,
+      },
+    });
+    const clips = [makeClip({ gameTitle: 'Battlefield', titleId: 77, thumbnailUrl: 'https://cdn.test/bf-frame.png' })];
+    const artOf = async () => {
+      const label = await screen.findByText('Most clipped');
+      return label.closest('div')!.querySelector('img')!.getAttribute('src');
+    };
+
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(clips) }, [`/api/v1/players/${XUID}/career`]: { body: career('77') } });
+    const first = renderAt('/player/TestPlayer');
+    expect(await artOf()).toContain('https://store-images.test/bf');
+    first.unmount();
+
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(clips) }, [`/api/v1/players/${XUID}/career`]: { body: career('12') } });
+    renderAt('/player/TestPlayer');
+    expect(await artOf()).toBe('https://cdn.test/bf-frame.png');
+  });
+
   it('notes the 100-game window only when the player has more games', async () => {
     const stats = { nowPlaying: null, biggestHaul: null, onTheBrink: { titleId: 'x', name: 'Close Game', imageUrl: null, gamerscore: 9, totalGamerscore: 10, percent: 90, lastPlayed: null }, gamesCounted: 40, limited: false };
     stubRoutes({

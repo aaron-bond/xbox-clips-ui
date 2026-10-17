@@ -46,8 +46,9 @@ describe('stats', () => {
 
   it('finds the most clipped game, breaking ties by the latest clip', () => {
     const c = (game: string, days: number) => makeClip({ gameTitle: game, recordedAt: daysFromNow(-days) });
-    expect(mostClipped([c('A', 5), c('B', 1), c('A', 9)])).toEqual({ game: 'A', count: 2, tiedWith: [] });
-    expect(mostClipped([c('Old', 40), c('New', 2)])).toEqual({ game: 'New', count: 1, tiedWith: ['Old'] });
+    const a5 = c('A', 5);
+    expect(mostClipped([a5, c('B', 1), c('A', 9)])).toEqual({ game: 'A', count: 2, tiedWith: [], latest: a5 });
+    expect(mostClipped([c('Old', 40), c('New', 2)])).toMatchObject({ game: 'New', count: 1, tiedWith: ['Old'] });
     expect(mostClipped([])).toBeNull();
   });
 });

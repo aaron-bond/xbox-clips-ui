@@ -53,11 +53,16 @@ export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
         {clipped && (
           <div className={styles.card}>
             <span className={styles.label}>Most clipped</span>
-            <strong className={styles.cardTitle}>{clipped.game}</strong>
-            <span className={styles.meta}>
-              {clipped.count} {clipped.count === 1 ? 'clip' : 'clips'}
-              {clipped.tiedWith.length > 0 && ` · tied with ${clipped.tiedWith.join(', ')}`}
-            </span>
+            <div className={styles.gameRow}>
+              <ClippedArt clip={clipped.latest} career={[nowPlaying, biggestHaul, onTheBrink]} />
+              <div className={styles.gameText}>
+                <strong className={styles.cardTitle}>{clipped.game}</strong>
+                <span className={styles.meta}>
+                  {clipped.count} {clipped.count === 1 ? 'clip' : 'clips'}
+                  {clipped.tiedWith.length > 0 && ` · tied with ${clipped.tiedWith.join(', ')}`}
+                </span>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -89,6 +94,20 @@ function GameArt({ game, size }: { game: CareerGame; size: number }) {
     <img src={storeImage(game.imageUrl, size * 2)} alt="" width={size} height={size} className={styles.art} />
   ) : (
     <span className={styles.art} style={{ width: size, height: size }} aria-hidden />
+  );
+}
+
+/**
+ * Clips carry no game art. If the game is one of the career facts, its box art
+ * is used; otherwise a frame from its latest clip (thumbnails are stable URLs).
+ */
+function ClippedArt({ clip, career }: { clip: Clip; career: (CareerGame | null)[] }) {
+  const game = career.find((g) => g && clip.titleId !== null && g.titleId === String(clip.titleId));
+  if (game?.imageUrl) return <GameArt game={game} size={64} />;
+  return clip.thumbnailUrl ? (
+    <img src={clip.thumbnailUrl} alt="" width={64} height={64} loading="lazy" className={styles.art} />
+  ) : (
+    <span className={styles.art} style={{ width: 64, height: 64 }} aria-hidden />
   );
 }
 
