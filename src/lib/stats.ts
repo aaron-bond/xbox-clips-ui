@@ -1,4 +1,4 @@
-import type { Clip } from '../api/types';
+import type { Clip, Reputation } from '../api/types';
 
 const DAY = 86_400_000;
 
@@ -37,3 +37,14 @@ export function nextToExpire(clips: Clip[], now = Date.now()): Clip | null {
 
 /** Real view counts are usually zero; a zero is noise, so it is not shown. */
 export const viewsWorthShowing = (clip: Clip) => clip.views > 0;
+
+const REPUTATION_LABELS: Record<Reputation, string> = { good: 'Good player', 'needs-work': 'Needs work', avoid: 'Avoid me' };
+
+/** Xbox's own names for its reputation tiers. */
+export const reputationLabel = (r: Reputation | null | undefined) => (r ? REPUTATION_LABELS[r] : null);
+
+/** "22 years on Xbox", "1 year on Xbox"; null when unknown. */
+export function tenureLabel(years: number | null | undefined): string | null {
+  if (years === null || years === undefined || years < 1) return null;
+  return `${years} ${years === 1 ? 'year' : 'years'} on Xbox`;
+}

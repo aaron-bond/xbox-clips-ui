@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { daysFromNow, makeClip } from '../test/helpers';
-import { daysAgo, latestRecordedAt, nextToExpire, reelLength, viewsWorthShowing } from './stats';
+import { daysAgo, latestRecordedAt, nextToExpire, reelLength, reputationLabel, tenureLabel, viewsWorthShowing } from './stats';
 
 describe('stats', () => {
   it('describes how long ago a clip was recorded', () => {
@@ -33,5 +33,14 @@ describe('stats', () => {
   it('treats zero views as not worth showing', () => {
     expect(viewsWorthShowing(makeClip({ views: 0 }))).toBe(false);
     expect(viewsWorthShowing(makeClip({ views: 3 }))).toBe(true);
+  });
+
+  it('labels tenure and reputation, or nothing when unknown', () => {
+    expect(tenureLabel(22)).toBe('22 years on Xbox');
+    expect(tenureLabel(1)).toBe('1 year on Xbox');
+    expect(tenureLabel(0)).toBeNull();
+    expect(tenureLabel(undefined)).toBeNull();
+    expect(reputationLabel('needs-work')).toBe('Needs work');
+    expect(reputationLabel(null)).toBeNull();
   });
 });

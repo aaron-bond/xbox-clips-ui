@@ -11,7 +11,6 @@ any trade-off made.
 ## Proposed features (PLAN §11)
 
 - [ ] P2: achievement face-off between two gamertags.
-- [ ] P3: gamercard on the clip page in place of "More from this player".
 - [ ] P4: profile trivia (most clipped and most played games, completion,
       genres, achievement timeline). Start with one sample payload per source.
 - [ ] P5: installable app: manifest, icons, Apple touch icon. No service
@@ -25,6 +24,10 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **P3: gamercard** (2026-10-17). The player card shows reputation, years
+      on Xbox, location and bio from the richer profile; the clip page's reel
+      card adds years on Xbox. Empty fields hidden. No extra upstream calls.
 
 - [x] **Redesign: Broadcast in kingfisher** (2026-10-17, PLAN §12). Designed
       on a canvas with real data first, then built: kingfisher tokens and

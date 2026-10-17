@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Clip, PlayerProfile } from '../api/types';
 import { formatDate } from '../lib/format';
-import { daysAgo, latestRecordedAt, nextToExpire, reelLength } from '../lib/stats';
+import { daysAgo, latestRecordedAt, nextToExpire, reelLength, reputationLabel, tenureLabel } from '../lib/stats';
 import styles from './PlayerCard.module.css';
 
 /**
@@ -10,6 +10,8 @@ import styles from './PlayerCard.module.css';
  */
 export function PlayerCard({ profile, clips, children }: { profile: PlayerProfile; clips: Clip[]; children?: ReactNode }) {
   const last = latestRecordedAt(clips);
+  const identity = [tenureLabel(profile.tenureYears), profile.location].filter(Boolean);
+  const reputation = reputationLabel(profile.reputation);
   const expiring = nextToExpire(clips);
   const stats = [
     { label: 'Gamerscore', value: profile.gamerscore.toLocaleString() },
@@ -26,11 +28,15 @@ export function PlayerCard({ profile, clips, children }: { profile: PlayerProfil
         ) : (
           <span className={styles.pic} aria-hidden />
         )}
-        <div>
+        <div className={styles.identity}>
           <h1 className={styles.name}>{profile.gamertag}</h1>
-          <span className={styles.kicker}>Player card</span>
+          <span className={styles.kicker}>
+            {reputation && <span className={styles.rep}>{reputation}</span>}
+            {identity.length > 0 ? identity.join(' · ') : !reputation && 'Player card'}
+          </span>
         </div>
       </div>
+      {profile.bio && <p className={styles.bio}>“{profile.bio}”</p>}
       <dl className={styles.stats}>
         {stats.map((s) => (
           <div key={s.label} className={styles.stat}>

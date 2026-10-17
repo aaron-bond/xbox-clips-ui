@@ -5,6 +5,7 @@ import { Replay } from '../components/Replay';
 import { ShareButtons } from '../components/ShareButtons';
 import { UpNext } from '../components/UpNext';
 import { clipPath, formatDate, formatDuration } from '../lib/format';
+import { tenureLabel } from '../lib/stats';
 import { clipQuery, clipsQuery, playerQuery } from '../lib/queries';
 import { isClipId, isXuid } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
@@ -58,8 +59,13 @@ export function ClipPage() {
               <div>
                 <strong className={styles.name}>{profile.data.gamertag}</strong>
                 <span className={styles.facts}>
-                  {profile.data.gamerscore.toLocaleString()} Gamerscore
-                  {reel.data ? ` · ${reel.data.clips.length} ${reel.data.clips.length === 1 ? 'clip' : 'clips'}` : ''}
+                  {[
+                    `${profile.data.gamerscore.toLocaleString()} Gamerscore`,
+                    reel.data ? `${reel.data.clips.length} ${reel.data.clips.length === 1 ? 'clip' : 'clips'}` : null,
+                    tenureLabel(profile.data.tenureYears),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ')}
                 </span>
               </div>
             </div>

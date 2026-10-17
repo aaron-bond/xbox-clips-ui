@@ -85,6 +85,26 @@ describe('player page', () => {
     expect(within(card).getByText('1:58')).toBeInTheDocument();
   });
 
+  it('shows reputation, years on Xbox, location and bio when the profile has them', async () => {
+    const full = { ...profile, bio: 'Clips from the couch.', location: 'Seattle', tenureYears: 22, reputation: 'good' as const };
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: full }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
+    renderAt('/player/TestPlayer');
+    const card = await screen.findByRole('region', { name: 'Player card' });
+    expect(within(card).getByText('Good player')).toBeInTheDocument();
+    expect(within(card).getByText(/22 years on Xbox · Seattle/)).toBeInTheDocument();
+    expect(within(card).getByText('“Clips from the couch.”')).toBeInTheDocument();
+  });
+
+  it('leaves out profile extras that are empty', async () => {
+    const sparse = { ...profile, bio: null, location: null, tenureYears: 22, reputation: null };
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: sparse }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
+    renderAt('/player/TestPlayer');
+    const card = await screen.findByRole('region', { name: 'Player card' });
+    expect(within(card).getByText('22 years on Xbox')).toBeInTheDocument();
+    expect(within(card).queryByText(/“/)).toBeNull();
+    expect(within(card).queryByText('Good player')).toBeNull();
+  });
+
   it('warns when a clip leaves Xbox within 30 days', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
     renderAt('/player/TestPlayer');

@@ -1,10 +1,18 @@
 /** The API's response shapes (xbox-clips-api PLAN-v1.md §5, §6). */
 
+export type Reputation = 'good' | 'needs-work' | 'avoid';
+
 export interface PlayerProfile {
   xuid: string;
   gamertag: string;
   gamerscore: number;
   gamerpicUrl: string | null;
+  /** Optional: absent from responses cached before these fields were added. */
+  bio?: string | null;
+  location?: string | null;
+  /** Years on the Xbox network (the profile's TenureLevel, read as years). */
+  tenureYears?: number | null;
+  reputation?: Reputation | null;
 }
 
 export interface ClipMedia {

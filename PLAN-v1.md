@@ -459,21 +459,25 @@ clip's.
 - **To decide:** whether per-game detail loads on demand (cheaper) or up
   front (nicer), and how many shared games a face-off shows.
 
-### P3 — Gamercard on the clip page
+### P3 — Gamercard (built 2026-10-17)
 
-"More from this player" becomes a gamercard: gamerpic, gamertag,
-gamerscore and a link to the shelf, styled like the old Xbox gamercard.
-The shelf's profile header can become the same card.
+Delivered as the player card of the redesign (§12) plus richer profiles.
+The card shows the gamerpic, gamertag and stats, and now Xbox's reputation
+tier as a tag (Good player, Needs work, Avoid me), years on Xbox, location
+and the player's bio. The clip page's "From the reel of" card adds years on
+Xbox. Empty fields are left out; bio and location are empty for many
+players.
 
-- **Source:** the profile call the API already makes. It returns more
-  than the API currently passes on: bio, location, tenure, reputation,
-  account tier and preferred colour. Exposing those costs no extra
-  upstream calls.
-- **Budget:** on the clip page, one profile request by XUID, cached by the
-  API for 2 hours. Online status would need the presence endpoint, a
-  separate call to Xbox's most strictly limited service, so it is left
-  out unless wanted.
-- **Backend:** extend the profile response with the extra fields.
+- **Source:** the profile call the API already made. No extra upstream
+  calls; the API's profile cache key was versioned so older cached
+  profiles are not served without the new fields.
+- **Years on Xbox** comes from the profile's `TenureLevel`, which Xbox does
+  not document. Real values fit years of membership (xbox-clips-api PLAN
+  §2); if that proves wrong, only the label changes.
+- **Left out:** online status (a separate call to Xbox's most strictly
+  limited service), account tier (names a subscription that no longer
+  exists under that name), and the preferred colour (a link to a colour
+  file, for a design idea that was not taken up).
 
 ### P4 — Profile trivia
 
