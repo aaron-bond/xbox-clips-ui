@@ -18,6 +18,11 @@ export function clipTitle(clip: { caption: string; gameTitle: string }): string 
   return clip.caption || (clip.gameTitle ? `${clip.gameTitle} clip` : 'Xbox clip');
 }
 
+/** A player page, by gamertag or XUID. */
+export function playerPath(identifier: string): string {
+  return `/player/${encodeURIComponent(identifier)}`;
+}
+
 /** The share link is the clip page's own URL (PLAN-v1.md §3). */
 export function clipPath(xuid: string, clipId: string): string {
   return `/clip/${xuid}/${clipId}`;

@@ -15,6 +15,17 @@
   z-index: 2;
 }
 
+/* Holds the intro's space for the first moments of a load, so nothing jumps. */
+.holding {
+  height: min(70vh, 560px);
+}
+
+/* The page as the exit wipe plays over it. */
+.revealing {
+  position: relative;
+  overflow: hidden;
+}
+
 .backdrop {
   position: absolute;
   inset: 0;

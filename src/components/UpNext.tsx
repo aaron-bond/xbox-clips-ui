@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { Link } from 'react-router';
 import type { Clip } from '../api/types';
 import { clipPath, formatDate, formatDuration } from '../lib/format';
@@ -5,16 +6,21 @@ import styles from './UpNext.module.css';
 
 interface Props {
   clips: Clip[];
+  /** The section heading. */
+  title?: string;
+  /** A closing tile leading to the rest, when the list is a cut-down one. */
+  more?: { to: string; label: string };
   /** 'grid' under a wide replay; 'list' in a narrow column. */
   layout?: 'grid' | 'list';
 }
 
 /** The rest of the reel. Callers leave it out when there is nothing else. */
-export function UpNext({ clips, layout = 'grid' }: Props) {
+export function UpNext({ clips, title = 'Up next', more, layout = 'grid' }: Props) {
+  const headingId = useId();
   return (
-    <section className={styles.section} aria-labelledby="up-next">
-      <h2 id="up-next" className="section-title">
-        Up next
+    <section className={styles.section} aria-labelledby={headingId}>
+      <h2 id={headingId} className="section-title">
+        {title}
       </h2>
       <ul className={layout === 'grid' ? styles.grid : styles.list}>
         {clips.map((clip) => (
@@ -34,6 +40,13 @@ export function UpNext({ clips, layout = 'grid' }: Props) {
             </Link>
           </li>
         ))}
+        {more && (
+          <li>
+            <Link to={more.to} className={styles.more}>
+              {more.label}
+            </Link>
+          </li>
+        )}
       </ul>
     </section>
   );

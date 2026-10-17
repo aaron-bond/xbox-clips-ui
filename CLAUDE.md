@@ -14,7 +14,7 @@ browser over CORS, and from the function over a service binding.
 
 | Path | Role |
 | :--- | :--- |
-| `src/main.tsx`, `src/routes.tsx` | Entry point; routes (`/`, `/player/:identifier`, `/clip/:xuid/:clipId`). |
+| `src/main.tsx`, `src/routes.tsx` | Entry point; routes (`/`, `/player/:identifier`, `/player/:identifier/clips`, `/clip/:xuid/:clipId`, `/game/:productId`). |
 | `src/api/` | Typed API client and response types. `ApiError.message` is user-safe. |
 | `src/lib/queries.ts` | TanStack Query client and query definitions: budget-safe defaults, media-expiry staleness, shelf-to-clip seeding. |
 | `src/lib/validation.ts` | Identifier rules mirroring the API. Shared with the function. |

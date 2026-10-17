@@ -210,7 +210,8 @@ scope (§10).
 | Path | Page |
 | :--- | :--- |
 | `/` | Search: a gamertag box. |
-| `/player/:identifier` | Shelf: profile header and clip grid. Gamertag or XUID. |
+| `/player/:identifier` | Player page: the replay, player card, Up next and career stats (§12). Gamertag or XUID. |
+| `/player/:identifier/clips` | The player's whole reel on its own page, from Up next's "See all" tile. |
 | `/clip/:xuid/:clipId` | Clip page: player, details, share. Also the share link. |
 | `/game/:productId` | Game page: store art and details for a most-played game (§11, P1). |
 | anything else | Client-side not-found page. |
@@ -220,7 +221,9 @@ API call: an all-digit identifier is an XUID (up to 20 digits); a
 gamertag is letters, digits and inner spaces, up to 15 characters, with
 an optional `#1234` suffix; a clip id is a UUID.
 
-The shelf requests `limit=100`, so it shows the whole first page.
+The player page requests `limit=100`, so it has the whole first page; the
+reel page reads the same cached list and costs no request when reached
+from the player page.
 
 ---
 
@@ -611,7 +614,10 @@ real data). Built in this order; each step leaves the site working.
    duration). If a clip leaves Xbox within 30 days, a notice at the foot of
    the page says which and when; it is kept out of the space above the
    fold. "COPY REPLAY LINK" and share act on the replay. UP NEXT lists the
-   other clips, and is left out when there are none. No new
+   other clips, and is left out when there are none. A long reel is cut
+   down to two rows of the desktop grid, so career stats stay in reach:
+   with more than eight other clips, it shows seven and a "SEE ALL N
+   CLIPS" tile leading to `/player/:identifier/clips`. No new
    requests: the profile and clip list are already fetched.
 5. **Clip page** (the share link). The same replay and strap, a line with
    duration and "On Xbox until about <date>", COPY LINK (solid) and share,
@@ -652,7 +658,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads. 71 tests run
+desktop and phone, with the player intro over slow loads. 75 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git

@@ -95,7 +95,37 @@
 }
 
 
+/* The closing tile of a cut-down list: the size of a thumbnail, leading to the rest. */
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  padding: 16px;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: 0.03em;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.more:hover {
+  border-color: var(--accent);
+}
+
 @media (max-width: 720px) {
+  .more {
+    aspect-ratio: auto;
+    padding: 14px;
+    font-size: 1.15rem;
+  }
+
   .grid {
     display: flex;
     flex-direction: column;

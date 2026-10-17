@@ -249,6 +249,29 @@ describe('player page', () => {
     expect(within(upNext).getByRole('link', { name: /Gears Beta/ })).toHaveAttribute('href', `/clip/${XUID}/${CLIP_B}`);
   });
 
+  const reelOf = (n: number) =>
+    Array.from({ length: n }, (_, i) =>
+      makeClip({ clipId: `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`, gameTitle: `Game ${i}`, recordedAt: daysFromNow(-i - 1) }),
+    );
+
+  it('cuts a long reel down to seven clips and a link to the rest', async () => {
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(reelOf(12)) } });
+    renderAt('/player/TestPlayer');
+    const upNext = await screen.findByRole('region', { name: 'Up next' });
+    const links = within(upNext).getAllByRole('link');
+    expect(links).toHaveLength(8);
+    expect(links[7]).toHaveTextContent('See all 12 clips');
+    expect(links[7]).toHaveAttribute('href', '/player/TestPlayer/clips');
+  });
+
+  it('shows a reel of up to eight more in full', async () => {
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(reelOf(9)) } });
+    renderAt('/player/TestPlayer');
+    const upNext = await screen.findByRole('region', { name: 'Up next' });
+    expect(within(upNext).getAllByRole('link')).toHaveLength(8);
+    expect(within(upNext).queryByText(/See all/)).toBeNull();
+  });
+
   it('leaves out up next when the reel is one clip', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf([twoClips[0]!]) } });
     renderAt('/player/TestPlayer');
@@ -436,5 +459,30 @@ describe('home and game page', () => {
     renderAt('/game/not-a-product');
     expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
     expect(paths.filter((p) => p.startsWith('/api/v1/games/') && !p.startsWith(MOST_PLAYED))).toEqual([]);
+  });
+});
+
+describe('reel page', () => {
+  const reel = Array.from({ length: 12 }, (_, i) =>
+    makeClip({ clipId: `00000000-0000-4000-8000-${String(i).padStart(12, '0')}`, gameTitle: `Game ${i}`, recordedAt: daysFromNow(-i - 1) }),
+  );
+
+  it('lists every clip, links back to the player, and asks for nothing else', async () => {
+    const paths = stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(reel) } });
+    renderAt('/player/TestPlayer/clips');
+    const all = await screen.findByRole('region', { name: 'All 12 clips' });
+    expect(within(all).getAllByRole('link')).toHaveLength(12);
+    expect(screen.getByRole('heading', { level: 1, name: 'TestPlayer' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to player' })).toHaveAttribute('href', '/player/TestPlayer');
+    expect(new Set(playerPaths(paths))).toEqual(new Set(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`]));
+  });
+
+  it('opens from the player page without asking again', async () => {
+    const paths = stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(reel) } });
+    const { router } = renderAt('/player/TestPlayer');
+    await userEvent.click(await screen.findByRole('link', { name: 'See all 12 clips' }));
+    expect(router.state.location.pathname).toBe('/player/TestPlayer/clips');
+    await screen.findByRole('region', { name: 'All 12 clips' });
+    expect(playerPaths(paths).filter((p) => !p.endsWith('/career'))).toHaveLength(2);
   });
 });

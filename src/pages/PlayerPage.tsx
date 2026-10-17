@@ -6,17 +6,20 @@ import { CareerStats, CareerStatsPlaceholder } from '../components/CareerStats';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { ExpiryNotice } from '../components/ExpiryNotice';
 import { PlayerCard } from '../components/PlayerCard';
-import { PlayerIntro } from '../components/PlayerIntro';
+import { IntroStage } from '../components/PlayerIntro';
 import { Replay } from '../components/Replay';
 import { ShareButtons } from '../components/ShareButtons';
 import { UpNext } from '../components/UpNext';
-import { clipPath } from '../lib/format';
+import { clipPath, playerPath } from '../lib/format';
 import { careerQuery, clipQuery, clipsQuery, playerQuery } from '../lib/queries';
 import { useIntroGate } from '../lib/useIntroGate';
 import { useNearViewport } from '../lib/useNearViewport';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
 import styles from './PlayerPage.module.css';
+
+/** Up next's size on the player page: two rows of the desktop grid. */
+const UP_NEXT_TILES = 8;
 
 /**
  * A player's reel: their latest clip already playing as the replay, the player
@@ -51,16 +54,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
   // clips are two requests in sequence, often a second or two on a cold cache.
   const ready = profile.isError || (profile.isSuccess && !clips.isPending);
   const intro = useIntroGate(ready);
-  if (intro === 'waiting') return <div className={styles.holding} aria-busy="true" />;
-  // The page and the intro each keep one place in the tree through every phase, so
-  // the exit doesn't replay the intro's entrance and the end of the wipe doesn't
-  // restart the replay.
-  return (
-    <div className={intro === 'leaving' ? styles.revealing : undefined}>
-      {intro !== 'showing' && content()}
-      {intro !== 'done' && <PlayerIntro name={name} profile={profile.data} leaving={intro === 'leaving'} />}
-    </div>
-  );
+  return <IntroStage phase={intro} name={name} profile={profile.data} page={content} />;
 
   function content(): ReactNode {
     if (profile.isPending) return null;
@@ -102,6 +96,10 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
 
     const shareUrl = `${window.location.origin}${clipPath(current.xuid, current.clipId)}`;
     const others = reel.filter((c) => c.clipId !== current.clipId);
+    // A long reel is cut down so career stats stay in reach; the last tile leads to
+    // the whole reel on its own page.
+    const cut = others.length > UP_NEXT_TILES;
+    const more = cut ? { to: `${playerPath(identifier)}/clips`, label: `See all ${reel.length} clips` } : undefined;
     return (
       <div className={styles.page}>
         <div className={styles.top}>
@@ -114,7 +112,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
         </div>
         {others.length > 0 && (
           <div className={styles.gutter}>
-            <UpNext clips={others} />
+            <UpNext clips={cut ? others.slice(0, UP_NEXT_TILES - 1) : others} more={more} />
           </div>
         )}
         {careerSection}

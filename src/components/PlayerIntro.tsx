@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { PlayerProfile } from '../api/types';
 import { reputationLabel, tenureLabel } from '../lib/stats';
-import { prefersReducedMotion } from '../lib/useIntroGate';
+import { prefersReducedMotion, type IntroPhase } from '../lib/useIntroGate';
 import styles from './PlayerIntro.module.css';
 
 /** Counts up to `target` with an ease-out, or shows it at once under reduced motion. */
@@ -79,6 +79,32 @@ export function PlayerIntro({ name, profile, leaving }: { name: string | null; p
           <span className={styles.wipeOrange} aria-hidden />
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * Lays a page out around its intro, by phase from `useIntroGate`. The page and
+ * the intro each keep one place in the tree through every phase, so the exit
+ * doesn't replay the intro's entrance and the end of the wipe doesn't remount
+ * the page (restarting a replay). `page` is called only once the data is in.
+ */
+export function IntroStage({
+  phase,
+  name,
+  profile,
+  page,
+}: {
+  phase: IntroPhase;
+  name: string | null;
+  profile?: PlayerProfile;
+  page: () => ReactNode;
+}) {
+  if (phase === 'waiting') return <div className={styles.holding} aria-busy="true" />;
+  return (
+    <div className={phase === 'leaving' ? styles.revealing : undefined}>
+      {phase !== 'showing' && page()}
+      {phase !== 'done' && <PlayerIntro name={name} profile={profile} leaving={phase === 'leaving'} />}
     </div>
   );
 }
