@@ -43,7 +43,9 @@
   font-size: 1rem;
 }
 
-.go {
+/* Scoped under .form so it beats the global .btn-primary, which the build may
+   emit later in the stylesheet. */
+.form .go {
   padding: 0 28px;
   font-size: 1.35rem;
 }
