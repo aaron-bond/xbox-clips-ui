@@ -9,7 +9,8 @@ export function Layout() {
     <div className={styles.shell}>
       <header className={styles.header}>
         <Link to="/" className={styles.brand}>
-          xbox<span className="gradient-text">clips</span>
+          <span className={styles.xbox}>xbox</span>
+          <span className={styles.clips}>clips</span>
         </Link>
         {!isHome && <SearchBox compact />}
       </header>

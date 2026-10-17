@@ -14,11 +14,15 @@ const CheckIcon = () => (
   </svg>
 );
 
+// Three connected nodes: the widely recognised "share" symbol. An arrow leaving a
+// tray (Apple's share glyph) was tried and reads as "upload" out of context.
 const ShareIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden>
-    <path d="M12 3v12" />
-    <path d="m7 8 5-5 5 5" />
-    <path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <path d="m8.6 13.5 6.8 4" />
+    <path d="m15.4 6.5-6.8 4" />
   </svg>
 );
 
@@ -55,7 +59,7 @@ export function ShareButtons({ url, title }: { url: string; title: string }) {
         <button
           type="button"
           onClick={() => void navigator.share({ title, url }).catch(() => {})}
-          className={styles.icon}
+          className={`btn ${styles.icon}`}
           aria-label="Share"
           title="Share"
         >

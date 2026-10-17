@@ -31,6 +31,15 @@
   letter-spacing: -0.03em;
 }
 
+/* The logo uses the palette's two colours, solid: a gradient read as too busy at this size. */
+.xbox {
+  color: var(--accent);
+}
+
+.clips {
+  color: var(--accent-2);
+}
+
 .main {
   max-width: 1200px;
   margin: 0 auto;

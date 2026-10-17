@@ -36,7 +36,8 @@ any trade-off made.
 ## Done
 
 - [x] **Midnight Violet and a bolder UI** (2026-10-17). Chosen from six
-      palettes screenshotted on the real app. Gradient brand and headline;
+      palettes screenshotted on the real app. Gradient headline; logo in
+      the two colours, solid;
       buttons are a light violet outline on a soft tint (a gradient fill was
       too busy, and no text colour reads across it); ambient violet and cyan
       glow; profile banner with a gradient ring; clip cards that lift, glow

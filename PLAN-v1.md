@@ -140,7 +140,8 @@ Midnight Violet**, chosen 2026-10-17 from six proposals rendered on the
 real app: inky indigo neutrals, a violet accent (`#a78bfa`) and a cyan
 second accent (`#22d3ee`), joined in a violet-to-cyan gradient. The
 treatment is deliberately bold: soft violet and cyan light behind the
-page, gradient text on the brand and headline, a banner behind the player profile with a gradient ring around the
+page, gradient text on the home headline, the logo in the two colours
+solid ("xbox" violet, "clips" cyan), a banner behind the player profile with a gradient ring around the
 gamerpic, and clip cards that lift, glow and show a play badge on hover.
 **Buttons are not gradient:** every filled control (search, copy, the
 card play badge, retry) is a light violet outline (`#c4b5fd`) with
