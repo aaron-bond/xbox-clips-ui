@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router';
+import { Link, Outlet, ScrollRestoration, useLocation } from 'react-router';
 import { SearchBox } from './SearchBox';
 import styles from './Layout.module.css';
 
@@ -17,6 +17,8 @@ export function Layout() {
       <main className={styles.main}>
         <Outlet />
       </main>
+      {/* New pages open at the top; Back returns to where the visitor was. */}
+      <ScrollRestoration />
     </div>
   );
 }

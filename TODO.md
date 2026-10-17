@@ -10,7 +10,6 @@ any trade-off made.
 
 ## Proposed features (PLAN §11)
 
-- [ ] P1: front-page dashboard of most-played games.
 - [ ] P2: achievement face-off between two gamertags.
 - [ ] P3: gamercard on the clip page in place of "More from this player".
 - [ ] P4: profile trivia (most clipped and most played games, completion,
@@ -26,6 +25,14 @@ any trade-off made.
 - [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **P1: most-played games** (2026-10-17). Front-page panel (#1 as a
+      hero, then 11 tiles) and an in-app game page at `/game/:productId`,
+      seeded from the cached list. No store links: the aim is to keep
+      visitors on the site. Ratings show only with 20+ ratings. Also added
+      scroll restoration, so new pages open at the top; links low on a page
+      used to open the next page part-way down. The home page's "Xbox game
+      clips" subtitle is removed.
 
 - [x] **Pages build uses Node 24** (2026-10-17). The build log shows it read
       `.node-version` and installed Node 24.13.1.

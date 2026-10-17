@@ -1,16 +1,7 @@
 .hero {
   max-width: 620px;
-  margin: 10vh auto 0;
+  margin: 8vh auto 0;
   text-align: center;
-}
-
-.eyebrow {
-  margin: 0 0 10px;
-  color: var(--accent-2);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
 }
 
 .hero h1 {

@@ -16,5 +16,8 @@ export function parsePlayerIdentifier(raw: string): PlayerIdentifier | null {
   return null;
 }
 
+const PRODUCT_ID = /^[0-9A-Z]{12}$/i;
+
 export const isXuid = (raw: string) => XUID.test(raw);
+export const isProductId = (raw: string) => PRODUCT_ID.test(raw);
 export const isClipId = (raw: string) => CLIP_ID.test(raw);

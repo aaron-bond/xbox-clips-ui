@@ -2,7 +2,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { vi } from 'vitest';
-import type { Clip, PlayerClips, PlayerProfile } from '../api/types';
+import type { Clip, Game, PlayerClips, PlayerProfile } from '../api/types';
 import { createQueryClient } from '../lib/queries';
 import { routes } from '../routes';
 
@@ -24,6 +24,25 @@ export function makeClip(overrides: Partial<Clip> = {}): Clip {
     availableUntil: '2026-12-30T18:20:30Z',
     views: 3,
     media: { url: 'https://cdn.test/clip-1.mp4', expiresAt: new Date(Date.now() + HOUR).toISOString() },
+    ...overrides,
+  };
+}
+
+export function makeGame(overrides: Partial<Game> = {}): Game {
+  return {
+    productId: '9N4PT8HGCDHQ',
+    rank: 1,
+    title: 'Example Game',
+    genres: ['Shooter', 'Action & adventure'],
+    developer: 'Example Studio',
+    publisher: 'Example Publisher',
+    releaseDate: '2026-10-06T15:00:00Z',
+    rating: 4.5,
+    ratingCount: 100,
+    platforms: ['XboxSeriesX', 'PC'],
+    description: 'An example game.',
+    heroImageUrl: 'https://store-images.test/hero',
+    boxArtUrl: 'https://store-images.test/box',
     ...overrides,
   };
 }

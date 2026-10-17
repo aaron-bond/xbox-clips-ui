@@ -42,6 +42,8 @@ requests only from configured origins (§8, B3).
 | `GET /api/v1/players/:identifier/clips?limit=` | `{ xuid, access, total, clips }`. `limit` defaults to 20, maximum 100. |
 | `GET /api/v1/clips/:xuid/:clipId` | One clip, with a media URL valid for playback. |
 | `GET /api/v1/clips/:xuid/:clipId/preview` | Clip metadata without a media URL or view count. Used only by the preview function (§7). |
+| `GET /api/v1/games/most-played` | `{ games }`: the Xbox Store's most-played games, ranked. Cached by the API for 6 hours. |
+| `GET /api/v1/games/:productId` | One game from that list, for the game page. |
 
 ### Clip shape
 
@@ -184,6 +186,7 @@ scope (§10).
 | `/` | Search: a gamertag box. |
 | `/player/:identifier` | Shelf: profile header and clip grid. Gamertag or XUID. |
 | `/clip/:xuid/:clipId` | Clip page: player, details, share. Also the share link. |
+| `/game/:productId` | Game page: store art and details for a most-played game (§11, P1). |
 | anything else | Client-side not-found page. |
 
 **Validation mirrors the backend's**, so malformed input never costs an
@@ -342,7 +345,7 @@ payload, inspected the way the clip payload was, before any code.
 Each one is sized against the shared budget of 150 upstream requests per
 hour, which is the constraint that decides whether a feature is viable.
 
-### P1 — Front page: popular games
+### P1 — Front page: popular games (built 2026-10-17)
 
 The front page gains a dashboard of what is being played right now,
 below the search box.
@@ -353,11 +356,61 @@ below the search box.
 - **Budget:** negligible. The list is the same for every visitor, so the
   API caches it once (for hours) and serves it to everyone. Traffic does
   not change the cost: one upstream call per cache window.
-- **Backend:** a new route, e.g. `GET /api/v1/games/most-played`, with a
+- **Backend:** a new route, `GET /api/v1/games/most-played`, with a
   transformer written against the real payload.
 - **Limit to know about:** there is no endpoint for clips by game across
   players, so a game tile cannot open "clips of this game". It can show
   the game, and link to its store page.
+
+**Payload findings** (one real response, 2026-10-17):
+
+- `content.channels.MOST_PLAYED_.products` is the ranking: 25 product IDs
+  per page, out of `totalItems` 17,744. `content.productSummaries` holds
+  the 25 games in the same order.
+- Each summary carries `title`, `categories` (genres such as "Shooter",
+  "Action & adventure"), `developerName`, `publisherName`, `releaseDate`,
+  `averageRating`, `ratingCount`, `availableOn`, and four images in
+  `images`: `boxArt` (square), `poster` (2:3), `superHeroArt` (16:9) and
+  `featurePromotionalSquareArt`. All 25 had every image.
+- **Duplicates.** Editions and platform versions are separate products:
+  GTA VI appeared three times and GTA V twice. The Xbox title ID
+  (`xCloudProperties.xboxTitleId`) cannot be used to merge them: only 9 of
+  25 games carry one, and three different Call of Duty games share one ID.
+  Only identical titles are merged, keeping the best rank.
+- **Images resize by query string.** `?w=640` on a store image URL cut a
+  16:9 hero image from 2.3 MB to 63 KB. The originals are up to 3840 px wide
+  and must not be used as is.
+- **Store links.** `https://www.xbox.com/games/store/_/<productId>`
+  redirects to the visitor's own regional store.
+- **Prices are omitted:** they arrive in a single currency (EUR here)
+  regardless of the visitor's country. **Game Pass badges are omitted:**
+  passes are listed only by internal product IDs.
+
+**As built:**
+
+- **API:** `GET /api/v1/games/most-played` returns the first page trimmed
+  to about 10 KB: per game, rank, title, genres, developer, release date,
+  rating, platforms, a resized hero image and box art, and the store link.
+  Cached as `games:most-played`: fresh for 6 hours, kept for 7 days for
+  stale serving. At most 4 upstream calls a day, regardless of traffic.
+- **UI:** a "Most played on Xbox" panel below the home-page search: the #1
+  game as a wide hero tile (16:9 art, rank badge, title, genres), then the
+  next 11 as box-art tiles with rank, title and main genre. The panel is
+  hidden if the list cannot load.
+- **Tiles open an in-app game page, not the store.** Keeping visitors on
+  the site was the aim, and clips by game do not exist upstream, so
+  `/game/:productId` shows the store hero art, rank, genres, developer,
+  release year, platforms, rating and description, with a player search
+  as the call to action. It is seeded from the cached list, so opening it
+  from the front page costs no request. A rating is shown only with at
+  least 20 ratings behind it; an average from a handful misleads.
+- **Images** are always requested at a size (`?w=` with a `srcset`), never
+  the originals.
+- **Known limits:** differently named editions still appear separately
+  (by design: only identical titles merge). Some store descriptions are
+  promotional text rather than a description of the game; they are shown
+  as the store provides them. If a by-game clip listing ever becomes
+  available upstream, the game page is where popular clips would go.
 
 ### P2 — Achievement face-off
 

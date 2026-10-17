@@ -1,16 +1,16 @@
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import { apiError, CLIP_ID, clipsOf, makeClip, profile, renderAt, stubApi, XUID } from '../test/helpers';
+import { apiError, CLIP_ID, clipsOf, makeClip, makeGame, profile, renderAt, stubApi, XUID } from '../test/helpers';
 
 describe('search', () => {
-  it('rejects an invalid gamertag without a request', async () => {
+  it('rejects an invalid gamertag without a player request', async () => {
     const paths = stubApi(() => ({ body: {} }));
     const { router } = renderAt('/');
     await userEvent.type(screen.getByLabelText('Gamertag'), 'bad/tag{Enter}');
     expect(screen.getByRole('alert')).toHaveTextContent("isn't a valid gamertag");
     expect(router.state.location.pathname).toBe('/');
-    expect(paths).toEqual([]);
+    expect(paths.filter((p) => p.includes('/players/'))).toEqual([]);
   });
 
   it('navigates to the player page', async () => {
@@ -129,5 +129,74 @@ describe('clip page', () => {
     stubApi(() => apiError('CLIP_EXPIRED', 410, 'This clip has expired on Xbox and is no longer available.'));
     renderAt(`/clip/${XUID}/${CLIP_ID}`);
     expect(await screen.findByRole('alert')).toHaveTextContent('This clip has expired on Xbox');
+  });
+});
+
+describe('most played and game page', () => {
+  const games = Array.from({ length: 14 }, (_, i) =>
+    makeGame({ rank: i + 1, productId: `9N4PT8HGCD${String(i).padStart(2, '0')}`, title: `Game ${i + 1}` }),
+  );
+
+  it('shows the top 12 on the home page: #1 as a hero, linking to game pages', async () => {
+    stubApi(() => ({ body: { games } }));
+    renderAt('/');
+    expect(await screen.findByRole('heading', { name: 'Most played on Xbox' })).toBeInTheDocument();
+    const links = screen.getAllByRole('link').filter((a) => a.getAttribute('href')?.startsWith('/game/'));
+    expect(links).toHaveLength(12);
+    expect(links[0]).toHaveAttribute('href', `/game/${games[0]!.productId}`);
+    expect(links[0]).toHaveTextContent('#1 most played');
+  });
+
+  it('requests sized store images, never the originals', async () => {
+    stubApi(() => ({ body: { games } }));
+    const { container } = renderAt('/');
+    await screen.findByRole('heading', { name: 'Most played on Xbox' });
+    const srcs = [...container.querySelectorAll('img')].map((img) => img.getAttribute('src') ?? '');
+    expect(srcs.length).toBeGreaterThan(0);
+    expect(srcs.every((src) => /\?w=\d+$/.test(src))).toBe(true);
+  });
+
+  it('hides the panel when the list cannot load', async () => {
+    stubApi(() => apiError('UPSTREAM_ERROR', 502));
+    renderAt('/');
+    await waitFor(() => expect(screen.queryByText('Loading')).toBeNull());
+    expect(screen.queryByRole('heading', { name: 'Most played on Xbox' })).toBeNull();
+  });
+
+  it('opens a game from the home page without another request', async () => {
+    const paths = stubApi(() => ({ body: { games } }));
+    renderAt('/');
+    await userEvent.click(await screen.findByText('Game 3'));
+    expect(await screen.findByRole('heading', { name: 'Game 3', level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('#3 most played on Xbox')).toBeInTheDocument();
+    expect(paths).toEqual(['/api/v1/games/most-played']);
+  });
+
+  it('loads a game directly, and shows a rating only with enough ratings behind it', async () => {
+    const paths = stubApi(() => ({ body: makeGame({ title: 'Solo', rating: 4.3, ratingCount: 58 }) }));
+    renderAt('/game/9N4PT8HGCDHQ');
+    expect(await screen.findByRole('heading', { name: 'Solo', level: 1 })).toBeInTheDocument();
+    expect(screen.getByText(/★ 4\.3/)).toBeInTheDocument();
+    expect(paths).toEqual(['/api/v1/games/9N4PT8HGCDHQ']);
+  });
+
+  it('hides an average built on too few ratings', async () => {
+    stubApi(() => ({ body: makeGame({ title: 'Thin', rating: 1, ratingCount: 2 }) }));
+    renderAt('/game/9N4PT8HGCDHQ');
+    expect(await screen.findByRole('heading', { name: 'Thin', level: 1 })).toBeInTheDocument();
+    expect(screen.queryByText(/★/)).toBeNull();
+  });
+
+  it("shows the API's message for a game no longer in the list", async () => {
+    stubApi(() => apiError('GAME_NOT_FOUND', 404, "That game isn't in the current most-played list."));
+    renderAt('/game/9N4PT8HGCDHQ');
+    expect(await screen.findByRole('alert')).toHaveTextContent("isn't in the current most-played list");
+  });
+
+  it('treats a malformed product id as not found, without a request', () => {
+    const paths = stubApi(() => ({ body: {} }));
+    renderAt('/game/not-a-product');
+    expect(screen.getByRole('heading', { name: 'Page not found' })).toBeInTheDocument();
+    expect(paths).toEqual([]);
   });
 });

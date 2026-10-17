@@ -1,6 +1,6 @@
 import { QueryClient, queryOptions } from '@tanstack/react-query';
 import { api, type ApiClient } from '../api/client';
-import type { Clip, PlayerClips } from '../api/types';
+import type { Clip, Game, PlayerClips } from '../api/types';
 
 const MINUTE = 60_000;
 
@@ -35,6 +35,8 @@ export const keys = {
   player: (identifier: string) => ['player', identifier.toLowerCase()] as const,
   clips: (identifier: string) => ['clips', identifier.toLowerCase()] as const,
   clip: (xuid: string, clipId: string) => ['clip', xuid, clipId.toLowerCase()] as const,
+  mostPlayed: () => ['games', 'most-played'] as const,
+  game: (productId: string) => ['game', productId.toUpperCase()] as const,
 };
 
 /** The shelf asks for the API's whole first page. */
@@ -70,4 +72,26 @@ function findCachedClip(queryClient: QueryClient, xuid: string, clipId: string) 
     if (clip) return { clip, updatedAt: queryClient.getQueryState(key)?.dataUpdatedAt };
   }
   return undefined;
+}
+
+/** The ranking changes slowly and the API caches it for hours. */
+export const mostPlayedQuery = (client: ApiClient = api) =>
+  queryOptions({ queryKey: keys.mostPlayed(), queryFn: () => client.getMostPlayed(), staleTime: 30 * MINUTE });
+
+/**
+ * One game. Opened from the front page, it is seeded from the cached ranking,
+ * so it costs no request; a direct visit asks the API.
+ */
+export const gameQuery = (queryClient: QueryClient, productId: string, client: ApiClient = api) =>
+  queryOptions({
+    queryKey: keys.game(productId),
+    queryFn: () => client.getGame(productId),
+    staleTime: 30 * MINUTE,
+    initialData: () => findCachedGame(queryClient, productId),
+    initialDataUpdatedAt: () => queryClient.getQueryState(keys.mostPlayed())?.dataUpdatedAt,
+  });
+
+function findCachedGame(queryClient: QueryClient, productId: string): Game | undefined {
+  const id = productId.toUpperCase();
+  return queryClient.getQueryData<{ games: Game[] }>(keys.mostPlayed())?.games.find((g) => g.productId === id);
 }
