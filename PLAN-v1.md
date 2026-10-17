@@ -208,10 +208,14 @@ The shelf requests `limit=100`, so it shows the whole first page.
 
 ## 6. Sharing
 
-- **Copy link** puts `https://xboxclips.io/clip/:xuid/:clipId` on the
-  clipboard and confirms briefly.
-- **Native share** (`navigator.share`) is offered where the browser
-  supports it, which covers most phones.
+Two icon buttons side by side, labelled for screen readers and with
+tooltips:
+
+- **Copy** puts `https://xboxclips.io/clip/:xuid/:clipId` on the
+  clipboard; the icon turns into a tick briefly to confirm.
+- **Share** opens the device's share sheet (`navigator.share`). It
+  appears only where the browser supports it, which covers most phones,
+  so desktop visitors usually see the copy icon alone.
 
 ---
 
@@ -413,6 +417,36 @@ each with its source:
   support is simply left out.
 - **First step:** one sample payload from each source, to settle the
   "unknown" rows before choosing which facts to build.
+
+### P5 — Installable app (PWA)
+
+The site can be installed to a phone's home screen or a desktop's app
+list, opening in its own window without browser chrome, like a native
+app.
+
+- **What installability needs** (MDN, "Making PWAs installable"): HTTPS,
+  which the site already has, and a web app manifest with a name, a
+  `start_url`, a `display` mode such as `standalone`, and icons at 192
+  and 512 pixels. **A service worker is not required** to be installable.
+- **Where it works:** Chromium browsers on desktop and Android offer
+  install from the manifest. iOS 16.4 and later installs from the Share
+  menu in Safari, Chrome, Edge and Firefox, but does not support a custom
+  in-page install button. Safari on macOS adds any site to the Dock.
+  Firefox does not install from a manifest.
+- **Offline: deliberately minimal.** The site's content is streamed
+  video and live data, so there is little to offer offline. If a service
+  worker is added, it caches only the app's own static files and an
+  offline notice, and **never caches API responses**: those carry media
+  URLs that expire within the hour, and must stay subject to the
+  budget-safe fetch rules in §3. It also never fetches anything ahead of
+  the visitor.
+- **Budget:** none. A manifest and icons are static files.
+- **Work:** a manifest, an icon set (and an Apple touch icon for iOS),
+  and the matching tags in `index.html`. The icons need the site's visual
+  identity, so this follows the palette decision (Q4).
+- **Later options:** the installed app could register as a share target,
+  so sharing a clip link from another app opens it here (Web Share Target,
+  Chromium only).
 
 ---
 

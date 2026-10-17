@@ -23,6 +23,9 @@ any trade-off made.
 - [ ] P3: gamercard on the clip page in place of "More from this player".
 - [ ] P4: profile trivia (most clipped and most played games, completion,
       genres, achievement timeline). Start with one sample payload per source.
+- [ ] P5: installable app: manifest, icons, Apple touch icon. No service
+      worker needed to install; if one is added, it never caches API
+      responses. Icons wait for the palette decision.
 
 ## Later (PLAN §10)
 
