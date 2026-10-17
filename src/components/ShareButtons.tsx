@@ -1,21 +1,6 @@
 import { useState } from 'react';
 import styles from './ShareButtons.module.css';
 
-const CopyIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden>
-    <rect x="9" y="9" width="11" height="11" rx="2" />
-    <path d="M5 15V6a2 2 0 0 1 2-2h9" />
-  </svg>
-);
-
-const CheckIcon = () => (
-  <svg viewBox="0 0 24 24" aria-hidden>
-    <path d="m5 12 5 5 9-10" />
-  </svg>
-);
-
-// Three connected nodes: the widely recognised "share" symbol. An arrow leaving a
-// tray (Apple's share glyph) was tried and reads as "upload" out of context.
 const ShareIcon = () => (
   <svg viewBox="0 0 24 24" aria-hidden>
     <circle cx="18" cy="5" r="3" />
@@ -26,13 +11,23 @@ const ShareIcon = () => (
   </svg>
 );
 
+interface Props {
+  url: string;
+  title: string;
+  /** Button text, e.g. "Copy link" or "Copy replay link". */
+  label: string;
+  /** Solid orange where copying is the page's main job (the clip page); outline elsewhere. */
+  primary?: boolean;
+}
+
 /**
- * Two icon buttons side by side: copy the clip page's URL (the share link,
- * PLAN-v1.md §6), and open the device's share sheet where the browser has one.
+ * Copy the clip page's URL (the share link, PLAN-v1.md §6), plus the device's
+ * share sheet where the browser has one.
  */
-export function ShareButtons({ url, title }: { url: string; title: string }) {
+export function ShareButtons({ url, title, label, primary = false }: Props) {
   const [copied, setCopied] = useState(false);
   const canShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+  const kind = primary ? 'btn-primary' : 'btn-outline';
 
   async function copy() {
     try {
@@ -46,27 +41,21 @@ export function ShareButtons({ url, title }: { url: string; title: string }) {
 
   return (
     <div className={styles.row}>
-      <button
-        type="button"
-        onClick={() => void copy()}
-        className={`btn ${styles.icon}`}
-        aria-label="Copy link"
-        title={copied ? 'Link copied' : 'Copy link'}
-      >
-        {copied ? <CheckIcon /> : <CopyIcon />}
+      <button type="button" onClick={() => void copy()} className={`${kind} ${styles.copy}`}>
+        {copied ? 'Link copied' : label}
       </button>
       {canShare && (
         <button
           type="button"
           onClick={() => void navigator.share({ title, url }).catch(() => {})}
-          className={`btn ${styles.icon}`}
+          className={`btn-outline ${styles.share}`}
           aria-label="Share"
           title="Share"
         >
           <ShareIcon />
         </button>
       )}
-      <span role="status" className={styles.status}>
+      <span role="status" className="visually-hidden">
         {copied ? 'Link copied to clipboard' : ''}
       </span>
     </div>

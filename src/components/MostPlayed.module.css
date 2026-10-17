@@ -1,35 +1,21 @@
 .section {
-  max-width: 1100px;
-  margin: 72px auto 0;
-  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 40px;
 }
 
-.heading {
-  margin: 0 0 16px;
-  font-size: 1.4rem;
-  font-weight: 900;
-  letter-spacing: -0.02em;
-}
-
-.hero {
+.feature {
   position: relative;
   display: block;
   aspect-ratio: 16 / 7;
-  border-radius: calc(var(--radius) + 6px);
+  border-radius: 6px;
   overflow: hidden;
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
+  background: var(--panel);
   text-decoration: none;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
-.hero:hover,
-.hero:focus-visible {
-  border-color: var(--accent);
-  box-shadow: 0 12px 40px var(--glow);
-}
-
-.heroImage {
+.featureImage {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -38,59 +24,28 @@
   transition: transform 400ms ease;
 }
 
-.hero:hover .heroImage {
+.feature:hover .featureImage {
   transform: scale(1.03);
 }
 
-/* Darkens the lower left so the title always reads over the art. */
-.hero::after {
-  content: '';
+.featureBadge {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, rgb(15 13 22 / 85%) 0%, rgb(15 13 22 / 25%) 55%, transparent 80%),
-    linear-gradient(0deg, rgb(15 13 22 / 70%), transparent 50%);
+  top: 18px;
+  left: 18px;
 }
 
-.heroText {
+.featureStrap {
   position: absolute;
-  left: clamp(16px, 4vw, 36px);
-  bottom: clamp(16px, 4vw, 32px);
-  right: 16px;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  left: 0;
+  bottom: 30px;
+  max-width: calc(100% - 24px);
 }
 
-.heroRank {
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: var(--btn-bg);
-  box-shadow: inset 0 0 0 1.5px var(--btn-border);
-  color: var(--btn-text);
-  font-size: 0.8rem;
-  font-weight: 800;
-}
-
-.heroTitle {
-  font-size: clamp(1.5rem, 4vw, 2.6rem);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.heroGenres {
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.grid {
+.row {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 18px;
-  margin: 18px 0 0;
+  margin: 4px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -98,60 +53,102 @@
 .tile {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
   text-decoration: none;
 }
 
 .art {
   position: relative;
+  display: block;
   aspect-ratio: 1;
-  margin-bottom: 8px;
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+  background: var(--panel);
 }
 
 .art img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
+  transition: transform 300ms ease;
 }
 
-.tile:hover .art,
-.tile:focus-visible .art {
-  transform: translateY(-3px);
-  border-color: var(--accent);
-  box-shadow: 0 10px 30px var(--glow);
+.tile:hover .art img {
+  transform: scale(1.05);
 }
 
 .rank {
   position: absolute;
-  top: 8px;
-  left: 8px;
-  min-width: 30px;
+  top: 0;
+  left: 0;
+  min-width: 34px;
   padding: 2px 8px;
-  border-radius: 999px;
-  background: rgb(15 13 22 / 85%);
-  border: 1px solid rgb(167 139 250 / 45%);
-  font-size: 0.8rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
   font-weight: 800;
+  font-size: 1.15rem;
   text-align: center;
-  font-variant-numeric: tabular-nums;
 }
 
 .title {
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+}
+
+.tile:hover .title {
+  color: var(--accent);
 }
 
 .genre {
-  color: var(--text-muted);
+  color: var(--muted);
   font-size: 0.85rem;
+}
+
+@media (max-width: 1000px) {
+  .row {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding-top: 28px;
+  }
+
+  .section > h2 {
+    padding: 0 var(--gutter);
+  }
+
+  .feature {
+    margin: 0 var(--gutter);
+    aspect-ratio: 4 / 3;
+  }
+
+  .featureBadge {
+    top: 12px;
+    left: 12px;
+  }
+
+  .featureStrap {
+    bottom: 18px;
+  }
+
+  /* Phones: ranks 2-12 scroll sideways rather than stacking into a long grid. */
+  .row {
+    display: flex;
+    gap: 12px;
+    padding: 0 var(--gutter) 6px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    /* Snap points respect the gutter, so the first tile isn't pulled to the screen edge. */
+    scroll-padding-inline: var(--gutter);
+  }
+
+  .row > li {
+    width: 136px;
+    flex: none;
+    scroll-snap-align: start;
+  }
 }

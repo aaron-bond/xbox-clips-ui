@@ -10,6 +10,10 @@ export const XUID = '2533274900000001';
 export const CLIP_ID = '0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d';
 const HOUR = 3_600_000;
 
+const DAY = 86_400_000;
+/** An ISO timestamp `days` from now (negative for the past), so date-based stats don't drift. */
+export const daysFromNow = (days: number) => new Date(Date.now() + days * DAY).toISOString();
+
 export function makeClip(overrides: Partial<Clip> = {}): Clip {
   return {
     clipId: CLIP_ID,
@@ -18,10 +22,10 @@ export function makeClip(overrides: Partial<Clip> = {}): Clip {
     titleId: 1,
     caption: '',
     durationSeconds: 30,
-    recordedAt: '2026-10-01T18:19:00Z',
-    publishedAt: '2026-10-01T18:20:30Z',
+    recordedAt: daysFromNow(-3),
+    publishedAt: daysFromNow(-3),
     thumbnailUrl: 'https://cdn.test/thumb.png',
-    availableUntil: '2026-12-30T18:20:30Z',
+    availableUntil: daysFromNow(87),
     views: 3,
     media: { url: 'https://cdn.test/clip-1.mp4', expiresAt: new Date(Date.now() + HOUR).toISOString() },
     ...overrides,
@@ -54,6 +58,20 @@ export function clipsOf(clips: Clip[], access: PlayerClips['access'] = 'public')
 }
 
 type Handler = (path: string) => { status?: number; body: unknown };
+
+/**
+ * A fake API keyed by path prefix (longest match wins). Unmatched paths answer
+ * 404, which components that are secondary (the ticker) treat as "leave out".
+ */
+export function stubRoutes(routes: Record<string, { status?: number; body: unknown } | (() => { status?: number; body: unknown })>) {
+  const prefixes = Object.keys(routes).sort((a, b) => b.length - a.length);
+  return stubApi((path) => {
+    const hit = prefixes.find((p) => path.startsWith(p));
+    if (!hit) return apiError('NOT_FOUND', 404);
+    const r = routes[hit]!;
+    return typeof r === 'function' ? r() : r;
+  });
+}
 
 /** Stubs fetch with a router over API paths, recording every path requested. */
 export function stubApi(handler: Handler) {

@@ -7,7 +7,7 @@ export function SearchPage() {
     <>
       <section className={styles.hero}>
         <h1>
-          Every gamertag has a <span className="gradient-text">highlight reel</span>
+          Every gamertag has a <span>highlight reel</span>
         </h1>
         <SearchBox />
       </section>

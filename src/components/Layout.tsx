@@ -1,5 +1,6 @@
 import { Link, Outlet, ScrollRestoration, useLocation } from 'react-router';
 import { SearchBox } from './SearchBox';
+import { Ticker } from './Ticker';
 import styles from './Layout.module.css';
 
 export function Layout() {
@@ -7,10 +8,10 @@ export function Layout() {
   const isHome = useLocation().pathname === '/';
   return (
     <div className={styles.shell}>
+      <Ticker />
       <header className={styles.header}>
-        <Link to="/" className={styles.brand}>
-          <span className={styles.xbox}>xbox</span>
-          <span className={styles.clips}>clips</span>
+        <Link to="/" className={styles.brand} aria-label="Xbox Clips home">
+          XBOX<span>CLIPS</span>
         </Link>
         {!isHome && <SearchBox compact />}
       </header>

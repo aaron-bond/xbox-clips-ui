@@ -1,29 +1,30 @@
 :root {
   color-scheme: dark;
-  /* Midnight Violet: inky indigo neutrals, a violet accent and a cyan second accent. */
-  --bg: #0f0d16;
-  --surface: #18152a;
-  --surface-raised: #211d36;
-  --border: #302a4a;
-  --text: #ece9f7;
-  --text-muted: #9a93b5;
-  --accent: #a78bfa;
-  --accent-2: #22d3ee;
-  --accent-text: #140b2b;
-  --gradient: linear-gradient(120deg, #a78bfa 0%, #8b7cf6 45%, #22d3ee 100%);
-  --glow: rgb(167 139 250 / 28%);
-  /* Buttons: light violet outline on a soft violet tint. The gradient is kept for
-     flourishes (brand, headline, gamerpic ring) and stays off controls. */
-  --btn-bg: #2b2550;
-  --btn-bg-hover: #3a3170;
-  --btn-border: #c4b5fd;
-  --btn-text: #ede9fe;
-  --glow-2: rgb(34 211 238 / 22%);
-  --danger: #ff7a90;
-  --radius: 12px;
-  --gap: 16px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* Kingfisher: teal-navy ground, orange straps and actions, blue badges (PLAN-v1.md §3). */
+  --bg: #06192b;
+  --bg-deep: #031220;
+  --panel: #0b2a40;
+  --line: #18405c;
+  --text: #f1f7fb;
+  --muted: #8fb4c9;
+  --accent: #f5862b;
+  --accent-hover: #ffa55e;
+  --on-accent: #06192b;
+  --badge: #0b6aa3;
+  --notice-bg: #2a1a0e;
+  --danger: #ff8a7a;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: Barlow, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --radius: 4px;
+  --gutter: 40px;
+  font-family: var(--font-body);
   line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  :root {
+    --gutter: 16px;
+  }
 }
 
 *,
@@ -34,14 +35,8 @@
 
 body {
   margin: 0;
-  min-height: 100vh;
+  background: var(--bg);
   color: var(--text);
-  /* Two soft light sources behind the content: violet top left, cyan top right. */
-  background:
-    radial-gradient(900px 520px at 8% -10%, rgb(167 139 250 / 16%), transparent 70%),
-    radial-gradient(700px 460px at 100% 0%, rgb(34 211 238 / 10%), transparent 70%),
-    var(--bg);
-  background-attachment: fixed;
 }
 
 a {
@@ -54,31 +49,130 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent-2);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* The shared button treatment. Components add size and layout. */
-.btn {
+/* ---- Shared broadcast pieces ---- */
+
+/* Primary action: solid orange, dark text. */
+.btn-primary,
+.btn-outline {
+  display: inline-grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 0 20px;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.btn-primary {
   border: 0;
-  background: var(--btn-bg);
-  color: var(--btn-text);
-  box-shadow: inset 0 0 0 1.5px var(--btn-border);
-  font-weight: 700;
-  transition: background-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
-.btn:hover {
-  background: var(--btn-bg-hover);
-  box-shadow: inset 0 0 0 1.5px var(--btn-border), 0 4px 20px var(--glow);
+.btn-primary:hover {
+  background: var(--accent-hover);
 }
 
-/* Gradient text, for the brand and headline moments. */
-.gradient-text {
-  background: var(--gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* Secondary action: orange outline. */
+.btn-outline {
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn-outline:hover {
+  background: rgb(245 134 43 / 12%);
+}
+
+/* Small condensed caps badge: REPLAY, NO. 1, durations. */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  background: var(--badge);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.badge-dark {
+  background: var(--bg-deep);
+  color: var(--accent);
+}
+
+/* Section heading with an orange bar. */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.7rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.section-title::before {
+  content: '';
+  width: 6px;
+  height: 0.9em;
+  background: var(--accent);
+}
+
+/* The name strap: an orange title bar over a dark detail bar. */
+.strap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.strap-title {
+  padding: 6px 22px 6px 26px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.strap-sub {
+  padding: 6px 22px 6px 26px;
+  background: var(--bg-deep);
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .strap-title,
+  .strap-sub {
+    padding-left: 16px;
+    padding-right: 14px;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 @media (prefers-reduced-motion: reduce) {

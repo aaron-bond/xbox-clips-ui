@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useId, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { parsePlayerIdentifier } from '../lib/validation';
 import styles from './SearchBox.module.css';
@@ -7,6 +7,7 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
   const [value, setValue] = useState('');
   const [invalid, setInvalid] = useState(false);
   const navigate = useNavigate();
+  const id = useId();
 
   function submit(e: FormEvent) {
     e.preventDefault();
@@ -23,10 +24,13 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
 
   return (
     <form role="search" onSubmit={submit} className={compact ? styles.compact : styles.form}>
+      <label htmlFor={id} className="visually-hidden">
+        Gamertag
+      </label>
       <input
-        aria-label="Gamertag"
+        id={id}
         aria-invalid={invalid}
-        aria-describedby={invalid ? 'search-error' : undefined}
+        aria-describedby={invalid ? `${id}-error` : undefined}
         placeholder="Gamertag"
         value={value}
         onChange={(e) => {
@@ -35,11 +39,11 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
         }}
         className={styles.input}
       />
-      <button type="submit" className={`btn ${styles.button}`}>
-        Search
+      <button type="submit" className={`btn-primary ${styles.go}`}>
+        Go
       </button>
       {invalid && (
-        <p id="search-error" role="alert" className={styles.error}>
+        <p id={`${id}-error`} role="alert" className={styles.error}>
           That isn't a valid gamertag.
         </p>
       )}

@@ -19,6 +19,11 @@ browser over CORS, and from the function over a service binding.
 | `src/lib/queries.ts` | TanStack Query client and query definitions: budget-safe defaults, media-expiry staleness, shelf-to-clip seeding. |
 | `src/lib/validation.ts` | Identifier rules mirroring the API. Shared with the function. |
 | `src/pages/`, `src/components/` | Pages and components, each with a CSS module. |
+| `src/components/Replay.tsx` | A clip as a broadcast replay: badges, name strap, autoplay, one-retry playback. |
+| `src/components/Ticker.tsx`, `MostPlayed.tsx` | The most-played band on every page; the home page's ranking. |
+| `src/components/PlayerCard.tsx`, `UpNext.tsx` | Player stats and expiry notice; the rest of a reel. |
+| `src/lib/stats.ts` | Stats derived from data already loaded (last clip, reel length, expiry). |
+| `src/styles/global.css` | Kingfisher tokens and the shared broadcast pieces (`.strap`, `.badge`, `.btn-primary`). |
 | `functions/clip/[xuid]/[clipId].ts` | Pages Function: adds the clip's preview tags to the app page. |
 | `functions/_lib/preview.ts` | Preview tag building, API call over the binding, HTMLRewriter. |
 | `src/test/helpers.tsx` | Test fixtures, `stubApi` (fake fetch), `renderAt` (router + query client). |
@@ -35,6 +40,8 @@ browser over CORS, and from the function over a service binding.
 - **The share link is the clip page URL.** No separate share route.
 - **The preview function never breaks the page.** Every failure serves the
   page unchanged.
+- **Design for real data** (PLAN §3): straps lead with the game name; a
+  caption shows only when present; views only when above zero.
 - **No `public/404.html`.** Its presence switches off Pages' single-page-app
   fallback and breaks every client-side route on reload.
 
@@ -44,7 +51,7 @@ browser over CORS, and from the function over a service binding.
   tests use fake `ASSETS` and `API` bindings.
 - Local `npm run dev` uses the production API and the shared budget. One
   lookup at a time.
-- Open items are in [TODO.md](TODO.md) and PLAN §9/§12. Proposed features: PLAN §11. Code marker:
+- Open items are in [TODO.md](TODO.md) and PLAN §9/§13. Proposed features: PLAN §11. Code marker:
   `TODO(Q1)` for client-IP forwarding over the service binding.
 
 ## Commands

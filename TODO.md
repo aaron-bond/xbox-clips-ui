@@ -26,6 +26,18 @@ any trade-off made.
 
 ## Done
 
+- [x] **Redesign: Broadcast in kingfisher** (2026-10-17, PLAN §12). Designed
+      on a canvas with real data first, then built: kingfisher tokens and
+      Barlow type; a most-played ticker on every page; the player page
+      merged with the replay (latest clip plays, player card, up next, end
+      of reel); clip, game and home pages restyled; phone layouts with the
+      strap moved below the video. No new API requests on the player page;
+      the clip page adds two cached ones (profile, clip list) for the reel
+      card and up next.
+      Trade-off: on desktop the strap overlays the picture and fades four
+      seconds into playback (returns on pause); it ignores clicks so the
+      video controls stay usable.
+
 - [x] **Own copy and disclaimer** (2026-10-17). Home headline "Every gamertag
       has a highlight reel" with no lede; search placeholder "Gamertag"; new
       empty-shelf and game-page wording; meta description rewritten; footer
@@ -82,7 +94,7 @@ any trade-off made.
       `CF-Connecting-IP` on preview requests over the binding, so its per-IP
       limit needs no change.
 
-- [x] **Scaffold per PLAN §12** (2026-10-16). Search, player shelf, clip
+- [x] **Scaffold per PLAN §13** (2026-10-16). Search, player shelf, clip
       page with playback and one automatic retry, copy and native share, the
       `/clip/*` preview function, CI. 34 tests.
       Trade-offs and choices:

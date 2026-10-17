@@ -8,7 +8,7 @@ export function ErrorMessage({ error, onRetry }: { error: unknown; onRetry?: () 
     <div role="alert" className={styles.box}>
       <p>{message}</p>
       {onRetry && (
-        <button type="button" onClick={onRetry} className={`btn ${styles.retry}`}>
+        <button type="button" onClick={onRetry} className="btn-primary">
           Try again
         </button>
       )}
