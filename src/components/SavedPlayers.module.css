@@ -20,11 +20,6 @@
   font-size: 1.6rem;
 }
 
-.note {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
 .clear {
   margin-left: auto;
   padding: 0;
@@ -155,10 +150,6 @@
 
   .head h2 {
     font-size: 1.35rem;
-  }
-
-  .note {
-    font-size: 0.8rem;
   }
 
   .grid {

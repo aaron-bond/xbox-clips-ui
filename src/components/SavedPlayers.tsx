@@ -63,7 +63,6 @@ export function SavedPlayers() {
             <h2 id="pinned-heading" className="section-title">
               Pinned
             </h2>
-            <span className={styles.note}>Kept on this device only</span>
           </div>
           <ul className={styles.grid}>
             {pinned.map((p) => (
@@ -78,7 +77,6 @@ export function SavedPlayers() {
             <h2 id="recent-heading" className="section-title">
               Recent
             </h2>
-            {pinned.length === 0 && <span className={styles.note}>Kept on this device only</span>}
             <button type="button" className={styles.clear} onClick={clearRecent}>
               Clear recent
             </button>

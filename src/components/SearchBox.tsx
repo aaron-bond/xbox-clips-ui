@@ -140,7 +140,7 @@ export function SearchBox({ compact = false }: { compact?: boolean }) {
             )}
             {recent.map((p, n) => option(p, pinned.length + n, false))}
           </ul>
-          <p className={styles.hint}>Type a gamertag to search, or pick a player. Kept on this device only.</p>
+          <p className={styles.hint}>Type a gamertag to search, or pick a player.</p>
         </div>
       )}
       {invalid && (
