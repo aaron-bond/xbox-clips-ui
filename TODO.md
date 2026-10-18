@@ -5,9 +5,6 @@ any trade-off made.
 
 ## Priorities (PLAN §13), in order
 
-- [ ] **P5: installable app.** Manifest, kingfisher icons, Apple touch icon.
-      No service worker needed to install; if one is added, it never caches
-      API responses.
 - [ ] **Pinned and recent gamertags**, in local storage on the device only.
       Design on the canvas first, then build.
 - [ ] **Achievements for a player in a game** (first half of P2).
@@ -18,6 +15,11 @@ any trade-off made.
 - [ ] Designed states for expired clips and restricted players.
 
 ## Done
+
+- [x] **P5: installable app** (2026-10-18). Manifest and XC monogram icons
+      (192, 512, maskable 512, Apple touch 180, favicon 32) in `public/`. No
+      service worker; if one is ever added, it never caches API responses.
+      Chromium's installability check passes on the production build.
 
 - [x] **Q4 dismissed** (2026-10-18). No component library; the look is
       settled and built with CSS Modules alone.

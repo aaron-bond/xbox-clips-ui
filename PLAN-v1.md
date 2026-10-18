@@ -556,7 +556,19 @@ five calls per player at first, falling as titles are cached.
 "mythics" until what Xbox means by it is confirmed; Game Pass share,
 since the per-game flag's meaning is unclear.
 
-### P5 — Installable app (PWA)
+### P5 — Installable app (PWA) (built 2026-10-18)
+
+**As built:** `public/manifest.webmanifest` (name "Xbox Clips", start URL
+`/`, standalone display, navy theme and background `#06192b`) and icons in
+`public/icons/`: 192 and 512 px, a 512 px maskable version with the mark
+inside the safe zone, a 180 px Apple touch icon and a 32 px favicon, all
+linked from `index.html`. The icon is an **XC** monogram in the wordmark's
+type, Barlow Condensed italic 800, white X and orange C on navy; the PNGs
+were rendered from that font, so changing the mark means rendering them
+again. No service worker. Chromium's own installability check reports no
+errors against the production build. In the installed window there is no
+browser back button; Android's system back works, and every page links
+home through the logo.
 
 The site can be installed to a phone's home screen or a desktop's app
 list, opening in its own window without browser chrome, like a native
@@ -707,7 +719,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads. 81 tests run
+desktop and phone, with the player intro over slow loads, installable as an app. 83 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
@@ -740,10 +752,9 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **Installable app** (P5, §11).
-2. **Pinned and recent gamertags**, kept on the device in local storage,
+1. **Pinned and recent gamertags**, kept on the device in local storage,
    never sent anywhere. Designed on the canvas first, then built.
-3. **Achievements for a player in a game** (the first half of P2, §11):
+2. **Achievements for a player in a game** (the first half of P2, §11):
    the list, with progress.
-4. **A second player for comparison** (the rest of P2): add another
+3. **A second player for comparison** (the rest of P2): add another
    gamertag to the achievement view and compare.

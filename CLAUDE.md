@@ -14,6 +14,7 @@ browser over CORS, and from the function over a service binding.
 
 | Path | Role |
 | :--- | :--- |
+| `public/manifest.webmanifest`, `public/icons/` | The installable app: manifest and XC monogram icons, rendered from Barlow Condensed (PLAN §11, P5). |
 | `src/main.tsx`, `src/routes.tsx` | Entry point; routes (`/`, `/player/:identifier`, `/player/:identifier/clips`, `/clip/:xuid/:clipId`, `/game/:productId`). |
 | `src/api/` | Typed API client and response types. `ApiError.message` is user-safe. |
 | `src/lib/queries.ts` | TanStack Query client and query definitions: budget-safe defaults, media-expiry staleness, shelf-to-clip seeding. |
