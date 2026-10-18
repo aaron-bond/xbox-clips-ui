@@ -14,6 +14,12 @@ any trade-off made.
 
 ## Done
 
+- [x] **Install prompt** (2026-10-18). "Get the app" banner on the home page:
+      the browser's install dialog on Chromium, Share-menu steps on iPhone and
+      iPad, nothing in the installed app or in browsers that can't install.
+      Dismissed for 30 days; a footer link remains.
+
+
 - [x] **Pinned and recent players** (2026-10-18). Designed on the canvas, then
       built: Pinned and Recent on the home page, the header search's list, and
       a Pin button on the player card. Local storage only, nothing sent to the

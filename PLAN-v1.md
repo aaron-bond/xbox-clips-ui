@@ -570,6 +570,17 @@ errors against the production build. In the installed window there is no
 browser back button; Android's system back works, and every page links
 home through the logo.
 
+**Install prompt:** a "Get the app" banner on the home page, under the
+search. Where the browser offers installation (Chromium: Android, desktop
+Chrome and Edge), the site catches `beforeinstallprompt` and its Install
+button opens the browser's own dialog. On iPhone and iPad, which have no
+such event, the banner gives the steps instead, with the Share icon drawn
+inline so it can't be mistaken for the site's own share button: "Tap ⬆
+Share in the browser toolbar, then Add to Home Screen". Nothing is shown inside the installed app or in browsers that
+can't install (Firefox, desktop Safari). Dismissed, the banner stays away
+for 30 days on that device; an "Install the app" link in every page's
+footer remains.
+
 The site can be installed to a phone's home screen or a desktop's app
 list, opening in its own window without browser chrome, like a native
 app.
@@ -734,7 +745,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players. 94 tests run
+desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players. 99 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git

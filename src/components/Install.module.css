@@ -1,0 +1,111 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  max-width: 560px;
+  padding: 14px 10px 14px 16px;
+  background: var(--panel);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+}
+
+.icon {
+  flex: none;
+  border-radius: 12px;
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.45rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.sub {
+  margin: 2px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.steps {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.shareIcon {
+  vertical-align: -0.15em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Scoped under .banner so it beats the global .btn-primary in any stylesheet order. */
+.banner .install {
+  flex: none;
+  min-height: 44px;
+  padding: 0 22px;
+}
+
+.close {
+  flex: none;
+  align-self: flex-start;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--accent);
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .banner {
+    gap: 12px;
+    padding: 12px 6px 12px 12px;
+  }
+
+  .icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .sub {
+    font-size: 0.85rem;
+  }
+
+  .banner .install {
+    padding: 0 16px;
+  }
+}

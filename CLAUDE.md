@@ -26,6 +26,7 @@ browser over CORS, and from the function over a service binding.
 | `src/components/CareerStats.tsx` | Career facts from the API's `/career` route, plus most clipped. |
 | `src/components/PlayerIntro.tsx`, `src/lib/useIntroGate.ts` | The name-strap intro over a slow player load, and its timing. |
 | `src/components/Screenshots.tsx` | The game page's store screenshots: featured image and thumbnails, or a swipe row on phones. |
+| `src/lib/install.ts`, `src/components/Install.tsx` | The install prompt: Chromium's install offer or iOS steps, as a home page banner and a footer link. |
 | `src/lib/savedPlayers.ts`, `src/components/SavedPlayers.tsx` | Pinned and recent players in local storage (device only), and the home page's Pinned and Recent sections. |
 | `src/lib/usePlayerReel.ts` | Profile and clips for the player and reel pages, including clips by gamertag when the profile is throttled. |
 | `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |

@@ -47,6 +47,14 @@
   margin: 0;
 }
 
+.footer .install {
+  margin-top: 8px;
+}
+
+.footer .install:empty {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .header {
     padding-top: 12px;

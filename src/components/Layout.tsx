@@ -1,4 +1,5 @@
 import { Link, Outlet, ScrollRestoration, useLocation } from 'react-router';
+import { InstallLink } from './Install';
 import { SearchBox } from './SearchBox';
 import { Ticker } from './Ticker';
 import styles from './Layout.module.css';
@@ -20,6 +21,9 @@ export function Layout() {
       </main>
       <footer className={styles.footer}>
         <p>Not affiliated with or endorsed by Microsoft. Xbox is a trademark of the Microsoft group of companies.</p>
+        <p className={styles.install}>
+          <InstallLink />
+        </p>
       </footer>
       {/* New pages open at the top; Back returns to where the visitor was. */}
       <ScrollRestoration />
