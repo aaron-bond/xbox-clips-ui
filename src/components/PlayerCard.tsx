@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Clip, PlayerProfile } from '../api/types';
 import { daysAgo, latestRecordedAt, reelLength, reputationLabel, tenureLabel } from '../lib/stats';
+import { MAX_PINNED, togglePin, useSavedPlayers } from '../lib/savedPlayers';
 import styles from './PlayerCard.module.css';
 
 /**
@@ -44,6 +45,7 @@ export function PlayerCard({
             {!profile ? 'Profile details unavailable right now' : identity.length > 0 ? identity.join(' · ') : !reputation && 'Player card'}
           </span>
         </div>
+        {profile && <PinButton profile={profile} />}
       </div>
       {profile?.bio && <p className={styles.bio}>“{profile.bio}”</p>}
       <dl className={styles.stats}>
@@ -56,5 +58,24 @@ export function PlayerCard({
       </dl>
       {children}
     </section>
+  );
+}
+
+/** Pins the player to the home page and the search list, on this device only. */
+function PinButton({ profile }: { profile: PlayerProfile }) {
+  const { pinned } = useSavedPlayers();
+  const on = pinned.some((p) => p.xuid === profile.xuid);
+  const full = !on && pinned.length >= MAX_PINNED;
+  return (
+    <button
+      type="button"
+      className={on ? `${styles.pin} ${styles.pinOn}` : styles.pin}
+      aria-pressed={on}
+      disabled={full}
+      title={full ? `Unpin someone first: up to ${MAX_PINNED} players can be pinned` : undefined}
+      onClick={() => togglePin({ xuid: profile.xuid, gamertag: profile.gamertag, gamerpicUrl: profile.gamerpicUrl })}
+    >
+      <span aria-hidden>{on ? '★' : '☆'}</span> {on ? 'Pinned' : 'Pin'}
+    </button>
   );
 }

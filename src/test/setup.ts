@@ -4,7 +4,11 @@ import { afterEach, beforeEach, vi } from 'vitest';
 
 // jsdom has no media playback. Each test starts with play() succeeding; tests that
 // need it to be refused override it.
-afterEach(() => cleanup());
+afterEach(() => {
+  cleanup();
+  // Pinned and recent players live in local storage; every test starts without any.
+  localStorage.clear();
+});
 
 // jsdom has no IntersectionObserver: report every observed element as on screen,
 // so content that loads on scroll loads in tests.

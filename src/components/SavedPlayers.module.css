@@ -1,0 +1,208 @@
+.groups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.head h2 {
+  font-size: 1.6rem;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.clear {
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.clear:hover {
+  color: var(--accent);
+}
+
+.grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tile {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  background: var(--panel);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.pinnedTile {
+  border-left-color: var(--accent);
+}
+
+.link {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.link:hover .name {
+  color: var(--accent);
+}
+
+.avatar {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius);
+  object-fit: cover;
+}
+
+.initials {
+  display: grid;
+  place-items: center;
+  background: var(--badge);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.35rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.pin,
+.remove {
+  flex: none;
+  width: 36px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pin {
+  font-size: 1.2rem;
+}
+
+.remove {
+  width: 32px;
+  font-size: 1.3rem;
+}
+
+.pin:hover,
+.remove:hover,
+.on {
+  color: var(--accent);
+}
+
+/* Phones: a row of round avatars to swipe; pinned ones ringed in orange.
+   Unpinning is on the player card, and Recent keeps its Clear link. */
+@media (max-width: 720px) {
+  .groups {
+    gap: 18px;
+  }
+
+  .head h2 {
+    font-size: 1.35rem;
+  }
+
+  .note {
+    font-size: 0.8rem;
+  }
+
+  .grid {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .tile,
+  .pinnedTile {
+    flex: none;
+    width: 72px;
+    background: none;
+    border: 0;
+  }
+
+  .link {
+    flex-direction: column;
+    gap: 6px;
+    padding: 0;
+  }
+
+  .avatar {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 3px solid var(--line);
+    box-sizing: border-box;
+  }
+
+  .pinnedTile .avatar {
+    border-color: var(--accent);
+  }
+
+  .name {
+    width: 100%;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .meta,
+  .pin,
+  .remove {
+    display: none;
+  }
+}

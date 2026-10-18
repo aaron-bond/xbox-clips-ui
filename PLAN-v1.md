@@ -200,9 +200,9 @@ guidelines ask third parties not to use its brands in product or domain
 names, so this is a known risk, accepted for now; the disclaimer and
 descriptive use elsewhere keep any implied endorsement out of the copy.
 
-**No visitor state in v1.** Recent and pinned gamertags were left out of
-v1 (§10); they are now the second priority (§13), stored on the device
-only.
+**Visitor state lives on the device only.** Pinned and recent players
+(§12, step 11) are kept in the browser's local storage and never sent to
+the API; there are no accounts.
 
 ---
 
@@ -713,13 +713,28 @@ real data). Built in this order; each step leaves the site working.
    error, with no clips request; if the clips fail too, the profile's
    error is shown. The API also keeps profiles fresh for 12 hours, so
    they are fetched less often.
+11. **Pinned and recent players.** Kept in local storage under
+    `xboxclips.players.v1`, on the device only: gamertag, XUID, gamerpic
+    URL and a timestamp per player. A player goes into Recent when their
+    page loads with a profile (not after a failed lookup, nor when the
+    profile is throttled); Recent keeps the last 8 and leaves out pinned
+    players, and pinned players (up to 12) stay first everywhere. The home
+    page shows **Pinned** and **Recent** under the search, each left out
+    while empty: cards with gamerpic, gamertag, a pin toggle and, for
+    recent players, a remove button, plus "Clear recent", which never
+    touches pinned players. On phones they become rows of round avatars,
+    pinned ones ringed in orange. The header search on every other page
+    lists the same players while focused, filtered as you type, and works
+    from the keyboard as a combobox. The player card has a Pin button.
+    Storage that is blocked or unreadable simply means empty lists. Costs
+    no requests.
 
 ## 13. Current status
 
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads, installable as an app. 83 tests run
+desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players. 94 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
@@ -752,9 +767,7 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **Pinned and recent gamertags**, kept on the device in local storage,
-   never sent anywhere. Designed on the canvas first, then built.
-2. **Achievements for a player in a game** (the first half of P2, §11):
+1. **Achievements for a player in a game** (the first half of P2, §11):
    the list, with progress.
-3. **A second player for comparison** (the rest of P2): add another
+2. **A second player for comparison** (the rest of P2): add another
    gamertag to the achievement view and compare.

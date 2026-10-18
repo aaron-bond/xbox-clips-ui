@@ -11,8 +11,93 @@
 }
 
 .compact {
+  position: relative;
   margin-left: auto;
   gap: 8px;
+}
+
+/* The header search's list of pinned and recent players. */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: min(360px, calc(100vw - 2 * var(--gutter)));
+  padding: 8px 0;
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--accent);
+  border-radius: 0 0 6px 6px;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 45%);
+}
+
+.dropdown[hidden] {
+  display: none;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.group {
+  padding: 8px 14px 4px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.option:hover,
+.active {
+  background: var(--panel);
+}
+
+.compact .optionAvatar {
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+.optionName {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.star {
+  color: var(--accent);
+}
+
+.seen {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.hint {
+  margin: 6px 0 0;
+  padding: 8px 14px 4px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.75rem;
 }
 
 .input {

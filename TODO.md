@@ -5,8 +5,6 @@ any trade-off made.
 
 ## Priorities (PLAN §13), in order
 
-- [ ] **Pinned and recent gamertags**, in local storage on the device only.
-      Design on the canvas first, then build.
 - [ ] **Achievements for a player in a game** (first half of P2).
 - [ ] **A second player for comparison** (rest of P2).
 
@@ -15,6 +13,12 @@ any trade-off made.
 - [ ] Designed states for expired clips and restricted players.
 
 ## Done
+
+- [x] **Pinned and recent players** (2026-10-18). Designed on the canvas, then
+      built: Pinned and Recent on the home page, the header search's list, and
+      a Pin button on the player card. Local storage only, nothing sent to the
+      API. Recent keeps 8, Pinned up to 12.
+
 
 - [x] **P5: installable app** (2026-10-18). Manifest and XC monogram icons
       (192, 512, maskable 512, Apple touch 180, favicon 32) in `public/`. No

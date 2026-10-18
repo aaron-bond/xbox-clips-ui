@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { recordVisit, togglePin } from '../lib/savedPlayers';
 import {
   apiError,
   CLIP_ID,
@@ -583,5 +584,67 @@ describe('reel page', () => {
     expect(router.state.location.pathname).toBe('/player/TestPlayer/clips');
     await screen.findByRole('region', { name: 'All 12 clips' });
     expect(playerPaths(paths).filter((p) => !p.endsWith('/career'))).toHaveLength(2);
+  });
+});
+
+describe('pinned and recent players', () => {
+  const visit = () => stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf([makeClip({})]) } });
+
+  it('shows nothing on the home page until a player has been viewed', async () => {
+    stubRoutes({});
+    renderAt('/');
+    await screen.findByRole('heading', { level: 1 });
+    expect(screen.queryByRole('region', { name: 'Recent' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Pinned' })).toBeNull();
+  });
+
+  it('adds a viewed player to Recent on the home page', async () => {
+    visit();
+    const { router } = renderAt('/player/TestPlayer');
+    await screen.findByRole('region', { name: 'Player card' });
+    await router.navigate('/');
+    const recent = await screen.findByRole('region', { name: 'Recent' });
+    expect(within(recent).getByRole('link', { name: /TestPlayer/ })).toHaveAttribute('href', '/player/TestPlayer');
+    expect(within(recent).getByText('Viewed today')).toBeInTheDocument();
+  });
+
+  it('pins from the player card, moving the player from Recent to Pinned', async () => {
+    visit();
+    const { router } = renderAt('/player/TestPlayer');
+    const pin = await screen.findByRole('button', { name: /Pin/ });
+    expect(pin).toHaveAttribute('aria-pressed', 'false');
+    await userEvent.click(pin);
+    expect(screen.getByRole('button', { name: /Pinned/ })).toHaveAttribute('aria-pressed', 'true');
+    await router.navigate('/');
+    const pinned = await screen.findByRole('region', { name: 'Pinned' });
+    expect(within(pinned).getByRole('link', { name: /TestPlayer/ })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Recent' })).toBeNull();
+  });
+
+  it('clears Recent but keeps Pinned', async () => {
+    togglePin({ xuid: '1', gamertag: 'Kept', gamerpicUrl: null });
+    recordVisit({ xuid: '2', gamertag: 'Gone', gamerpicUrl: null });
+    stubRoutes({});
+    renderAt('/');
+    await userEvent.click(await screen.findByRole('button', { name: 'Clear recent' }));
+    expect(screen.queryByRole('region', { name: 'Recent' })).toBeNull();
+    expect(within(screen.getByRole('region', { name: 'Pinned' })).getByText('Kept')).toBeInTheDocument();
+  });
+
+  it('lists saved players in the header search, filtered as you type, and opens one from the keyboard', async () => {
+    togglePin({ xuid: '1', gamertag: 'Pinned One', gamerpicUrl: null });
+    recordVisit({ xuid: '2', gamertag: 'Recent Two', gamerpicUrl: null });
+    stubRoutes({ '/api/v1/games/9N4PT8HGCDHQ': { body: makeGame({ title: 'Solo' }) } });
+    const { router } = renderAt('/game/9N4PT8HGCDHQ');
+    await screen.findByRole('heading', { name: 'Solo', level: 1 });
+    const box = screen.getByRole('combobox', { name: 'Gamertag' });
+    await userEvent.click(box);
+    const list = screen.getByRole('listbox', { name: 'Pinned and recent players' });
+    expect(within(list).getAllByRole('option').map((o) => o.textContent)).toEqual([expect.stringContaining('Pinned One'), expect.stringContaining('Recent Two')]);
+
+    await userEvent.type(box, 'rec');
+    expect(within(list).getAllByRole('option')).toHaveLength(1);
+    await userEvent.keyboard('{ArrowDown}{Enter}');
+    expect(router.state.location.pathname).toBe('/player/Recent%20Two');
   });
 });

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useParams } from 'react-router';
 import type { PlayerClips, PlayerProfile } from '../api/types';
 import { CareerStats, CareerStatsPlaceholder } from '../components/CareerStats';
@@ -12,6 +12,7 @@ import { ShareButtons } from '../components/ShareButtons';
 import { UpNext } from '../components/UpNext';
 import { clipPath, playerPath } from '../lib/format';
 import { careerQuery, clipQuery } from '../lib/queries';
+import { recordVisit } from '../lib/savedPlayers';
 import { usePlayerReel } from '../lib/usePlayerReel';
 import { useIntroGate } from '../lib/useIntroGate';
 import { useNearViewport } from '../lib/useNearViewport';
@@ -38,6 +39,12 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
   const queryClient = useQueryClient();
 
   const { profile, clips, xuid, profileDown, ready } = usePlayerReel(identifier);
+  // A successful visit goes into Recent on this device (PLAN-v1.md §12). A throttled
+  // profile has no gamerpic or confirmed gamertag, so it isn't recorded.
+  const visited = profile.data;
+  useEffect(() => {
+    if (visited) recordVisit({ xuid: visited.xuid, gamertag: visited.gamertag, gamerpicUrl: visited.gamerpicUrl });
+  }, [visited]);
   // Career stats sit below Up next and load only when scrolled near, so visitors
   // who watch and leave never spend the title-history call (PLAN-v1.md §12).
   const careerSlot = useNearViewport<HTMLDivElement>('0px');

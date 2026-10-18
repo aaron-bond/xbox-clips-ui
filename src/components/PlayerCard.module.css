@@ -34,7 +34,40 @@
 }
 
 .identity {
+  flex: 1;
   min-width: 0;
+}
+
+.pin {
+  flex: none;
+  align-self: flex-start;
+  padding: 7px 12px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.pin:hover {
+  background: rgb(245 134 43 / 12%);
+}
+
+.pinOn,
+.pinOn:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.pin:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .kicker {
