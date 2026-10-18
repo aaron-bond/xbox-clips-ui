@@ -1,22 +1,28 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router';
 import type { Clip, PlayerProfile } from '../api/types';
-import { daysAgo, latestRecordedAt, reelLength, reputationLabel, tenureLabel } from '../lib/stats';
+import { achievementsPath } from '../lib/format';
+import { daysAgo, latestRecordedAt, reputationLabel, tenureLabel } from '../lib/stats';
 import { MAX_PINNED, togglePin, useSavedPlayers } from '../lib/savedPlayers';
 import styles from './PlayerCard.module.css';
 
 /**
- * The player's card beside the replay: four stats chosen to read well with
- * real numbers (PLAN-v1.md §3). `profile` is null when Xbox is throttling profile
- * calls: the card then shows what the clips say, under `gamertag`.
+ * The player's card beside the replay: three stats chosen to read well with
+ * real numbers (PLAN-v1.md §3), and a tile leading to their achievements.
+ * `profile` is null when Xbox is throttling profile calls: the card then shows
+ * what the clips say, under `gamertag`. `identifier` is the player's gamertag or
+ * XUID, for links.
  */
 export function PlayerCard({
   profile,
   gamertag,
+  identifier,
   clips,
   children,
 }: {
   profile: PlayerProfile | null;
   gamertag: string;
+  identifier: string;
   clips: Clip[];
   children?: ReactNode;
 }) {
@@ -27,7 +33,6 @@ export function PlayerCard({
     { label: 'Gamerscore', value: profile ? profile.gamerscore.toLocaleString() : '–' },
     { label: 'Clips', value: String(clips.length) },
     { label: 'Last clip', value: last ? daysAgo(last) : '–' },
-    { label: 'Reel length', value: reelLength(clips) },
   ];
 
   return (
@@ -55,6 +60,14 @@ export function PlayerCard({
             <dd>{s.value}</dd>
           </div>
         ))}
+        <div className={`${styles.stat} ${styles.statLink}`}>
+          <dt>Achievements</dt>
+          <dd>
+            <Link to={achievementsPath(identifier)} className={styles.statAnchor}>
+              See games <span aria-hidden>›</span>
+            </Link>
+          </dd>
+        </div>
       </dl>
       {children}
     </section>

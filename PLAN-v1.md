@@ -216,6 +216,8 @@ the API; there are no accounts.
 | `/` | Search: a gamertag box. |
 | `/player/:identifier` | Player page: the replay, player card, Up next and career stats (§12). Gamertag or XUID. |
 | `/player/:identifier/clips` | The player's whole reel on its own page, from Up next's "See all" tile. |
+| `/player/:identifier/achievements` | The player's recent games (up to 100), each leading to its achievements. From the player card's Achievements tile. |
+| `/player/:identifier/achievements/:titleId` | The player's achievements in one game. From a recent game, or a career stats card. |
 | `/clip/:xuid/:clipId` | Clip page: player, details, share. Also the share link. |
 | `/game/:productId` | Game page: store art and details for a most-played game (§11, P1). |
 | anything else | Client-side not-found page. |
@@ -449,6 +451,22 @@ below the search box.
 Priority order (§13): first a single player's achievements in a game,
 then a second player added for comparison.
 
+**Built 2026-10-18: one player.** The player card's Achievements tile
+opens `/player/:identifier/achievements`: the player's recent games (from
+the same cached title history as career stats) as box-art tiles with
+gamerscore progress, unlocked count and when last played, Xbox 360 games
+badged. Each opens `/player/:identifier/achievements/:titleId`, as does
+each career stats card: a banner with box art and name strap, a stats bar
+(gamerscore earned and total, unlocked count, rarest unlock), tabs (All,
+Unlocked, In progress, Locked), and a row per achievement with its 16:9
+art (greyed while locked), description, rarity, gamerscore and either its
+unlock date or a progress bar. Newest unlocks come first, then those
+furthest along. Secret achievements show as "Secret achievement · Tap to
+reveal" until unlocked. Xbox 360 games list only unlocked achievements,
+without art (the game's art stands in), and say so. Cost: the games list
+costs nothing extra; each player's achievements in a game is one call per
+hour while viewed. **Still to build:** the second player.
+
 Enter two gamertags and compare them: gamerscore head to head, the games
 they share, and achievement progress in each shared game. A face-off has
 its own shareable URL, e.g. `/compare/:a/:b`, with a link preview like a
@@ -671,10 +689,12 @@ real data). Built in this order; each step leaves the site working.
    art with orange rank chips (a grid on desktop, a sideways-scrolling
    row on phones).
 4. **Player page.** The player's latest clip plays at the top as the
-   replay, with REPLAY and duration badges and the name strap. Beside it
-   (below on phones) the player card: gamerpic, gamertag, and four stats
-   (gamerscore, clips, last clip as "N days ago", reel length as total
-   duration). If a clip leaves Xbox within 30 days, a notice at the foot of
+   replay, with REPLAY and duration badges; the name strap (game, then
+   gamertag and date) sits flush below the video at every size, always
+   visible. Beside it (below on phones) the player card: gamerpic,
+   gamertag, three stats (gamerscore, clips, last clip as "N days ago") and
+   an ACHIEVEMENTS tile, "SEE GAMES ›", leading to the player's recent
+   games. (Reel length was dropped: it said little.) If a clip leaves Xbox within 30 days, a notice at the foot of
    the page says which and when; it is kept out of the space above the
    fold. "COPY REPLAY LINK" and share act on the replay. UP NEXT lists the
    other clips, and is left out when there are none. A long reel is cut
@@ -693,8 +713,7 @@ real data). Built in this order; each step leaves the site working.
    description, the find-clips panel, and ALSO MOST PLAYED (the next
    ranks, excluding this game).
 7. **Phones.** Below 720 px: the replay and banners run edge to edge; the
-   game-name strap sits flush below the video, so it never covers the
-   clip; stats become a 2×2 grid; UP NEXT a list; most-
+   strap below the video is the same as on desktop; stats become a 2×2 grid; UP NEXT a list; most-
    played rows scroll sideways; the header search shrinks to a compact box.
 8. **Docs and checks.** README, CLAUDE.md and TODO updated; tests cover the
    ticker, the stats, the expiry notice, views hidden at zero, and the
@@ -748,7 +767,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players. 99 tests run
+desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players, and achievements. 103 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
@@ -781,7 +800,5 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **Achievements for a player in a game** (the first half of P2, §11):
-   the list, with progress.
-2. **A second player for comparison** (the rest of P2): add another
+1. **A second player for comparison** (the rest of P2): add another
    gamertag to the achievement view and compare.

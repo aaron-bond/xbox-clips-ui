@@ -37,6 +37,8 @@ export const keys = {
   clip: (xuid: string, clipId: string) => ['clip', xuid, clipId.toLowerCase()] as const,
   mostPlayed: () => ['games', 'most-played'] as const,
   career: (identifier: string) => ['career', identifier.toLowerCase()] as const,
+  games: (identifier: string) => ['games', identifier.toLowerCase()] as const,
+  achievements: (identifier: string, titleId: string) => ['achievements', identifier.toLowerCase(), titleId] as const,
   game: (productId: string) => ['game', productId.toUpperCase()] as const,
   screenshots: (productId: string) => ['screenshots', productId.toUpperCase()] as const,
 };
@@ -108,4 +110,16 @@ export const screenshotsQuery = (productId: string, client: ApiClient = api) =>
     queryKey: keys.screenshots(productId),
     queryFn: () => client.getScreenshots(productId),
     staleTime: 24 * 60 * MINUTE,
+  });
+
+/** A player's recent games; the API reads them with the career facts, once a day. */
+export const gamesQuery = (identifier: string, client: ApiClient = api) =>
+  queryOptions({ queryKey: keys.games(identifier), queryFn: () => client.getGames(identifier), staleTime: 60 * MINUTE });
+
+/** A player's achievements in one game; the API keeps them fresh for an hour. */
+export const achievementsQuery = (identifier: string, titleId: string, client: ApiClient = api) =>
+  queryOptions({
+    queryKey: keys.achievements(identifier, titleId),
+    queryFn: () => client.getAchievements(identifier, titleId),
+    staleTime: 30 * MINUTE,
   });

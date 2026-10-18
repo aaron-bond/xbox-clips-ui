@@ -112,8 +112,10 @@ describe('player page', () => {
     expect(within(card).getByText('1,234')).toBeInTheDocument();
     expect(within(card).getByText('2')).toBeInTheDocument();
     expect(within(card).getByText('41 days ago')).toBeInTheDocument();
-    expect(within(card).getByText('1:58')).toBeInTheDocument();
+    expect(within(card).getByRole('link', { name: /See games/ })).toHaveAttribute('href', '/player/TestPlayer/achievements');
   });
+
+
 
   it('shows reputation, years on Xbox, location and bio when the profile has them', async () => {
     const full = { ...profile, bio: 'Clips from the couch.', location: 'Seattle', tenureYears: 22, reputation: 'good' as const };
@@ -646,5 +648,89 @@ describe('pinned and recent players', () => {
     expect(within(list).getAllByRole('option')).toHaveLength(1);
     await userEvent.keyboard('{ArrowDown}{Enter}');
     expect(router.state.location.pathname).toBe('/player/Recent%20Two');
+  });
+});
+
+describe('achievements', () => {
+  const game = (n: number, extra: Record<string, unknown> = {}) => ({
+    titleId: String(100 + n), name: `Game ${n}`, imageUrl: 'https://store-images.test/g', gamerscore: 330, totalGamerscore: 1000, percent: 33,
+    lastPlayed: daysFromNow(-6), unlocked: 19, xbox360: false, ...extra,
+  });
+  const ach = (id: string, extra: Record<string, unknown> = {}) => ({
+    id, name: `Ach ${id}`, description: `Do ${id}`, gamerscore: 10, imageUrl: 'https://img.test/a', secret: false, unlockedAt: null, progress: null,
+    rarity: { category: 'Common', percent: 40 }, ...extra,
+  });
+  const list = (extra: Record<string, unknown> = {}) => ({
+    xuid: XUID, titleId: '101', game: game(1), titleName: null, lockedListed: true,
+    achievements: [
+      ach('1', { unlockedAt: '2026-10-01T10:00:00Z', gamerscore: 50, rarity: { category: 'Rare', percent: 4.2 } }),
+      ach('2', { unlockedAt: '2026-10-11T10:00:00Z', gamerscore: 20 }),
+      ach('3', { progress: { current: 66, target: 100 } }),
+      ach('4', { secret: true, gamerscore: 30 }),
+      ach('5'),
+    ],
+    ...extra,
+  });
+
+  it("lists a player's recent games, each linking to its achievements", async () => {
+    stubRoutes({
+      '/api/v1/players/TestPlayer/games': { body: { xuid: XUID, games: [game(1), game(2, { xbox360: true })], limited: true } },
+      '/api/v1/players/TestPlayer': { body: profile },
+    });
+    renderAt('/player/TestPlayer/achievements');
+    const section = await screen.findByRole('region', { name: 'Recent games' });
+    const links = within(section).getAllByRole('link');
+    expect(links.map((l) => l.getAttribute('href'))).toEqual(['/player/TestPlayer/achievements/101', '/player/TestPlayer/achievements/102']);
+    expect(within(links[0]!).getByText('330')).toBeInTheDocument();
+    expect(within(links[1]!).getByText('Xbox 360')).toBeInTheDocument();
+    expect(screen.getByText('Their last 2 games')).toBeInTheDocument();
+  });
+
+  it('says so when a game history is hidden', async () => {
+    stubRoutes({ '/api/v1/players/TestPlayer/games': { body: { xuid: XUID, games: [], limited: false } }, '/api/v1/players/TestPlayer': { body: profile } });
+    renderAt('/player/TestPlayer/achievements');
+    expect(await screen.findByText(/game history isn't public/)).toBeInTheDocument();
+  });
+
+  it('shows achievements newest first, filters them, and keeps secrets hidden until revealed', async () => {
+    stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list() }, '/api/v1/players/TestPlayer': { body: profile } });
+    renderAt('/player/TestPlayer/achievements/101');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Game 1' })).toBeInTheDocument();
+    const rows = () => within(screen.getByRole('region', { name: 'Achievements' })).getAllByRole('listitem').map((li) => li.querySelector('strong')!.textContent);
+    expect(rows()).toEqual(['Ach 2', 'Ach 1', 'Ach 3', 'Secret achievement', 'Ach 5']);
+    expect(screen.getByText('Ach 1', { selector: 'dd' })).toBeInTheDocument();
+    expect(screen.queryByText('Do 4')).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: 'Tap to reveal' }));
+    expect(screen.getByText('Do 4')).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Unlocked 2' }));
+    expect(rows()).toEqual(['Ach 2', 'Ach 1']);
+    await userEvent.click(screen.getByRole('button', { name: 'In progress 1' }));
+    expect(rows()).toEqual(['Ach 3']);
+    expect(screen.getByText('66 / 100')).toBeInTheDocument();
+  });
+
+  it('notes that Xbox 360 games list only unlocked achievements, with no Locked tab', async () => {
+    stubRoutes({
+      '/api/v1/players/TestPlayer/achievements/101': { body: list({ lockedListed: false, achievements: [ach('1', { unlockedAt: '2017-09-23T10:00:00Z', imageUrl: null })] }) },
+      '/api/v1/players/TestPlayer': { body: profile },
+    });
+    renderAt('/player/TestPlayer/achievements/101');
+    expect(await screen.findByText(/Xbox 360 games list only/)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Locked/ })).toBeNull();
+  });
+
+  it('links each career card to its achievements', async () => {
+    const stats = { nowPlaying: game(1), biggestHaul: game(2), onTheBrink: game(3, { gamerscore: 900 }), gamesCounted: 3, limited: false };
+    stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: { body: clipsOf([makeClip({})]) },
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats } },
+    });
+    renderAt('/player/TestPlayer');
+    await screen.findByText('Game 2');
+    const section = screen.getByRole('region', { name: 'Career stats' });
+    const hrefs = within(section).getAllByRole('link').map((l) => l.getAttribute('href'));
+    expect(hrefs).toEqual(expect.arrayContaining(['/player/TestPlayer/achievements/101', '/player/TestPlayer/achievements/102', '/player/TestPlayer/achievements/103']));
   });
 });

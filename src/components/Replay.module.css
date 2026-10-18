@@ -43,20 +43,10 @@
   margin: 0;
 }
 
-/* Desktop: a lower third over the picture, clear of the video controls, and
-   transparent to clicks so the controls beneath stay usable. */
+/* The name strap sits flush below the picture, always visible, so it never
+   covers the clip or its controls. */
 .strap {
-  position: absolute;
-  left: 0;
-  bottom: 64px;
-  max-width: calc(100% - 32px);
-  pointer-events: none;
-  transition: opacity 400ms ease, transform 400ms ease;
-}
-
-.strapDown {
-  opacity: 0;
-  transform: translateX(-24px);
+  max-width: 100%;
 }
 
 @media (max-width: 720px) {
@@ -69,14 +59,4 @@
     left: 10px;
   }
 
-  /* Phones: the game-name strap sits flush below the video, so it never covers the clip. */
-  .strap {
-    position: relative;
-    bottom: auto;
-  }
-
-  .strapDown {
-    opacity: 1;
-    transform: none;
-  }
 }

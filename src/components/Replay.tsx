@@ -14,12 +14,10 @@ interface Props {
 
 type State = 'playing' | 'retrying' | 'failed';
 
-/** How long the name strap stays over the picture once playback starts. */
-const STRAP_VISIBLE_MS = 4000;
-
 /**
  * A clip presented as a broadcast replay: REPLAY and duration badges, and a
- * name strap leading with the game (captions are almost always empty).
+ * name strap below the picture leading with the game (captions are almost
+ * always empty).
  *
  * Plays the upstream media URL directly and starts automatically: with sound
  * where the browser allows it, otherwise muted. URLs expire hourly and can die
@@ -29,9 +27,7 @@ const STRAP_VISIBLE_MS = 4000;
 export function Replay({ clip, gamertag, refresh }: Props) {
   const [state, setState] = useState<State>('playing');
   const [retried, setRetried] = useState(false);
-  const [strapUp, setStrapUp] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const strapTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const mediaUrl = clip.media?.url;
 
   useEffect(() => {
@@ -44,8 +40,6 @@ export function Replay({ clip, gamertag, refresh }: Props) {
       }
     });
   }, [mediaUrl]);
-
-  useEffect(() => () => clearTimeout(strapTimer.current), []);
 
   async function recover(automatic: boolean) {
     if (automatic && retried) {
@@ -84,14 +78,6 @@ export function Replay({ clip, gamertag, refresh }: Props) {
           playsInline
           preload="metadata"
           onError={() => void recover(true)}
-          onPlay={() => {
-            clearTimeout(strapTimer.current);
-            strapTimer.current = setTimeout(() => setStrapUp(false), STRAP_VISIBLE_MS);
-          }}
-          onPause={() => {
-            clearTimeout(strapTimer.current);
-            setStrapUp(true);
-          }}
           className={styles.video}
           data-testid="clip-video"
         />
@@ -109,7 +95,7 @@ export function Replay({ clip, gamertag, refresh }: Props) {
           <span className="badge badge-dark">{formatDuration(clip.durationSeconds)}</span>
         </span>
       </div>
-      <figcaption className={`strap ${styles.strap} ${strapUp ? '' : styles.strapDown}`}>
+      <figcaption className={`strap ${styles.strap}`}>
         <span className="strap-title">{clip.gameTitle || 'Xbox clip'}</span>
         <span className="strap-sub">{details.join(' · ')}</span>
       </figcaption>

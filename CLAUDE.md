@@ -28,6 +28,7 @@ browser over CORS, and from the function over a service binding.
 | `src/components/Screenshots.tsx` | The game page's store screenshots: featured image and thumbnails, or a swipe row on phones. |
 | `src/lib/install.ts`, `src/components/Install.tsx` | The install prompt: Chromium's install offer or iOS steps, as a home page banner and a footer link. |
 | `src/lib/savedPlayers.ts`, `src/components/SavedPlayers.tsx` | Pinned and recent players in local storage (device only), and the home page's Pinned and Recent sections. |
+| `src/pages/AchievementsPage.tsx`, `GameAchievementsPage.tsx` | A player's recent games, and their achievements in one game. |
 | `src/lib/usePlayerReel.ts` | Profile and clips for the player and reel pages, including clips by gamertag when the profile is throttled. |
 | `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |
 | `src/lib/stats.ts` | Stats derived from data already loaded (last clip, reel length, expiry). |

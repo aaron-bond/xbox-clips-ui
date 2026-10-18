@@ -1,18 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { daysFromNow, makeClip } from '../test/helpers';
-import { daysAgo, latestRecordedAt, mostClipped, nextToExpire, reelLength, reputationLabel, tenureLabel, viewsWorthShowing } from './stats';
+import { daysAgo, latestRecordedAt, mostClipped, nextToExpire, reputationLabel, tenureLabel, viewsWorthShowing } from './stats';
 
 describe('stats', () => {
   it('describes how long ago a clip was recorded', () => {
     expect(daysAgo(daysFromNow(-0.2))).toBe('Today');
     expect(daysAgo(daysFromNow(-1.2))).toBe('Yesterday');
     expect(daysAgo(daysFromNow(-41.2))).toBe('41 days ago');
-  });
-
-  it('totals a reel, past an hour too', () => {
-    expect(reelLength([makeClip({ durationSeconds: 59 }), makeClip({ durationSeconds: 59 })])).toBe('1:58');
-    expect(reelLength([makeClip({ durationSeconds: 3725 })])).toBe('1:02:05');
-    expect(reelLength([])).toBe('0:00');
   });
 
   it('finds the latest recording', () => {

@@ -91,6 +91,47 @@ export interface PlayerCareer {
   stats: CareerStats | null;
 }
 
+/** One of a player's recent games. */
+export interface PlayerGame extends CareerGame {
+  /** Achievements unlocked. */
+  unlocked: number;
+  /** Xbox 360 games list only unlocked achievements, without art. */
+  xbox360: boolean;
+}
+
+export interface PlayerGames {
+  xuid: string;
+  /** Most recent first; empty when the history is hidden. */
+  games: PlayerGame[];
+  /** The player has more games than were read. */
+  limited: boolean;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  gamerscore: number;
+  /** 16:9 art; null for Xbox 360 games. */
+  imageUrl: string | null;
+  /** The description arrives anyway; the UI hides it until unlocked. */
+  secret: boolean;
+  unlockedAt: string | null;
+  progress: { current: number; target: number } | null;
+  rarity: { category: string; percent: number } | null;
+}
+
+export interface GameAchievements {
+  xuid: string;
+  titleId: string;
+  /** The game, when it is among the player's recent games. */
+  game: PlayerGame | null;
+  titleName: string | null;
+  /** False for Xbox 360 games: only unlocked achievements are listed. */
+  lockedListed: boolean;
+  achievements: Achievement[];
+}
+
 /** Clip metadata without media or views, as used by link previews. */
 /** A store screenshot of a game. `url` resizes by query string (`?w=1280`). */
 export interface Screenshot {

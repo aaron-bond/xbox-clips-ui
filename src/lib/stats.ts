@@ -10,15 +10,6 @@ export function daysAgo(iso: string, now = Date.now()): string {
   return `${days} days ago`;
 }
 
-/** Total duration of a reel: "1:58", or "1:02:05" past an hour. */
-export function reelLength(clips: Clip[]): string {
-  const total = Math.round(clips.reduce((sum, c) => sum + c.durationSeconds, 0));
-  const h = Math.floor(total / 3600);
-  const m = Math.floor((total % 3600) / 60);
-  const s = String(total % 60).padStart(2, '0');
-  return h > 0 ? `${h}:${String(m).padStart(2, '0')}:${s}` : `${m}:${s}`;
-}
-
 /** The most recent clip's recording date, for "last clip". */
 export function latestRecordedAt(clips: Clip[]): string | null {
   return clips.reduce<string | null>((latest, c) => (!latest || c.recordedAt > latest ? c.recordedAt : latest), null);

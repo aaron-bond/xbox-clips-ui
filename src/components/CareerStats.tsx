@@ -1,14 +1,18 @@
 import type { ReactNode } from 'react';
+import { Link } from 'react-router';
 import type { CareerGame, CareerStats as Stats, Clip } from '../api/types';
+import { gameAchievementsPath } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { daysAgo, mostClipped } from '../lib/stats';
 import styles from './CareerStats.module.css';
 
 /**
  * The player page's stat sheet (PLAN-v1.md §11, P4): three facts from the
- * player's most recent games and one from the clips already on the page.
+ * player's most recent games and one from the clips already on the page. Each
+ * card opens the player's achievements in that game.
  */
-export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
+export function CareerStats({ stats, clips, identifier }: { stats: Stats; clips: Clip[]; identifier: string }) {
+  const to = (titleId: string | number) => gameAchievementsPath(identifier, titleId);
   const clipped = mostClipped(clips);
   const { nowPlaying, biggestHaul, onTheBrink } = stats;
   if (!nowPlaying && !biggestHaul && !onTheBrink) return null;
@@ -23,11 +27,13 @@ export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
       </div>
 
       {nowPlaying && (
-        <div className={styles.now}>
+        <div className={`${styles.now} ${styles.linked}`}>
           <GameArt game={nowPlaying} size={132} />
           <div className={styles.nowText}>
             <span className="badge">Now playing</span>
-            <strong className={styles.nowTitle}>{nowPlaying.name}</strong>
+            <Link to={to(nowPlaying.titleId)} className={styles.cardLink}>
+              <strong className={styles.nowTitle}>{nowPlaying.name}</strong>
+            </Link>
             <span className={styles.meta}>
               {nowPlaying.lastPlayed ? `Last played ${daysAgo(nowPlaying.lastPlayed).toLowerCase()}` : 'Recently played'}
               {nowPlaying.totalGamerscore > 0 && ` · ${nowPlaying.gamerscore.toLocaleString()} / ${nowPlaying.totalGamerscore.toLocaleString()} G`}
@@ -39,24 +45,30 @@ export function CareerStats({ stats, clips }: { stats: Stats; clips: Clip[] }) {
 
       <div className={styles.cards}>
         {biggestHaul && (
-          <GameCard label="Biggest haul" game={biggestHaul}>
+          <GameCard label="Biggest haul" game={biggestHaul} to={to(biggestHaul.titleId)}>
             {biggestHaul.percent}% complete
             {biggestHaul.lastPlayed && ` · last played ${new Date(biggestHaul.lastPlayed).getFullYear()}`}
           </GameCard>
         )}
         {onTheBrink && (
-          <GameCard label="On the brink" game={onTheBrink}>
+          <GameCard label="On the brink" game={onTheBrink} to={to(onTheBrink.titleId)}>
             {onTheBrink.percent}% complete · {(onTheBrink.totalGamerscore - onTheBrink.gamerscore).toLocaleString()} G to
             go
           </GameCard>
         )}
         {clipped && (
-          <div className={styles.card}>
+          <div className={clipped.latest.titleId !== null ? `${styles.card} ${styles.linked}` : styles.card}>
             <span className={styles.label}>Most clipped</span>
             <div className={styles.gameRow}>
               <ClippedArt clip={clipped.latest} career={[nowPlaying, biggestHaul, onTheBrink]} />
               <div className={styles.gameText}>
-                <strong className={styles.cardTitle}>{clipped.game}</strong>
+                {clipped.latest.titleId !== null ? (
+                  <Link to={to(clipped.latest.titleId)} className={styles.cardLink}>
+                    <strong className={styles.cardTitle}>{clipped.game}</strong>
+                  </Link>
+                ) : (
+                  <strong className={styles.cardTitle}>{clipped.game}</strong>
+                )}
                 <span className={styles.meta}>
                   {clipped.count} {clipped.count === 1 ? 'clip' : 'clips'}
                   {clipped.tiedWith.length > 0 && ` · tied with ${clipped.tiedWith.join(', ')}`}
@@ -111,14 +123,16 @@ function ClippedArt({ clip, career }: { clip: Clip; career: (CareerGame | null)[
   );
 }
 
-function GameCard({ label, game, children }: { label: string; game: CareerGame; children: ReactNode }) {
+function GameCard({ label, game, to, children }: { label: string; game: CareerGame; to: string; children: ReactNode }) {
   return (
-    <div className={styles.card}>
+    <div className={`${styles.card} ${styles.linked}`}>
       <span className={styles.label}>{label}</span>
       <div className={styles.gameRow}>
         <GameArt game={game} size={64} />
         <div className={styles.gameText}>
-          <strong className={styles.cardTitle}>{game.name}</strong>
+          <Link to={to} className={styles.cardLink}>
+            <strong className={styles.cardTitle}>{game.name}</strong>
+          </Link>
           <span className={styles.meta}>
             {game.gamerscore.toLocaleString()} / {game.totalGamerscore.toLocaleString()} G
           </span>

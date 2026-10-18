@@ -76,7 +76,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
     const careerGone = career.isError || (career.isSuccess && !career.data.stats);
     const careerSection = careerGone ? null : (
       <div className={styles.gutter} ref={careerSlot.ref}>
-        {career.data?.stats ? <CareerStats stats={career.data.stats} clips={reel} /> : <CareerStatsPlaceholder />}
+        {career.data?.stats ? <CareerStats stats={career.data.stats} clips={reel} identifier={identifier} /> : <CareerStatsPlaceholder />}
       </div>
     );
 
@@ -91,7 +91,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
                   : 'Nothing captured yet. Check back after their next session.'}
               </p>
             </div>
-            <PlayerCard profile={profile} gamertag={gamertag} clips={reel} />
+            <PlayerCard profile={profile} gamertag={gamertag} identifier={identifier} clips={reel} />
           </div>
           {careerSection}
         </div>
@@ -108,7 +108,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
       <div className={styles.page}>
         <div className={styles.top}>
           <Replay clip={current} gamertag={gamertag} refresh={async () => (await replay.refetch()).data} />
-          <PlayerCard profile={profile} gamertag={gamertag} clips={reel}>
+          <PlayerCard profile={profile} gamertag={gamertag} identifier={identifier} clips={reel}>
             <div className={styles.share}>
               <ShareButtons url={shareUrl} title={current.gameTitle} label="Copy replay link" />
             </div>

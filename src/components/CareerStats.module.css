@@ -149,3 +149,29 @@
     opacity: 0.55;
   }
 }
+
+/* Cards that open the player's achievements in their game: the whole card is
+   the link, through the title's stretched hit area. */
+.linked {
+  position: relative;
+  transition: background-color 120ms ease;
+}
+
+.linked:hover {
+  background: #103552;
+}
+
+.cardLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.cardLink::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.linked:hover .cardLink {
+  color: var(--accent);
+}

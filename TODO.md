@@ -5,7 +5,6 @@ any trade-off made.
 
 ## Priorities (PLAN §13), in order
 
-- [ ] **Achievements for a player in a game** (first half of P2).
 - [ ] **A second player for comparison** (rest of P2).
 
 ## Later (PLAN §10)
@@ -15,6 +14,13 @@ any trade-off made.
       message should cover both "nothing captured" and "clips are private".
 
 ## Done
+
+- [x] **Achievements for a player in a game** (2026-10-18). Recent games page
+      from the player card's Achievements tile (which replaced Reel length),
+      per-game achievements from there and from the career cards. Xbox 360
+      games list unlocked achievements only. The replay's strap now sits
+      below the video on desktop too, so the game name and date always show.
+
 
 - [x] **Install prompt** (2026-10-18). "Get the app" banner on the home page:
       the browser's install dialog on Chromium, Share-menu steps on iPhone and

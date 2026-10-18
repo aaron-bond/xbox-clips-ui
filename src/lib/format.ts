@@ -23,6 +23,16 @@ export function playerPath(identifier: string): string {
   return `/player/${encodeURIComponent(identifier)}`;
 }
 
+/** A player's recent games, each leading to its achievements. */
+export function achievementsPath(identifier: string): string {
+  return `${playerPath(identifier)}/achievements`;
+}
+
+/** A player's achievements in one game. */
+export function gameAchievementsPath(identifier: string, titleId: string | number): string {
+  return `${achievementsPath(identifier)}/${titleId}`;
+}
+
 /** The share link is the clip page's own URL (PLAN-v1.md §3). */
 export function clipPath(xuid: string, clipId: string): string {
   return `/clip/${xuid}/${clipId}`;

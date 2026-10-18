@@ -131,6 +131,29 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The achievements tile: the whole tile is the link. */
+.statLink {
+  position: relative;
+  transition: background-color 120ms ease;
+}
+
+.statLink:hover {
+  background: #103552;
+}
+
+.statAnchor {
+  color: var(--accent);
+  font-style: italic;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.statAnchor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
 @media (max-width: 720px) {
   .name {
     font-size: 1.9rem;

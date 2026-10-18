@@ -6,6 +6,8 @@ import { afterEach, beforeEach, vi } from 'vitest';
 // need it to be refused override it.
 afterEach(() => {
   cleanup();
+  // Globals a test swaps in (fetch, an off-screen IntersectionObserver) never leak into the next.
+  vi.unstubAllGlobals();
   // Pinned and recent players live in local storage; every test starts without any.
   localStorage.clear();
 });
