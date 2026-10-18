@@ -132,9 +132,9 @@ gamertag twice on a first visit, spending an extra upstream search.
 seeded from the cached list, so it costs no request while the clip's
 media URL is still fresh.
 
-**CSS Modules for styling; a component library is optional and
-deferred.** CSS Modules are built into Vite and need no dependency. The
-choice of component library, if any, is Q4 (§9).
+**CSS Modules for styling, and no component library.** CSS Modules are
+built into Vite and need no dependency. A library was considered and
+dismissed (Q4, §9).
 
 **The look: Broadcast, in kingfisher colours** (chosen 2026-10-17; §12).
 Generic clip sites share one layout, a profile header over a grid of
@@ -200,8 +200,9 @@ guidelines ask third parties not to use its brands in product or domain
 names, so this is a known risk, accepted for now; the disclaimer and
 descriptive use elsewhere keep any implied endorsement out of the copy.
 
-**No visitor state in v1.** Recent gamertags and favourites are out of
-scope (§10).
+**No visitor state in v1.** Recent and pinned gamertags were left out of
+v1 (§10); they are now the second priority (§13), stored on the device
+only.
 
 ---
 
@@ -340,16 +341,15 @@ zone is on Cloudflare. It is not needed for v1.
 - **Q3 — Base HTML in the function. Settled by design:** the function
   fetches `/` from its `ASSETS` binding explicitly, so it does not depend
   on how the single-page-app fallback resolves `/clip/*`.
-- **Q4 — Component library.** The palette and treatment are settled
-  (§3). Whether a component library is worth adding is still open; the
-  UI is built with CSS Modules alone so far.
+- **Q4 — Component library. Dismissed 2026-10-18.** The look is settled
+  (§3) and built with CSS Modules alone; there is no reason to revisit it.
 
 ---
 
 ## 10. Deliberately out of scope for v1
 
-- **Recent gamertags and favourites.** Device-only state; the obvious
-  next feature.
+- **Recent gamertags and favourites.** Device-only state. Now planned as
+  pinned and recent gamertags (§13).
 - **Dedicated expired and restricted states.** v1 shows the API's
   message. A designed state for `CLIP_EXPIRED` and `restricted` access
   comes later.
@@ -442,6 +442,9 @@ below the search box.
   available upstream, the game page is where popular clips would go.
 
 ### P2 — Achievement face-off
+
+Priority order (§13): first a single player's achievements in a game,
+then a second player added for comparison.
 
 Enter two gamertags and compare them: gamerscore head to head, the games
 they share, and achievement progress in each shared game. A face-off has
@@ -577,8 +580,8 @@ app.
   the visitor.
 - **Budget:** none. A manifest and icons are static files.
 - **Work:** a manifest, an icon set (and an Apple touch icon for iOS),
-  and the matching tags in `index.html`. The icons need the site's visual
-  identity, so this follows the palette decision (Q4).
+  and the matching tags in `index.html`. The icons use the kingfisher
+  identity (§3): the XBOX**CLIPS** wordmark's orange on the navy ground.
 - **Later options:** the installed app could register as a share target,
   so sharing a clip link from another app opens it here (Web Share Target,
   Chromium only).
@@ -727,7 +730,7 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 - Cloudflare Pages with Git integration, on `xboxclips.io` (§3).
 - React, Vite, TypeScript, React Router, TanStack Query, CSS Modules (§3).
-  A component library is optional and deferred (Q4).
+  No component library (Q4, dismissed).
 - `xboxclips.io` is already a Cloudflare zone on the account (§3).
 - v1 scope: search and shelf; clip page with playback and sharing (§1).
 - The share link is the clip page URL, with previews from a Pages
@@ -737,5 +740,10 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. Choose the next proposed feature (§11). P5 (installable app) is
-   unblocked now that the visual identity is settled.
+1. **Installable app** (P5, §11).
+2. **Pinned and recent gamertags**, kept on the device in local storage,
+   never sent anywhere. Designed on the canvas first, then built.
+3. **Achievements for a player in a game** (the first half of P2, §11):
+   the list, with progress.
+4. **A second player for comparison** (the rest of P2): add another
+   gamertag to the achievement view and compare.

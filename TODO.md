@@ -3,28 +3,32 @@
 Live backlog. Finished items keep a short note on what was actually built and
 any trade-off made.
 
-## Open questions (PLAN §9)
+## Priorities (PLAN §13), in order
 
-- [ ] **Q4: component library.** Palette settled (Midnight Violet); decide
-      on a library once the layout has been used for a while.
-
-## Proposed features (PLAN §11)
-
-- [ ] P2: achievement face-off between two gamertags.
-- [ ] P5: installable app: manifest, icons, Apple touch icon. No service
-      worker needed to install; if one is added, it never caches API
-      responses. Icons wait for the palette decision.
-- [x] P6: store screenshots on the game page (one store-detail call per
-      game, cached 7 days). Players' own screenshots dropped: the endpoint
-      returns nothing, even for an account known to have them.
+- [ ] **P5: installable app.** Manifest, kingfisher icons, Apple touch icon.
+      No service worker needed to install; if one is added, it never caches
+      API responses.
+- [ ] **Pinned and recent gamertags**, in local storage on the device only.
+      Design on the canvas first, then build.
+- [ ] **Achievements for a player in a game** (first half of P2).
+- [ ] **A second player for comparison** (rest of P2).
 
 ## Later (PLAN §10)
 
-- [ ] Recent gamertags and favourites, on the device.
 - [ ] Designed states for expired clips and restricted players.
-- [ ] Show `availableUntil` on the clip page.
 
 ## Done
+
+- [x] **Q4 dismissed** (2026-10-18). No component library; the look is
+      settled and built with CSS Modules alone.
+
+- [x] **`availableUntil` on the clip page.** Shown as "On Xbox until about
+      <date>" since the redesign.
+
+- [x] **P6: store screenshots on the game page** (2026-10-18). One
+      store-detail call per game, cached 7 days. Players' own screenshots
+      dropped: the endpoint returns nothing, even for an account known to
+      have them.
 
 - [x] **Career stats load on scroll** (2026-10-17). Moved below Up next, with a
       same-sized placeholder; the `/career` request starts only when the section
