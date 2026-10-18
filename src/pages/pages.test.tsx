@@ -344,6 +344,33 @@ describe('player page', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('No player with that gamertag or XUID was found.');
   });
 
+  it('still shows the reel when Xbox throttles the profile, asking for clips by gamertag', async () => {
+    const paths = stubRoutes({
+      '/api/v1/players/TestPlayer': apiError('UPSTREAM_RATE_LIMIT', 429),
+      '/api/v1/players/TestPlayer/clips': { body: clipsOf([makeClip({ gameTitle: 'Battlefield' })]) },
+    });
+    renderAt('/player/TestPlayer');
+    const card = await screen.findByRole('region', { name: 'Player card' });
+    expect(within(card).getByRole('heading', { name: 'TestPlayer' })).toBeInTheDocument();
+    expect(within(card).getByText('Profile details unavailable right now')).toBeInTheDocument();
+    expect(await screen.findByTestId('clip-video')).toBeInTheDocument();
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(playerPaths(paths)).toContain('/api/v1/players/TestPlayer/clips?limit=100');
+  });
+
+  it("shows the profile's error when the clips fail too", async () => {
+    stubRoutes({ '/api/v1/players/': apiError('UPSTREAM_RATE_LIMIT', 429, 'Xbox data is temporarily rate-limited.') });
+    renderAt('/player/TestPlayer');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Xbox data is temporarily rate-limited.');
+  });
+
+  it('asks for no clips when the player does not exist', async () => {
+    const paths = stubRoutes({ '/api/v1/players/': apiError('PLAYER_NOT_FOUND', 404) });
+    renderAt('/player/Nobody');
+    await screen.findByRole('alert');
+    expect(playerPaths(paths)).toEqual(['/api/v1/players/Nobody']);
+  });
+
   it('treats a malformed identifier as not found, without a player request', () => {
     const paths = stubRoutes({});
     renderAt('/player/bad;tag');

@@ -11,7 +11,8 @@ import { Replay } from '../components/Replay';
 import { ShareButtons } from '../components/ShareButtons';
 import { UpNext } from '../components/UpNext';
 import { clipPath, playerPath } from '../lib/format';
-import { careerQuery, clipQuery, clipsQuery, playerQuery } from '../lib/queries';
+import { careerQuery, clipQuery } from '../lib/queries';
+import { usePlayerReel } from '../lib/usePlayerReel';
 import { useIntroGate } from '../lib/useIntroGate';
 import { useNearViewport } from '../lib/useNearViewport';
 import { parsePlayerIdentifier } from '../lib/validation';
@@ -36,12 +37,7 @@ export function PlayerPage() {
 function PlayerReel({ identifier, name }: { identifier: string; name: string | null }) {
   const queryClient = useQueryClient();
 
-  const profile = useQuery(playerQuery(identifier));
-  // Clips are requested by XUID once the profile resolves it. Asking by gamertag in
-  // parallel would make the API resolve the same gamertag twice, spending an extra
-  // upstream search on a first visit.
-  const xuid = profile.data?.xuid;
-  const clips = useQuery({ ...clipsQuery(xuid ?? ''), enabled: !!xuid });
+  const { profile, clips, xuid, profileDown, ready } = usePlayerReel(identifier);
   // Career stats sit below Up next and load only when scrolled near, so visitors
   // who watch and leave never spend the title-history call (PLAN-v1.md §12).
   const careerSlot = useNearViewport<HTMLDivElement>('0px');
@@ -52,19 +48,20 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
 
   // A slow load plays the player intro over the wait (PLAN-v1.md §12): profile and
   // clips are two requests in sequence, often a second or two on a cold cache.
-  const ready = profile.isError || (profile.isSuccess && !clips.isPending);
   const intro = useIntroGate(ready);
   return <IntroStage phase={intro} name={name} profile={profile.data} page={content} />;
 
   function content(): ReactNode {
     if (profile.isPending) return null;
-    if (profile.isError) return <ErrorMessage error={profile.error} />;
+    if (profile.isError && !profileDown) return <ErrorMessage error={profile.error} />;
     if (clips.isPending) return null;
-    if (clips.isError) return <ErrorMessage error={clips.error} onRetry={() => void clips.refetch()} />;
-    return reelView(profile.data, clips.data);
+    // With the profile down too, the profile's error is the one worth showing.
+    if (clips.isError) return <ErrorMessage error={profileDown ? profile.error : clips.error} onRetry={() => void clips.refetch()} />;
+    return reelView(profile.data ?? null, clips.data);
   }
 
-  function reelView(profile: PlayerProfile, clips: PlayerClips): ReactNode {
+  function reelView(profile: PlayerProfile | null, clips: PlayerClips): ReactNode {
+    const gamertag = profile?.gamertag ?? name ?? 'This player';
     const reel = clips.clips;
     const current = replay.data ?? latest;
     // Secondary: a placeholder holds its place while loading; if the history is
@@ -87,7 +84,7 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
                   : 'Nothing captured yet. Check back after their next session.'}
               </p>
             </div>
-            <PlayerCard profile={profile} clips={reel} />
+            <PlayerCard profile={profile} gamertag={gamertag} clips={reel} />
           </div>
           {careerSection}
         </div>
@@ -103,8 +100,8 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
     return (
       <div className={styles.page}>
         <div className={styles.top}>
-          <Replay clip={current} gamertag={profile.gamertag} refresh={async () => (await replay.refetch()).data} />
-          <PlayerCard profile={profile} clips={reel}>
+          <Replay clip={current} gamertag={gamertag} refresh={async () => (await replay.refetch()).data} />
+          <PlayerCard profile={profile} gamertag={gamertag} clips={reel}>
             <div className={styles.share}>
               <ShareButtons url={shareUrl} title={current.gameTitle} label="Copy replay link" />
             </div>

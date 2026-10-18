@@ -5,14 +5,25 @@ import styles from './PlayerCard.module.css';
 
 /**
  * The player's card beside the replay: four stats chosen to read well with
- * real numbers (PLAN-v1.md §3).
+ * real numbers (PLAN-v1.md §3). `profile` is null when Xbox is throttling profile
+ * calls: the card then shows what the clips say, under `gamertag`.
  */
-export function PlayerCard({ profile, clips, children }: { profile: PlayerProfile; clips: Clip[]; children?: ReactNode }) {
+export function PlayerCard({
+  profile,
+  gamertag,
+  clips,
+  children,
+}: {
+  profile: PlayerProfile | null;
+  gamertag: string;
+  clips: Clip[];
+  children?: ReactNode;
+}) {
   const last = latestRecordedAt(clips);
-  const identity = [tenureLabel(profile.tenureYears), profile.location].filter(Boolean);
-  const reputation = reputationLabel(profile.reputation);
+  const identity = [tenureLabel(profile?.tenureYears), profile?.location].filter(Boolean);
+  const reputation = reputationLabel(profile?.reputation);
   const stats = [
-    { label: 'Gamerscore', value: profile.gamerscore.toLocaleString() },
+    { label: 'Gamerscore', value: profile ? profile.gamerscore.toLocaleString() : '–' },
     { label: 'Clips', value: String(clips.length) },
     { label: 'Last clip', value: last ? daysAgo(last) : '–' },
     { label: 'Reel length', value: reelLength(clips) },
@@ -21,20 +32,20 @@ export function PlayerCard({ profile, clips, children }: { profile: PlayerProfil
   return (
     <section className={styles.card} aria-label="Player card">
       <div className={styles.who}>
-        {profile.gamerpicUrl ? (
+        {profile?.gamerpicUrl ? (
           <img src={profile.gamerpicUrl} alt="" width={64} height={64} className={styles.pic} />
         ) : (
           <span className={styles.pic} aria-hidden />
         )}
         <div className={styles.identity}>
-          <h1 className={styles.name}>{profile.gamertag}</h1>
+          <h1 className={styles.name}>{gamertag}</h1>
           <span className={styles.kicker}>
             {reputation && <span className={styles.rep}>{reputation}</span>}
-            {identity.length > 0 ? identity.join(' · ') : !reputation && 'Player card'}
+            {!profile ? 'Profile details unavailable right now' : identity.length > 0 ? identity.join(' · ') : !reputation && 'Player card'}
           </span>
         </div>
       </div>
-      {profile.bio && <p className={styles.bio}>“{profile.bio}”</p>}
+      {profile?.bio && <p className={styles.bio}>“{profile.bio}”</p>}
       <dl className={styles.stats}>
         {stats.map((s) => (
           <div key={s.label} className={styles.stat}>

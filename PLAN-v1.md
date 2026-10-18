@@ -674,13 +674,25 @@ real data). Built in this order; each step leaves the site working.
    short fade and the gamerscore shows at once. If a request fails, the
    wipe reveals the error. This changes only the UI; the requests are
    unchanged.
+10. **Throttled profiles.** Microsoft throttles profile calls more than
+   any other, and a throttled profile with nothing cached used to blank
+   the player page with an error. Now, when the profile fails with
+   `UPSTREAM_RATE_LIMIT` or `UPSTREAM_ERROR`, the page asks for the clips
+   by the identifier in the URL; the API needs only its cached
+   gamertag-to-XUID mapping for that. The reel shows as usual with a
+   plainer player card: the gamertag from the URL, a gamerscore of "–" and
+   "Profile details unavailable right now". The reel page does the same.
+   Any other profile failure (such as `PLAYER_NOT_FOUND`) still shows its
+   error, with no clips request; if the clips fail too, the profile's
+   error is shown. The API also keeps profiles fresh for 12 hours, so
+   they are fetched less often.
 
 ## 13. Current status
 
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads. 75 tests run
+desktop and phone, with the player intro over slow loads. 79 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
