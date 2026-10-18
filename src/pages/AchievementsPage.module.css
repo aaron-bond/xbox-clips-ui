@@ -4,50 +4,6 @@
   gap: 28px;
 }
 
-.head {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Scoped under .head so the Pinned row's round phone avatars don't apply here. */
-.head .pic {
-  width: 56px;
-  height: 56px;
-  border: 2px solid var(--accent);
-  border-radius: var(--radius);
-  box-sizing: border-box;
-}
-
-.titles {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-
-.name {
-  margin: 0;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 800;
-  font-size: 2.2rem;
-  line-height: 1;
-  text-transform: uppercase;
-  overflow-wrap: anywhere;
-}
-
-.kicker {
-  color: var(--muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.back {
-  margin-left: auto;
-  flex: none;
-}
-
 .section {
   display: flex;
   flex-direction: column;
@@ -200,20 +156,6 @@
 @media (max-width: 720px) {
   .page {
     padding: 0 var(--gutter);
-  }
-
-  .head {
-    flex-wrap: wrap;
-  }
-
-  .name {
-    font-size: 1.7rem;
-  }
-
-  .back {
-    margin-left: 0;
-    width: 100%;
-    text-align: center;
   }
 
   .grid {

@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import type { Achievement, GameAchievements } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Loading } from '../components/Loading';
-import { achievementsPath, formatDate, formatPlaytime, playerPath } from '../lib/format';
+import { PageHeader } from '../components/PageHeader';
+import { achievementsPath, formatDate, formatPlaytime } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { markLoaded } from '../lib/images';
 import { achievementsQuery, playerQuery } from '../lib/queries';
@@ -68,15 +69,20 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
 
   return (
     <article className={styles.page}>
+      <div className={styles.header}>
+        <PageHeader
+          gamertag={gamertag}
+          gamerpicUrl={gamerpicUrl}
+          kicker="Achievements"
+          back={{ to: achievementsPath(identifier), label: 'Back to games' }}
+          heading={false}
+        />
+      </div>
       <header className={styles.banner}>
         {data.game?.imageUrl && <img src={storeImage(data.game.imageUrl, 440)} alt="" className={styles.art} />}
         <div className={styles.strap}>
           <span className={styles.kicker}>Achievements</span>
           <h1 className="strap-title">{name}</h1>
-          <Link to={playerPath(identifier)} className={`strap-sub ${styles.player}`}>
-            {gamerpicUrl && <img src={gamerpicUrl} alt="" width={26} height={26} />}
-            {gamertag} · back to their reel
-          </Link>
         </div>
       </header>
 
@@ -119,9 +125,6 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
               </button>
             ))}
           </div>
-          <Link to={achievementsPath(identifier)} className={styles.allGames}>
-            All their games
-          </Link>
         </div>
         {!data.lockedListed && <p className={styles.note}>Xbox 360 games list only the achievements a player has unlocked.</p>}
         {all.length === 0 && <p className={styles.note}>No achievements to show for this game.</p>}

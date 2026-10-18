@@ -684,6 +684,7 @@ describe('achievements', () => {
     expect(within(links[0]!).getByText('330')).toBeInTheDocument();
     expect(within(links[1]!).getByText('Xbox 360')).toBeInTheDocument();
     expect(screen.getByText('Their last 2 games')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to player' })).toHaveAttribute('href', '/player/TestPlayer');
   });
 
   it('shows a loading spinner until the games arrive', async () => {
@@ -719,6 +720,7 @@ describe('achievements', () => {
     expect(rows()).toEqual(['Ach 2', 'Ach 1', 'Ach 3', 'Secret achievement', 'Ach 5']);
     expect(screen.getByText('Ach 1', { selector: 'dd' })).toBeInTheDocument();
     expect(screen.getByText('33 h 39 m')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back to games' })).toHaveAttribute('href', '/player/TestPlayer/achievements');
     expect(screen.queryByText('Do 4')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Tap to reveal' }));
     expect(screen.getByText('Do 4')).toBeInTheDocument();

@@ -3,6 +3,10 @@
   flex-direction: column;
 }
 
+.header {
+  margin-bottom: 20px;
+}
+
 
 .banner {
   display: flex;
@@ -42,22 +46,6 @@
   margin: 0;
   max-width: 100%;
   font-size: clamp(1.7rem, 3.6vw, 2.8rem);
-}
-
-.player {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: var(--text);
-  text-decoration: none;
-}
-
-.player:hover {
-  color: var(--accent);
-}
-
-.player img {
-  border-radius: 3px;
 }
 
 .stats {
@@ -165,13 +153,6 @@
   border-color: var(--accent);
   background: var(--accent);
   color: var(--on-accent);
-}
-
-.allGames {
-  margin-left: auto;
-  color: var(--accent);
-  font-size: 0.9rem;
-  font-weight: 600;
 }
 
 .note {
@@ -329,6 +310,10 @@
 }
 
 @media (max-width: 720px) {
+  .header {
+    padding: 0 var(--gutter);
+  }
+
   .banner {
     flex-direction: column;
     border-radius: 0;
@@ -385,10 +370,6 @@
 
   .list {
     padding: 0 var(--gutter);
-  }
-
-  .allGames {
-    margin-left: 0;
   }
 
   .row {

@@ -15,6 +15,11 @@ any trade-off made.
 
 ## Done
 
+- [x] **Back navigation standardised** (2026-10-18). One shared header with an
+      outline Back button on the reel, games and per-game achievements pages:
+      "Back to player", or "Back to games" from a game's achievements.
+
+
 - [x] **Loading states on the achievements pages** (2026-10-18). A spinner
       until the API answers, and a shimmer on art and achievement images until
       each loads.

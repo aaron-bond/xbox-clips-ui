@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router';
 import type { PlayerGame } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Loading } from '../components/Loading';
-import { PlayerAvatar } from '../components/SavedPlayers';
+import { PageHeader } from '../components/PageHeader';
 import { gameAchievementsPath, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { markLoaded } from '../lib/images';
@@ -28,16 +28,12 @@ export function AchievementsPage() {
   const gamertag = profile.data?.gamertag ?? identifier;
   return (
     <div className={styles.page}>
-      <header className={styles.head}>
-        <PlayerAvatar player={{ gamertag, gamerpicUrl: profile.data?.gamerpicUrl ?? null }} className={styles.pic} />
-        <div className={styles.titles}>
-          <h1 className={styles.name}>{gamertag}</h1>
-          <span className={styles.kicker}>Achievements</span>
-        </div>
-        <Link to={playerPath(identifier)} className={`btn-outline ${styles.back}`}>
-          Back to player
-        </Link>
-      </header>
+      <PageHeader
+        gamertag={gamertag}
+        gamerpicUrl={profile.data?.gamerpicUrl ?? null}
+        kicker="Achievements"
+        back={{ to: playerPath(identifier), label: 'Back to player' }}
+      />
 
       {games.isPending ? (
         <>

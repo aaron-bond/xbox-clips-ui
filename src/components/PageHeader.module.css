@@ -1,0 +1,61 @@
+.head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pic {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--panel);
+  object-fit: cover;
+  box-sizing: border-box;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 2.2rem;
+  line-height: 1;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.kicker {
+  color: var(--muted);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Scoped under .head so it beats the global .btn-outline in any stylesheet order. */
+.head .back {
+  margin-left: auto;
+  flex: none;
+}
+
+@media (max-width: 720px) {
+  .head {
+    flex-wrap: wrap;
+  }
+
+  .name {
+    font-size: 1.7rem;
+  }
+
+  .head .back {
+    margin-left: 0;
+    width: 100%;
+  }
+}

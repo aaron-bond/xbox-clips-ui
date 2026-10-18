@@ -1,5 +1,6 @@
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { PageHeader } from '../components/PageHeader';
 import { IntroStage } from '../components/PlayerIntro';
 import { UpNext } from '../components/UpNext';
 import { playerPath } from '../lib/format';
@@ -35,17 +36,12 @@ function Reel({ identifier, name }: { identifier: string; name: string | null })
     const p = profile.data;
     return (
       <div className={styles.page}>
-        <header className={styles.head}>
-          {p?.gamerpicUrl ? (
-            <img src={p.gamerpicUrl} alt="" width={56} height={56} className={styles.pic} />
-          ) : (
-            <span className={styles.pic} aria-hidden />
-          )}
-          <h1 className={styles.name}>{p?.gamertag ?? name ?? 'This player'}</h1>
-          <Link to={playerPath(identifier)} className={`btn-outline ${styles.back}`}>
-            Back to player
-          </Link>
-        </header>
+        <PageHeader
+          gamertag={p?.gamertag ?? name ?? 'This player'}
+          gamerpicUrl={p?.gamerpicUrl ?? null}
+          kicker="Clips"
+          back={{ to: playerPath(identifier), label: 'Back to player' }}
+        />
         {reel.length > 0 ? (
           <UpNext clips={reel} title={reel.length === 1 ? 'The only clip' : `All ${reel.length} clips`} />
         ) : (

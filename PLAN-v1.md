@@ -769,6 +769,13 @@ real data). Built in this order; each step leaves the site working.
     from the keyboard as a combobox. The player card has a Pin button.
     Storage that is blocked or unreadable simply means empty lists. Costs
     no requests.
+12. **Back navigation, one way everywhere.** A player's secondary pages
+    (their whole reel, their games, a game's achievements) share one
+    header: gamerpic, gamertag, a label ("Clips", "Achievements"), and an
+    outline Back button on the right, full width on phones. It goes one
+    level up: "Back to player" from the reel and the games list, "Back to
+    games" from a game's achievements. There are no other back links on
+    those pages.
 
 ## 13. Current status
 
