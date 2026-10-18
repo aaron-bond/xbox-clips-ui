@@ -3,9 +3,6 @@
   flex-direction: column;
 }
 
-.placeholder {
-  height: min(70vh, 560px);
-}
 
 .banner {
   display: flex;
@@ -212,7 +209,13 @@
   aspect-ratio: 16 / 9;
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--bg-deep);
+  background: linear-gradient(90deg, var(--bg-deep) 30%, #12395a 50%, var(--bg-deep) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.thumb[data-loaded] {
+  animation: none;
 }
 
 .thumb img {
@@ -417,5 +420,21 @@
   .side .bar {
     flex: 1;
     width: auto;
+  }
+}
+
+/* Placeholders and art shimmer until their image has loaded (data-loaded). */
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thumb {
+    animation: none !important;
   }
 }

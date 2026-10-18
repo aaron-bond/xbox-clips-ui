@@ -3,8 +3,10 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import type { Achievement, GameAchievements } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { Loading } from '../components/Loading';
 import { achievementsPath, formatDate, formatPlaytime, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
+import { markLoaded } from '../lib/images';
 import { achievementsQuery, playerQuery } from '../lib/queries';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
@@ -26,7 +28,7 @@ export function GameAchievementsPage() {
   const profile = useQuery({ ...playerQuery(identifier), enabled: valid });
   const list = useQuery({ ...achievementsQuery(identifier, titleId), enabled: valid });
   if (!valid) return <NotFoundPage />;
-  if (list.isPending) return <div className={styles.placeholder} aria-busy="true" />;
+  if (list.isPending) return <Loading label="Loading achievements…" />;
   if (list.isError) return <ErrorMessage error={list.error} onRetry={() => void list.refetch()} />;
   return <Achievements data={list.data} identifier={identifier} gamertag={profile.data?.gamertag ?? identifier} gamerpicUrl={profile.data?.gamerpicUrl ?? null} />;
 }
@@ -142,7 +144,7 @@ function AchievementRow({ a, revealed, onReveal, fallbackArt }: { a: Achievement
   return (
     <li className={done ? `${styles.row} ${styles.done}` : styles.row}>
       <span className={done ? styles.thumb : `${styles.thumb} ${styles.lockedThumb}`}>
-        {art && <img src={art} alt="" loading="lazy" />}
+        {art && <img src={art} alt="" loading="lazy" onLoad={markLoaded} />}
       </span>
       <div className={styles.text}>
         <strong className={styles.achName}>{hidden ? 'Secret achievement' : a.name}</strong>

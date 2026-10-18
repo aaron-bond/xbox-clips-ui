@@ -2,9 +2,11 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
 import type { PlayerGame } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { Loading } from '../components/Loading';
 import { PlayerAvatar } from '../components/SavedPlayers';
 import { gameAchievementsPath, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
+import { markLoaded } from '../lib/images';
 import { gamesQuery, playerQuery } from '../lib/queries';
 import { daysAgo } from '../lib/stats';
 import { parsePlayerIdentifier } from '../lib/validation';
@@ -38,11 +40,14 @@ export function AchievementsPage() {
       </header>
 
       {games.isPending ? (
-        <ul className={styles.grid} aria-busy="true">
-          {Array.from({ length: 8 }, (_, i) => (
-            <li key={i} className={styles.skeleton} />
-          ))}
-        </ul>
+        <>
+          <Loading label="Loading their games…" />
+          <ul className={styles.grid} aria-hidden>
+            {Array.from({ length: 6 }, (_, i) => (
+              <li key={i} className={styles.skeleton} />
+            ))}
+          </ul>
+        </>
       ) : games.isError ? (
         <ErrorMessage error={games.error} onRetry={() => void games.refetch()} />
       ) : games.data.games.length === 0 ? (
@@ -78,7 +83,7 @@ function GameTile({ game, to }: { game: PlayerGame; to: string }) {
     <li>
       <Link to={to} className={styles.tile}>
         <span className={styles.art}>
-          {game.imageUrl && <img src={storeImage(game.imageUrl, 300)} alt="" loading="lazy" />}
+          {game.imageUrl && <img src={storeImage(game.imageUrl, 300)} alt="" loading="lazy" onLoad={markLoaded} />}
           {game.xbox360 && <span className={styles.platform}>Xbox 360</span>}
         </span>
         <span className={styles.gameName}>{game.name}</span>

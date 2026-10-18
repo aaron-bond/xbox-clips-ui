@@ -15,6 +15,11 @@ any trade-off made.
 
 ## Done
 
+- [x] **Loading states on the achievements pages** (2026-10-18). A spinner
+      until the API answers, and a shimmer on art and achievement images until
+      each loads.
+
+
 - [x] **Fresher data, and time played** (2026-10-18). Browser reuse of player
       data cut to 5 minutes (from 10–60). The API now keeps clips and
       achievements fresh 15 minutes, profiles and title history 2 hours, so a

@@ -10,10 +10,12 @@
   gap: 14px;
 }
 
+/* Scoped under .head so the Pinned row's round phone avatars don't apply here. */
 .head .pic {
   width: 56px;
   height: 56px;
   border: 2px solid var(--accent);
+  border-radius: var(--radius);
   box-sizing: border-box;
 }
 
@@ -85,13 +87,23 @@
   text-decoration: none;
 }
 
+.art,
+.skeleton {
+  background: linear-gradient(90deg, var(--panel) 30%, #12395a 50%, var(--panel) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
 .art {
   position: relative;
   display: block;
   aspect-ratio: 1;
   border-radius: var(--radius);
   overflow: hidden;
-  background: var(--panel);
+}
+
+.art[data-loaded] {
+  animation: none;
 }
 
 .art img {
@@ -164,8 +176,26 @@
 .skeleton {
   aspect-ratio: 0.72;
   border-radius: var(--radius);
-  background: var(--panel);
 }
+
+/* Placeholders and art shimmer until their image has loaded (data-loaded). */
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art,
+  .skeleton,
+  .thumb {
+    animation: none !important;
+  }
+}
+
 
 @media (max-width: 720px) {
   .page {

@@ -686,6 +686,25 @@ describe('achievements', () => {
     expect(screen.getByText('Their last 2 games')).toBeInTheDocument();
   });
 
+  it('shows a loading spinner until the games arrive', async () => {
+    let release = () => {};
+    const held = new Promise<void>((r) => (release = r));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const path = new URL(String(input)).pathname;
+        if (path.endsWith('/games')) await held;
+        const body = path.endsWith('/games') ? { xuid: XUID, games: [game(1)], limited: false } : path === '/api/v1/players/TestPlayer' ? profile : { error: { code: 'NOT_FOUND', message: 'x', status: 404 } };
+        return new Response(JSON.stringify(body), { status: 'error' in body ? 404 : 200, headers: { 'Content-Type': 'application/json' } });
+      }),
+    );
+    renderAt('/player/TestPlayer/achievements');
+    expect(await screen.findByRole('status')).toHaveTextContent('Loading their games…');
+    release();
+    await screen.findByRole('region', { name: 'Recent games' });
+    expect(screen.queryByText('Loading their games…')).toBeNull();
+  });
+
   it('says so when a game history is hidden', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer/games': { body: { xuid: XUID, games: [], limited: false } }, '/api/v1/players/TestPlayer': { body: profile } });
     renderAt('/player/TestPlayer/achievements');

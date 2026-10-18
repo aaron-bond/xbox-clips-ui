@@ -466,7 +466,9 @@ Unlocked, In progress, Locked), and a row per achievement with its 16:9
 art (greyed while locked), description, rarity, gamerscore and either its
 unlock date or a progress bar. The stats bar also shows **time played**
 in the game ("33 h 39 m"), left out when Xbox reports none, as for Xbox
-360 games. Newest unlocks come first, then those
+360 games. While the data loads, both pages show a spinner with a line of
+text ("Loading their games…"), and game art and achievement images shimmer
+until each has loaded (a fade under reduced motion). Newest unlocks come first, then those
 furthest along. Secret achievements show as "Secret achievement · Tap to
 reveal" until unlocked. Xbox 360 games list only unlocked achievements,
 without art (the game's art stands in), and say so. Cost: the games list
@@ -773,7 +775,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players, and achievements. 104 tests run
+desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players, and achievements. 105 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git
