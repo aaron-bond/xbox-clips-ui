@@ -10,7 +10,9 @@ any trade-off made.
 
 ## Later (PLAN §10)
 
-- [ ] Designed states for expired clips and restricted players.
+- [ ] Designed states for expired clips and empty reels. A private reel
+      can't be detected (it arrives as an empty list), so the empty-reel
+      message should cover both "nothing captured" and "clips are private".
 
 ## Done
 

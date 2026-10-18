@@ -65,9 +65,12 @@ requests only from configured origins (§8, B3).
 - **`media` can be `null`** when the API is serving cached data while
   Xbox is throttling it. The clip's details are still valid; it just
   cannot be played right now.
-- **`access`** is `public` or `restricted`. `restricted` means the
-  player's capture privacy hides their clips, which is different from
-  having none.
+- **`access`** is `public` or `restricted`, but in practice a private
+  reel arrives as `public` with no clips: Xbox returns the same empty
+  list for a player whose clips are private as for one with none
+  (confirmed 2026-10-18). So the empty-reel message ("Nothing captured
+  yet…") is also what a private reel shows. `restricted` is handled, but
+  not expected.
 - **Only the first page of a player's clips** is returned. There is no
   pagination in v1.
 
@@ -350,9 +353,9 @@ zone is on Cloudflare. It is not needed for v1.
 
 - **Recent gamertags and favourites.** Device-only state. Now planned as
   pinned and recent gamertags (§13).
-- **Dedicated expired and restricted states.** v1 shows the API's
-  message. A designed state for `CLIP_EXPIRED` and `restricted` access
-  comes later.
+- **Dedicated expired and empty states.** v1 shows the API's message. A
+  designed state for `CLIP_EXPIRED`, and an empty-reel message worded to
+  cover private reels too, come later.
 - **`availableUntil` display.** The data is there; showing it is later.
   (View counts are shown on clip cards and the clip page; they come with
   the clip list, at no extra request.)
