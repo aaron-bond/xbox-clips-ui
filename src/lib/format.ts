@@ -23,6 +23,12 @@ export function playerPath(identifier: string): string {
   return `/player/${encodeURIComponent(identifier)}`;
 }
 
+/** "45 min", "33 h 39 m". */
+export function formatPlaytime(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`;
+  return `${Math.floor(minutes / 60).toLocaleString()} h ${minutes % 60} m`;
+}
+
 /** A player's recent games, each leading to its achievements. */
 export function achievementsPath(identifier: string): string {
   return `${playerPath(identifier)}/achievements`;

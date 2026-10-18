@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import type { Achievement, GameAchievements } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { achievementsPath, formatDate, playerPath } from '../lib/format';
+import { achievementsPath, formatDate, formatPlaytime, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { achievementsQuery, playerQuery } from '../lib/queries';
 import { parsePlayerIdentifier } from '../lib/validation';
@@ -78,7 +78,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
         </div>
       </header>
 
-      <dl className={styles.stats}>
+      <dl className={data.minutesPlayed != null ? `${styles.stats} ${styles.withTime}` : styles.stats}>
         <div>
           <dt>Gamerscore</dt>
           <dd>
@@ -96,6 +96,12 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
             {earned.length} {data.lockedListed && <span>of {all.length}</span>}
           </dd>
         </div>
+        {data.minutesPlayed != null && (
+          <div>
+            <dt>Time played</dt>
+            <dd>{formatPlaytime(data.minutesPlayed)}</dd>
+          </div>
+        )}
         <div>
           <dt>Rarest unlock</dt>
           <dd className={styles.small}>{rarest ? <>{rarest.name} <span>{rarest.rarity!.percent}% of players</span></> : '–'}</dd>

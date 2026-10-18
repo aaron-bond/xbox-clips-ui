@@ -71,6 +71,10 @@
   border-bottom: 3px solid var(--accent);
 }
 
+.withTime {
+  grid-template-columns: 1.2fr 0.9fr 1fr 1.4fr;
+}
+
 .stats > div {
   padding: 14px 18px;
   border-right: 1px solid var(--line);
@@ -359,8 +363,17 @@
     padding: 10px 12px;
   }
 
+  /* Three tiles: the last spans the row. Four (with time played): a 2×2 grid. */
   .stats > div:last-child {
     grid-column: span 2;
+  }
+
+  .withTime > div:last-child {
+    grid-column: auto;
+  }
+
+  .withTime {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .stats dd {

@@ -8,6 +8,13 @@ const MINUTE = 60_000;
 export const MEDIA_EXPIRY_MARGIN = 5 * MINUTE;
 
 /**
+ * How long player data (profile, clips, career, games, achievements) is reused
+ * in the browser before asking the API again. The API's own cache is what
+ * protects the upstream budget, so this stays short.
+ */
+export const PLAYER_DATA_STALE = 5 * MINUTE;
+
+/**
  * Tuned for the shared upstream budget (PLAN-v1.md §2): never retry, never
  * refetch on focus or reconnect. Every request is one the visitor caused.
  */
@@ -18,17 +25,20 @@ export function createQueryClient() {
         retry: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
-        staleTime: 10 * MINUTE,
+        staleTime: PLAYER_DATA_STALE,
       },
     },
   });
 }
 
-/** Milliseconds until the earliest media URL among these clips is too close to expiry. */
+/**
+ * How long clip data stays fresh: the usual player-data window, or less when a
+ * media URL among these clips is about to expire.
+ */
 export function msUntilMediaStale(clips: Clip[], now = Date.now()): number {
   const expiries = clips.flatMap((c) => (c.media ? [Date.parse(c.media.expiresAt)] : []));
-  if (expiries.length === 0) return 10 * MINUTE;
-  return Math.max(0, Math.min(...expiries) - MEDIA_EXPIRY_MARGIN - now);
+  if (expiries.length === 0) return PLAYER_DATA_STALE;
+  return Math.max(0, Math.min(PLAYER_DATA_STALE, Math.min(...expiries) - MEDIA_EXPIRY_MARGIN - now));
 }
 
 export const keys = {
@@ -102,7 +112,7 @@ function findCachedGame(queryClient: QueryClient, productId: string): Game | und
 
 /** Career facts change slowly; the API caches them for a day. */
 export const careerQuery = (identifier: string, client: ApiClient = api) =>
-  queryOptions({ queryKey: keys.career(identifier), queryFn: () => client.getCareer(identifier), staleTime: 60 * MINUTE });
+  queryOptions({ queryKey: keys.career(identifier), queryFn: () => client.getCareer(identifier), staleTime: PLAYER_DATA_STALE });
 
 /** Store screenshots barely change; the API caches them for a week. */
 export const screenshotsQuery = (productId: string, client: ApiClient = api) =>
@@ -112,14 +122,14 @@ export const screenshotsQuery = (productId: string, client: ApiClient = api) =>
     staleTime: 24 * 60 * MINUTE,
   });
 
-/** A player's recent games; the API reads them with the career facts, once a day. */
+/** A player's recent games; the API reads them with the career facts. */
 export const gamesQuery = (identifier: string, client: ApiClient = api) =>
-  queryOptions({ queryKey: keys.games(identifier), queryFn: () => client.getGames(identifier), staleTime: 60 * MINUTE });
+  queryOptions({ queryKey: keys.games(identifier), queryFn: () => client.getGames(identifier), staleTime: PLAYER_DATA_STALE });
 
-/** A player's achievements in one game; the API keeps them fresh for an hour. */
+/** A player's achievements and playtime in one game. */
 export const achievementsQuery = (identifier: string, titleId: string, client: ApiClient = api) =>
   queryOptions({
     queryKey: keys.achievements(identifier, titleId),
     queryFn: () => client.getAchievements(identifier, titleId),
-    staleTime: 30 * MINUTE,
+    staleTime: PLAYER_DATA_STALE,
   });

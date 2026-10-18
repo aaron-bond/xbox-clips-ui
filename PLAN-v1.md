@@ -123,9 +123,13 @@ work on direct visits and reloads.
 so going from a shelf to a clip and back does not spend another API
 call, and it removes duplicate in-flight requests. It is configured to
 match the shared budget: no automatic retries at all, no refetch on
-window focus or reconnect, and a clip's cached data is considered stale
-5 minutes before its `media.expiresAt`. Retries are off even for server
-errors, because a retry is a request the visitor did not ask for.
+window focus or reconnect. Player data (profile, clips, career, games,
+achievements) is reused for 5 minutes, and a clip's data goes stale
+sooner if its `media.expiresAt` is less than 5 minutes further off. The
+window is short because the API's own cache is what protects the upstream
+budget; together, a new clip or achievement shows within about 20 minutes
+(15 at the API, 5 here). Retries are off even for server errors, because a
+retry is a request the visitor did not ask for.
 
 **The shelf requests the profile first, then clips by XUID.** Requesting
 both by gamertag in parallel would make the API resolve the same
@@ -460,7 +464,9 @@ each career stats card: a banner with box art and name strap, a stats bar
 (gamerscore earned and total, unlocked count, rarest unlock), tabs (All,
 Unlocked, In progress, Locked), and a row per achievement with its 16:9
 art (greyed while locked), description, rarity, gamerscore and either its
-unlock date or a progress bar. Newest unlocks come first, then those
+unlock date or a progress bar. The stats bar also shows **time played**
+in the game ("33 h 39 m"), left out when Xbox reports none, as for Xbox
+360 games. Newest unlocks come first, then those
 furthest along. Secret achievements show as "Secret achievement · Tap to
 reveal" until unlocked. Xbox 360 games list only unlocked achievements,
 without art (the game's art stands in), and say so. Cost: the games list
@@ -767,7 +773,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players, and achievements. 103 tests run
+desktop and phone, with the player intro over slow loads, installable as an app, with pinned and recent players, and achievements. 104 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git

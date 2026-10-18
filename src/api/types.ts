@@ -129,6 +129,8 @@ export interface GameAchievements {
   titleName: string | null;
   /** False for Xbox 360 games: only unlocked achievements are listed. */
   lockedListed: boolean;
+  /** Time played, in minutes; null when Xbox doesn't report it (Xbox 360 games, for one). */
+  minutesPlayed: number | null;
   achievements: Achievement[];
 }
 

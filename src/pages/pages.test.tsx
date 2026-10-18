@@ -661,7 +661,7 @@ describe('achievements', () => {
     rarity: { category: 'Common', percent: 40 }, ...extra,
   });
   const list = (extra: Record<string, unknown> = {}) => ({
-    xuid: XUID, titleId: '101', game: game(1), titleName: null, lockedListed: true,
+    xuid: XUID, titleId: '101', game: game(1), titleName: null, lockedListed: true, minutesPlayed: 2019,
     achievements: [
       ach('1', { unlockedAt: '2026-10-01T10:00:00Z', gamerscore: 50, rarity: { category: 'Rare', percent: 4.2 } }),
       ach('2', { unlockedAt: '2026-10-11T10:00:00Z', gamerscore: 20 }),
@@ -699,6 +699,7 @@ describe('achievements', () => {
     const rows = () => within(screen.getByRole('region', { name: 'Achievements' })).getAllByRole('listitem').map((li) => li.querySelector('strong')!.textContent);
     expect(rows()).toEqual(['Ach 2', 'Ach 1', 'Ach 3', 'Secret achievement', 'Ach 5']);
     expect(screen.getByText('Ach 1', { selector: 'dd' })).toBeInTheDocument();
+    expect(screen.getByText('33 h 39 m')).toBeInTheDocument();
     expect(screen.queryByText('Do 4')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Tap to reveal' }));
     expect(screen.getByText('Do 4')).toBeInTheDocument();
@@ -712,12 +713,13 @@ describe('achievements', () => {
 
   it('notes that Xbox 360 games list only unlocked achievements, with no Locked tab', async () => {
     stubRoutes({
-      '/api/v1/players/TestPlayer/achievements/101': { body: list({ lockedListed: false, achievements: [ach('1', { unlockedAt: '2017-09-23T10:00:00Z', imageUrl: null })] }) },
+      '/api/v1/players/TestPlayer/achievements/101': { body: list({ lockedListed: false, minutesPlayed: null, achievements: [ach('1', { unlockedAt: '2017-09-23T10:00:00Z', imageUrl: null })] }) },
       '/api/v1/players/TestPlayer': { body: profile },
     });
     renderAt('/player/TestPlayer/achievements/101');
     expect(await screen.findByText(/Xbox 360 games list only/)).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /^Locked/ })).toBeNull();
+    expect(screen.queryByText('Time played')).toBeNull();
   });
 
   it('links each career card to its achievements', async () => {

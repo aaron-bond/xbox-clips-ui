@@ -15,6 +15,13 @@ any trade-off made.
 
 ## Done
 
+- [x] **Fresher data, and time played** (2026-10-18). Browser reuse of player
+      data cut to 5 minutes (from 10–60). The API now keeps clips and
+      achievements fresh 15 minutes, profiles and title history 2 hours, so a
+      new clip or achievement shows within about 20 minutes. Time played per
+      game shows on the achievements page, from `MinutesPlayed`.
+
+
 - [x] **Achievements for a player in a game** (2026-10-18). Recent games page
       from the player card's Achievements tile (which replaced Reel length),
       per-game achievements from there and from the career cards. Xbox 360
