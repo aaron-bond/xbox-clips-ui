@@ -4,12 +4,16 @@
   min-height: 100vh;
 }
 
+/* As tall on the home page, which has no header search, as on every other page,
+   where the search box sets the height: the logo sits the same everywhere. */
 .header {
   display: flex;
   align-items: center;
   gap: 16px;
   max-width: 1280px;
   width: 100%;
+  /* 46px of search box plus the padding. */
+  min-height: 78px;
   margin: 0 auto;
   padding: 16px var(--gutter);
 }
@@ -57,6 +61,7 @@
 
 @media (max-width: 720px) {
   .header {
+    min-height: 70px;
     padding-top: 12px;
     padding-bottom: 12px;
   }
