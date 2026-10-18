@@ -1,4 +1,4 @@
-import type { ApiErrorCode, Clip, Game, PlayerCareer, PlayerClips, PlayerProfile } from './types';
+import type { ApiErrorCode, Clip, Game, PlayerCareer, PlayerClips, PlayerProfile, Screenshot } from './types';
 
 /**
  * A failure response from the API, or a network failure. `message` is the API's
@@ -22,6 +22,7 @@ export interface ApiClient {
   getMostPlayed(): Promise<{ games: Game[] }>;
   getCareer(identifier: string): Promise<PlayerCareer>;
   getGame(productId: string): Promise<Game>;
+  getScreenshots(productId: string): Promise<{ screenshots: Screenshot[] }>;
 }
 
 export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (...a) => fetch(...a)): ApiClient {
@@ -50,6 +51,7 @@ export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (...a
     getMostPlayed: () => get('/api/v1/games/most-played'),
     getCareer: (identifier) => get(`/api/v1/players/${seg(identifier)}/career`),
     getGame: (productId) => get(`/api/v1/games/${seg(productId)}`),
+    getScreenshots: (productId) => get(`/api/v1/games/${seg(productId)}/screenshots`),
   };
 }
 

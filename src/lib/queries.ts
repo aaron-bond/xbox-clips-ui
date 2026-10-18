@@ -38,6 +38,7 @@ export const keys = {
   mostPlayed: () => ['games', 'most-played'] as const,
   career: (identifier: string) => ['career', identifier.toLowerCase()] as const,
   game: (productId: string) => ['game', productId.toUpperCase()] as const,
+  screenshots: (productId: string) => ['screenshots', productId.toUpperCase()] as const,
 };
 
 /** The shelf asks for the API's whole first page. */
@@ -100,3 +101,11 @@ function findCachedGame(queryClient: QueryClient, productId: string): Game | und
 /** Career facts change slowly; the API caches them for a day. */
 export const careerQuery = (identifier: string, client: ApiClient = api) =>
   queryOptions({ queryKey: keys.career(identifier), queryFn: () => client.getCareer(identifier), staleTime: 60 * MINUTE });
+
+/** Store screenshots barely change; the API caches them for a week. */
+export const screenshotsQuery = (productId: string, client: ApiClient = api) =>
+  queryOptions({
+    queryKey: keys.screenshots(productId),
+    queryFn: () => client.getScreenshots(productId),
+    staleTime: 24 * 60 * MINUTE,
+  });

@@ -1,10 +1,11 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { Screenshots, ScreenshotsPlaceholder } from '../components/Screenshots';
 import { SearchBox } from '../components/SearchBox';
 import { formatDate } from '../lib/format';
 import { gamePath, platformLabels, showRating, storeImage, storeImageSet } from '../lib/games';
-import { gameQuery, mostPlayedQuery } from '../lib/queries';
+import { gameQuery, mostPlayedQuery, screenshotsQuery } from '../lib/queries';
 import { isProductId } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
 import styles from './GamePage.module.css';
@@ -27,6 +28,9 @@ export function GamePage() {
   const queryClient = useQueryClient();
   const game = useQuery({ ...gameQuery(queryClient, productId), enabled: valid });
   const ranking = useQuery(mostPlayedQuery());
+  // Secondary: a placeholder holds its place while loading; with no screenshots,
+  // or if they fail to load, the section is left out.
+  const screenshots = useQuery({ ...screenshotsQuery(productId), enabled: valid && game.isSuccess });
 
   if (!valid) return <NotFoundPage />;
   if (game.isPending) return <p className={styles.loading}>Loading game…</p>;
@@ -41,6 +45,7 @@ export function GamePage() {
     g.platforms.length ? { label: 'Plays on', value: platformLabels(g).join(' · '), small: true } : null,
   ];
   const stats = candidates.filter((s): s is Stat => s !== null);
+  const shots = screenshots.data?.screenshots ?? [];
 
   return (
     <article className={styles.page}>
@@ -77,6 +82,18 @@ export function GamePage() {
             </div>
           ))}
         </dl>
+      )}
+
+      {screenshots.isPending ? (
+        <div className={styles.screenshots}>
+          <ScreenshotsPlaceholder />
+        </div>
+      ) : (
+        shots.length > 0 && (
+          <div className={styles.screenshots}>
+            <Screenshots shots={shots} />
+          </div>
+        )
       )}
 
       <div className={styles.body}>

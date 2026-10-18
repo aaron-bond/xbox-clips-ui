@@ -92,6 +92,15 @@ export interface PlayerCareer {
 }
 
 /** Clip metadata without media or views, as used by link previews. */
+/** A store screenshot of a game. `url` resizes by query string (`?w=1280`). */
+export interface Screenshot {
+  url: string;
+  /** The store's description of the image, when it has one. */
+  caption: string | null;
+  width: number;
+  height: number;
+}
+
 export type ClipPreview = Omit<Clip, 'views' | 'media'>;
 
 export type ApiErrorCode =

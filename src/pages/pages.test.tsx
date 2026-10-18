@@ -471,14 +471,59 @@ describe('home and game page', () => {
     expect(srcs.every((src) => /\?w=\d+$/.test(src))).toBe(true);
   });
 
-  it('opens a game from the home page without another request', async () => {
+  it('opens a game from the home page without another game request', async () => {
     const paths = stubRoutes({ [MOST_PLAYED]: { body: { games } } });
     renderAt('/');
     const section = await screen.findByRole('region', { name: 'Most played on Xbox' });
     await userEvent.click(within(section).getByText('Game 3'));
     expect(await screen.findByRole('heading', { name: 'Game 3', level: 1 })).toBeInTheDocument();
     expect(screen.getByText('No. 3')).toBeInTheDocument();
-    expect(new Set(paths)).toEqual(new Set([MOST_PLAYED]));
+    // The game comes from the cached ranking; only its screenshots are asked for.
+    await waitFor(() => expect(new Set(paths)).toEqual(new Set([MOST_PLAYED, `/api/v1/games/${games[2]!.productId}/screenshots`])));
+  });
+
+  const shot = (n: number, caption: string | null = `Shot ${n}`) => ({ url: `https://store-images.test/${n}`, caption, width: 3840, height: 2160 });
+
+  it('shows store screenshots with their captions, stepping through them', async () => {
+    const shots = [shot(1), shot(2), shot(3, null), shot(4), shot(5), shot(6)];
+    stubRoutes({
+      '/api/v1/games/9N4PT8HGCDHQ/screenshots': { body: { screenshots: shots } },
+      '/api/v1/games/9N4PT8HGCDHQ': { body: makeGame({ title: 'Solo' }) },
+    });
+    renderAt('/game/9N4PT8HGCDHQ');
+    const section = await screen.findByRole('region', { name: /Screenshots/ });
+    const featured = section.querySelector('figure')!;
+    expect(within(featured).getByText('1 / 6')).toBeInTheDocument();
+    expect(within(featured).getByText('Shot 1')).toBeInTheDocument();
+    expect(within(featured).getByRole('img', { name: 'Shot 1' })).toHaveAttribute('src', 'https://store-images.test/1?w=1280');
+    expect(within(section).getByRole('button', { name: '+2 more' })).toBeInTheDocument();
+
+    await userEvent.click(within(section).getByRole('button', { name: 'Next screenshot' }));
+    expect(within(featured).getByText('2 / 6')).toBeInTheDocument();
+    // No caption: no caption bar, and an empty alt.
+    await userEvent.click(within(section).getByRole('button', { name: 'Show screenshot 3' }));
+    expect(within(featured).getByText('3 / 6')).toBeInTheDocument();
+    expect(featured.querySelector('figcaption')).toBeNull();
+  });
+
+  it('leaves the screenshots section out when a game has none, or they fail to load', async () => {
+    stubRoutes({
+      '/api/v1/games/9N4PT8HGCDHQ/screenshots': { body: { screenshots: [] } },
+      '/api/v1/games/9N4PT8HGCDHQ': { body: makeGame({ title: 'Solo' }) },
+    });
+    const first = renderAt('/game/9N4PT8HGCDHQ');
+    await screen.findByRole('heading', { name: 'Solo', level: 1 });
+    await waitFor(() => expect(screen.queryByRole('region', { name: /Screenshots/ })).toBeNull());
+    first.unmount();
+
+    stubRoutes({
+      '/api/v1/games/9N4PT8HGCDHQ/screenshots': apiError('UPSTREAM_ERROR', 502),
+      '/api/v1/games/9N4PT8HGCDHQ': { body: makeGame({ title: 'Solo' }) },
+    });
+    renderAt('/game/9N4PT8HGCDHQ');
+    await screen.findByRole('heading', { name: 'Solo', level: 1 });
+    await waitFor(() => expect(document.querySelector('[class*="placeholder"]')).toBeNull());
+    expect(screen.queryByRole('region', { name: /Screenshots/ })).toBeNull();
   });
 
   it('loads a game directly, showing a rating only with enough ratings behind it', async () => {

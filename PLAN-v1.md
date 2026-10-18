@@ -583,27 +583,39 @@ app.
   so sharing a clip link from another app opens it here (Web Share Target,
   Chromium only).
 
-### P6 — Game screenshots
+### P6 — Game screenshots (built 2026-10-18)
 
-Noted for later; not yet scoped. Screenshots were left out of v1 (§10).
-"Game screenshots" covers two different things, and either or both could
-be built:
+Screenshots were left out of v1 (§10). This brings back one kind.
 
-- **Players' own screenshots,** alongside their clips. The live spec has
-  `GET /v2/dvr/screenshots/{xuid}` ("Get screenshots by XUID"), the
-  sibling of the game clips endpoint the site already uses. Unknown until
-  one real response is inspected: the payload shape, whether image URLs
-  are signed and expire like clip media or are stable like clip
-  thumbnails, how long Xbox keeps screenshots, and whether capture
-  privacy hides them the same way. **Budget:** one more upstream call per
-  player, cached on the same terms as the clip list; it would be worth
-  fetching only when a visitor asks for screenshots, not on every player
-  page.
-- **Store screenshots of a game,** on the game page. The most-played
-  payload already carries store images (box art, hero art); whether it
-  also carries screenshots needs checking in that payload. **Budget:**
-  none if it does, since the ranking is one cached call shared by every
-  visitor.
+**As built:** the game page shows a Screenshots section between the stats
+bar and the description, from `GET /api/v1/games/:productId/screenshots`.
+On wide screens, one large screenshot with a "SCREENSHOT · N / total"
+badge, previous and next arrows, and its caption on a dark bar; beside it
+the next three as thumbnails and a "+N MORE" tile. On phones, a row to
+swipe, each screenshot with an "N / total" chip and its caption below. A
+caption is also the image's alt text; without one, the caption bar is left
+out and the alt text is empty. A placeholder holds the section's place
+while loading; with no screenshots, or if they fail to load, the section
+is left out. Opened from the home page, the game itself still costs no
+request; only its screenshots are asked for.
+
+- **Store screenshots of a game, on the game page.** The store's detail
+  payload (`POST /v2/marketplace/details`) carries the game's
+  screenshots: 23 distinct 4K images for Gears of War: E-Day, each listed
+  twice, with descriptive captions that make good alt text; 3 for
+  Titanfall, 1920×1080 with empty captions. So the count varies widely and
+  captions are optional. A detail response is about 100 KB per game, so
+  one call per game, not a batch of the whole ranking.
+  The most-played payload does not (checked 2026-10-18: its 25 games
+  carry box art, poster, hero art and square promotional art only), so
+  the API needs one store-detail call per game. Store images don't
+  change, so a 7-day cache keeps that to at most one call per game a
+  week, shared by every visitor.
+- **Players' own screenshots: dropped.** OpenXBL lists
+  `GET /v2/dvr/screenshots/{xuid}`, but on 2026-10-18 it returned an
+  empty list for two players, one of them an account known to have
+  screenshots and whose clips are public. Without data there is nothing
+  to design or build.
 
 ---
 
@@ -692,7 +704,7 @@ real data). Built in this order; each step leaves the site working.
 Updated 2026-10-17.
 
 **Redesigned** in the Broadcast look, in kingfisher colours (§3, §12), on
-desktop and phone, with the player intro over slow loads. 79 tests run
+desktop and phone, with the player intro over slow loads. 81 tests run
 without touching the API.
 
 **Live at `https://xboxclips.io`**, deployed through Pages' Git

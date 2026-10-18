@@ -24,6 +24,7 @@ browser over CORS, and from the function over a service binding.
 | `src/components/PlayerCard.tsx`, `UpNext.tsx`, `ExpiryNotice.tsx` | Player stats; the rest of a reel; the clip-deletion notice at the foot of the player page. |
 | `src/components/CareerStats.tsx` | Career facts from the API's `/career` route, plus most clipped. |
 | `src/components/PlayerIntro.tsx`, `src/lib/useIntroGate.ts` | The name-strap intro over a slow player load, and its timing. |
+| `src/components/Screenshots.tsx` | The game page's store screenshots: featured image and thumbnails, or a swipe row on phones. |
 | `src/lib/usePlayerReel.ts` | Profile and clips for the player and reel pages, including clips by gamertag when the profile is throttled. |
 | `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |
 | `src/lib/stats.ts` | Stats derived from data already loaded (last clip, reel length, expiry). |

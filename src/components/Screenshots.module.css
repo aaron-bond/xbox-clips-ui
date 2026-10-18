@@ -1,0 +1,232 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.count {
+  font-family: var(--font-body);
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--muted);
+}
+
+/* Wide screens: one large screenshot, the next few beside it. */
+.wide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 236px;
+  gap: 14px;
+}
+
+.single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.featured {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+.featured img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.badges {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(3 18 32 / 80%);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.arrow:hover {
+  background: var(--bg-deep);
+}
+
+.prev {
+  left: 14px;
+}
+
+.next {
+  right: 14px;
+}
+
+.caption {
+  position: absolute;
+  left: 0;
+  bottom: 22px;
+  max-width: calc(100% - 80px);
+  padding: 7px 22px 7px 26px;
+  background: var(--bg-deep);
+  font-weight: 600;
+}
+
+.thumbs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Each slot takes a quarter of the featured image's height; the images inside
+   fill their slot without adding height of their own. */
+.thumbs li {
+  position: relative;
+  min-height: 0;
+}
+
+.thumb,
+.more {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.thumb {
+  border: 0;
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+.thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms ease;
+}
+
+.thumb:hover img {
+  transform: scale(1.05);
+}
+
+.more {
+  border: 2px dashed var(--line);
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.more:hover {
+  border-color: var(--accent);
+}
+
+/* Phones: a row to swipe, every screenshot with its caption. */
+.row {
+  display: none;
+  margin: 0;
+  padding: 0 0 6px;
+  list-style: none;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+}
+
+.row li {
+  flex: none;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scroll-snap-align: start;
+}
+
+.rowImage {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+.rowImage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.chip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 2px 8px;
+  background: var(--bg-deep);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.rowCaption {
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+.placeholder {
+  aspect-ratio: 16 / 7;
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+@media (max-width: 720px) {
+  .section > h2 {
+    padding: 0 var(--gutter);
+  }
+
+  .wide {
+    display: none;
+  }
+
+  .row {
+    display: flex;
+    padding: 0 var(--gutter) 6px;
+  }
+
+  .placeholder {
+    aspect-ratio: 16 / 9;
+    margin: 0 var(--gutter);
+  }
+}
