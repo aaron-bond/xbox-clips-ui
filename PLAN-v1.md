@@ -751,9 +751,11 @@ real data). Built in this order; each step leaves the site working.
    "Profile details unavailable right now". The reel page does the same.
    Any other profile failure (such as `PLAYER_NOT_FOUND`) still shows its
    error, with no clips request; if the clips fail too, the profile's
-   error is shown. When only the clips fail, the error and Try again sit
-   in the replay's slot, and the player card (clips and last clip as "–")
-   and career stats still show. The API also keeps profiles fresh for 12 hours, so
+   error is shown. When only the clips fail (an upstream hiccup with no
+   earlier list to fall back on), the replay's slot shows the empty-state
+   panel in the same voice: "Their clips didn't load just now. Check back
+   in a moment." with a Try again button. The player card (clips and last
+   clip as "–") and career stats still show. The API also keeps profiles fresh for 12 hours, so
    they are fetched less often.
 11. **Pinned and recent players.** Kept in local storage under
     `xboxclips.players.v1`, on the device only: gamertag, XUID, gamerpic

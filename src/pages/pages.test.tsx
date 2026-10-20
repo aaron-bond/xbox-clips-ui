@@ -371,7 +371,8 @@ describe('player page', () => {
     const card = await screen.findByRole('region', { name: 'Player card' });
     expect(within(card).getByRole('heading', { name: 'TestPlayer' })).toBeInTheDocument();
     expect(within(card).getByText('Clips').nextElementSibling).toHaveTextContent('–');
-    expect(screen.getByRole('alert')).toHaveTextContent('Xbox data is temporarily unavailable.');
+    expect(screen.getByRole('status')).toHaveTextContent("Their clips didn't load just now. Check back in a moment.");
+    expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
     await waitFor(() => expect(paths.some((p) => p.endsWith('/career'))).toBe(true));
   });

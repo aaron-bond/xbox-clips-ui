@@ -14,10 +14,11 @@ any trade-off made.
 
 ## Done
 
-- [x] **Clips errors stay in the reel area** (2026-10-20). A failed clips
-      request no longer replaces the whole player page: the error and Try
-      again fill the replay's slot, and the player card and career stats
-      still load.
+- [x] **Clips hiccups stay in the reel area** (2026-10-20). A failed clips
+      request no longer replaces the whole player page: the replay's slot
+      shows the empty-state panel, "Their clips didn't load just now. Check
+      back in a moment." with Try again, and the player card and career
+      stats still load.
 
 
 - [x] **Back navigation standardised** (2026-10-18). One shared header with an

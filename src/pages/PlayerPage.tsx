@@ -56,7 +56,6 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
   // A slow load plays the player intro over the wait (PLAN-v1.md §12): profile and
   // clips are two requests in sequence, often a second or two on a cold cache.
   const intro = useIntroGate(ready);
-  const clipsQueryError = clips.error;
   const retryClips = () => clips.refetch();
   return <IntroStage phase={intro} name={name} profile={profile.data} page={content} />;
 
@@ -97,8 +96,12 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
                 </p>
               </div>
             ) : (
-              <div className={styles.reelError}>
-                <ErrorMessage error={clipsQueryError} onRetry={() => void retryClips()} />
+              // A hiccup, not a dead end: said in the same voice as the empty state.
+              <div className={`${styles.empty} ${styles.retry}`} role="status">
+                <p>Their clips didn't load just now. Check back in a moment.</p>
+                <button type="button" className="btn-outline" onClick={() => void retryClips()}>
+                  Try again
+                </button>
               </div>
             )}
             <PlayerCard profile={profile} gamertag={gamertag} identifier={identifier} clips={clips ? reel : null} />
