@@ -65,12 +65,11 @@ requests only from configured origins (§8, B3).
 - **`media` can be `null`** when the API is serving cached data while
   Xbox is throttling it. The clip's details are still valid; it just
   cannot be played right now.
-- **`access`** is `public` or `restricted`, but in practice a private
-  reel arrives as `public` with no clips: Xbox returns the same empty
-  list for a player whose clips are private as for one with none
-  (confirmed 2026-10-18). So the empty-reel message ("Nothing captured
-  yet…") is also what a private reel shows. `restricted` is handled, but
-  not expected.
+- **`access`** is `public` or `restricted`. `restricted` means the
+  player's clips aren't public (Xbox says so explicitly; settled
+  2026-10-20), and the player page says "This player's clips aren't
+  public." A player with nothing to show is `public` with no clips:
+  "Nothing captured yet…".
 - **Only the first page of a player's clips** is returned. There is no
   pagination in v1.
 
@@ -360,8 +359,8 @@ zone is on Cloudflare. It is not needed for v1.
 - **Recent gamertags and favourites.** Device-only state. Now planned as
   pinned and recent gamertags (§13).
 - **Dedicated expired and empty states.** v1 shows the API's message. A
-  designed state for `CLIP_EXPIRED`, and an empty-reel message worded to
-  cover private reels too, come later.
+  designed state for `CLIP_EXPIRED` and for empty and private reels comes
+  later.
 - **`availableUntil` display.** The data is there; showing it is later.
   (View counts are shown on clip cards and the clip page; they come with
   the clip list, at no extra request.)
@@ -752,7 +751,9 @@ real data). Built in this order; each step leaves the site working.
    "Profile details unavailable right now". The reel page does the same.
    Any other profile failure (such as `PLAYER_NOT_FOUND`) still shows its
    error, with no clips request; if the clips fail too, the profile's
-   error is shown. The API also keeps profiles fresh for 12 hours, so
+   error is shown. When only the clips fail, the error and Try again sit
+   in the replay's slot, and the player card (clips and last clip as "–")
+   and career stats still show. The API also keeps profiles fresh for 12 hours, so
    they are fetched less often.
 11. **Pinned and recent players.** Kept in local storage under
     `xboxclips.players.v1`, on the device only: gamertag, XUID, gamerpic

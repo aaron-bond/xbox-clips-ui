@@ -56,20 +56,24 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
   // A slow load plays the player intro over the wait (PLAN-v1.md §12): profile and
   // clips are two requests in sequence, often a second or two on a cold cache.
   const intro = useIntroGate(ready);
+  const clipsQueryError = clips.error;
+  const retryClips = () => clips.refetch();
   return <IntroStage phase={intro} name={name} profile={profile.data} page={content} />;
 
   function content(): ReactNode {
     if (profile.isPending) return null;
     if (profile.isError && !profileDown) return <ErrorMessage error={profile.error} />;
     if (clips.isPending) return null;
-    // With the profile down too, the profile's error is the one worth showing.
-    if (clips.isError) return <ErrorMessage error={profileDown ? profile.error : clips.error} onRetry={() => void clips.refetch()} />;
-    return reelView(profile.data ?? null, clips.data);
+    // With the profile down too there is nothing to show, and the profile's error is
+    // the one worth showing. Otherwise only the reel area says the clips failed.
+    if (clips.isError && profileDown) return <ErrorMessage error={profile.error} onRetry={() => void clips.refetch()} />;
+    return reelView(profile.data ?? null, clips.isError ? null : clips.data);
   }
 
-  function reelView(profile: PlayerProfile | null, clips: PlayerClips): ReactNode {
+  /** `clips` is null when they failed to load: the error then sits where the replay would. */
+  function reelView(profile: PlayerProfile | null, clips: PlayerClips | null): ReactNode {
     const gamertag = profile?.gamertag ?? name ?? 'This player';
-    const reel = clips.clips;
+    const reel = clips?.clips ?? [];
     const current = replay.data ?? latest;
     // Secondary: a placeholder holds its place while loading; if the history is
     // hidden or fails to load, the section is left out.
@@ -84,14 +88,20 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
       return (
         <div className={styles.page}>
           <div className={styles.top}>
-            <div className={styles.empty}>
-              <p>
-                {clips.access === 'restricted'
-                  ? "This player's clips aren't public."
-                  : 'Nothing captured yet. Check back after their next session.'}
-              </p>
-            </div>
-            <PlayerCard profile={profile} gamertag={gamertag} identifier={identifier} clips={reel} />
+            {clips ? (
+              <div className={styles.empty}>
+                <p>
+                  {clips.access === 'restricted'
+                    ? "This player's clips aren't public."
+                    : 'Nothing captured yet. Check back after their next session.'}
+                </p>
+              </div>
+            ) : (
+              <div className={styles.reelError}>
+                <ErrorMessage error={clipsQueryError} onRetry={() => void retryClips()} />
+              </div>
+            )}
+            <PlayerCard profile={profile} gamertag={gamertag} identifier={identifier} clips={clips ? reel : null} />
           </div>
           {careerSection}
         </div>

@@ -23,15 +23,16 @@ export function PlayerCard({
   profile: PlayerProfile | null;
   gamertag: string;
   identifier: string;
-  clips: Clip[];
+  /** Null when the clips failed to load: their stats then show "–". */
+  clips: Clip[] | null;
   children?: ReactNode;
 }) {
-  const last = latestRecordedAt(clips);
+  const last = clips ? latestRecordedAt(clips) : null;
   const identity = [tenureLabel(profile?.tenureYears), profile?.location].filter(Boolean);
   const reputation = reputationLabel(profile?.reputation);
   const stats = [
     { label: 'Gamerscore', value: profile ? profile.gamerscore.toLocaleString() : '–' },
-    { label: 'Clips', value: String(clips.length) },
+    { label: 'Clips', value: clips ? String(clips.length) : '–' },
     { label: 'Last clip', value: last ? daysAgo(last) : '–' },
   ];
 

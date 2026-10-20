@@ -361,6 +361,21 @@ describe('player page', () => {
     expect(playerPaths(paths)).toContain('/api/v1/players/TestPlayer/clips?limit=100');
   });
 
+  it('shows a clips failure in the reel area, keeping the player card and career stats', async () => {
+    const paths = stubRoutes({
+      '/api/v1/players/TestPlayer': { body: profile },
+      [`/api/v1/players/${XUID}/clips`]: apiError('UPSTREAM_ERROR', 502, 'Xbox data is temporarily unavailable.'),
+      [`/api/v1/players/${XUID}/career`]: { body: { xuid: XUID, stats: null } },
+    });
+    renderAt('/player/TestPlayer');
+    const card = await screen.findByRole('region', { name: 'Player card' });
+    expect(within(card).getByRole('heading', { name: 'TestPlayer' })).toBeInTheDocument();
+    expect(within(card).getByText('Clips').nextElementSibling).toHaveTextContent('–');
+    expect(screen.getByRole('alert')).toHaveTextContent('Xbox data is temporarily unavailable.');
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+    await waitFor(() => expect(paths.some((p) => p.endsWith('/career'))).toBe(true));
+  });
+
   it("shows the profile's error when the clips fail too", async () => {
     stubRoutes({ '/api/v1/players/': apiError('UPSTREAM_RATE_LIMIT', 429, 'Xbox data is temporarily rate-limited.') });
     renderAt('/player/TestPlayer');

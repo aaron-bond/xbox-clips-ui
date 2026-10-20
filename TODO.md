@@ -9,11 +9,16 @@ any trade-off made.
 
 ## Later (PLAN §10)
 
-- [ ] Designed states for expired clips and empty reels. A private reel
-      can't be detected (it arrives as an empty list), so the empty-reel
-      message should cover both "nothing captured" and "clips are private".
+- [ ] Designed states for expired clips, empty reels and private reels (the
+      API tells the last two apart).
 
 ## Done
+
+- [x] **Clips errors stay in the reel area** (2026-10-20). A failed clips
+      request no longer replaces the whole player page: the error and Try
+      again fill the replay's slot, and the player card and career stats
+      still load.
+
 
 - [x] **Back navigation standardised** (2026-10-18). One shared header with an
       outline Back button on the reel, games and per-game achievements pages:
