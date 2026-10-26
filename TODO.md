@@ -9,6 +9,10 @@ any trade-off made.
 
 ## Later (PLAN §10)
 
+- [ ] **Lock the API to this site, if abuse appears** (PLAN §10): serve it at
+      `/api/*` through a Pages Function over the `API` binding, with a
+      `Sec-Fetch-Site` check, before the API's `workers.dev` address is
+      switched off.
 - [ ] Designed states for expired clips, empty reels and private reels (the
       API tells the last two apart).
 

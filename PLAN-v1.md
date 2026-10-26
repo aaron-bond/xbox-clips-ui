@@ -369,6 +369,21 @@ zone is on Cloudflare. It is not needed for v1.
   identifiers into one code; not needed yet.
 - **Logs and analytics.** To be handled separately.
 - **Screenshots, accounts, any database.**
+- **Locking the API to this site.** Deferred (2026-10-23) until abuse is
+  seen, such as the shared upstream budget running low. If it is, the
+  UI's part: a Pages Function, `functions/api/[[path]].ts`, serves
+  `xboxclips.io/api/*` by forwarding to the API Worker over the existing
+  `API` service binding (the one link previews use; the API still sees
+  the visitor's IP). It lets a request through only if the browser's
+  `Sec-Fetch-Site` header is `same-origin` or `same-site`, or, for older
+  browsers without it, the `Referer` is this site or a `pages.dev`
+  preview; anything else gets `403`. `VITE_API_BASE_URL` becomes empty in
+  production, so the app calls `/api/...` on its own origin, and the Vite
+  dev server forwards `/api` to `https://xboxclips.io` for local
+  development. Only once that is live is the API's public `workers.dev`
+  address switched off, and Cloudflare's Bot Fight Mode turned on for the
+  zone. Checks: the site works, `curl` on `/api/...` gets `403`, and clip
+  link previews still unfurl.
 
 ---
 
