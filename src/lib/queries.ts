@@ -132,7 +132,7 @@ export const gamesQuery = (identifier: string, client: ApiClient = api) =>
 export const mythicsQuery = (identifier: string, client: ApiClient = api) =>
   queryOptions({ queryKey: keys.mythics(identifier), queryFn: () => client.getMythics(identifier), staleTime: PLAYER_DATA_STALE });
 
-/** The games a player is closest to finishing. The API doesn't cache this, so each ask is an upstream call. */
+/** The games a player is closest to finishing, and their Mythics. The API doesn't cache this, so each ask is an upstream call. */
 export const nearestQuery = (identifier: string, client: ApiClient = api) =>
   queryOptions({ queryKey: keys.nearest(identifier), queryFn: () => client.getNearestCompletion(identifier) });
 

@@ -89,9 +89,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
           {mythic && (
             <p className={styles.mythic}>
               <Laurel size={44} />
-              <span>
-                Mythic <span>· Game completed</span>
-              </span>
+              Mythic
             </p>
           )}
         </div>

@@ -14,7 +14,13 @@ import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
 import styles from './AchievementsPage.module.css';
 
-type Sort = 'recent' | 'nearest';
+type Sort = 'recent' | 'nearest' | 'mythics';
+
+const SORTS: [Sort, string][] = [
+  ['recent', 'Recent'],
+  ['nearest', 'Nearest completion'],
+  ['mythics', 'Mythics'],
+];
 
 const SKELETON_TILES = 6;
 
@@ -35,8 +41,8 @@ export function AchievementsPage() {
   // link never starts the search: that runs only when someone presses the button.
   const location = useLocation();
   const navigate = useNavigate();
-  const sort: Sort = location.state?.sort === 'nearest' ? 'nearest' : 'recent';
-  const nearest = useQuery({ ...nearestQuery(identifier), enabled: hasGames && sort === 'nearest' });
+  const sort: Sort = SORTS.find(([id]) => id === location.state?.sort)?.[0] ?? 'recent';
+  const nearest = useQuery({ ...nearestQuery(identifier), enabled: hasGames && sort !== 'recent' });
   if (!valid) return <NotFoundPage />;
 
   const gamertag = profile.data?.gamertag ?? identifier;
@@ -63,10 +69,10 @@ export function AchievementsPage() {
         <section aria-labelledby="games-heading" className={styles.section}>
           <div className={styles.sectionHead}>
             <h2 id="games-heading" className="section-title">
-              {sort === 'nearest' ? 'Nearest completion' : 'Recent games'}
+              {sort === 'recent' ? 'Recent games' : SORTS.find(([id]) => id === sort)![1]}
             </h2>
             {sort === 'recent' && games.data.limited && <span className={styles.note}>Their last {games.data.games.length} games</span>}
-            {sort === 'nearest' && nearest.isPending && (
+            {sort !== 'recent' && nearest.isPending && (
               <span className="visually-hidden" role="status">
                 Searching their whole history
               </span>
@@ -75,12 +81,7 @@ export function AchievementsPage() {
               <span className={styles.note}>{nearest.data.capped ? 'From their last 1,000 games' : 'From their whole history'}</span>
             )}
             <div className={styles.sort} role="group" aria-label="Order games">
-              {(
-                [
-                  ['recent', 'Recent'],
-                  ['nearest', 'Nearest completion'],
-                ] as [Sort, string][]
-              ).map(([id, label]) => (
+              {SORTS.map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
@@ -99,6 +100,11 @@ export function AchievementsPage() {
             <Skeletons />
           ) : nearest.isError ? (
             <ErrorMessage error={nearest.error} onRetry={() => void nearest.refetch()} />
+          ) : sort === 'mythics' ? (
+            <>
+              {nearest.data.mythics.length === 0 ? <p className={styles.empty}>No Mythics to show.</p> : <GameGrid games={nearest.data.mythics} identifier={identifier} />}
+              <p className={styles.footNote}>{mythicsNote(nearest.data.mythics.length, mythics.data?.mythics ?? null, nearest.data.capped)}</p>
+            </>
           ) : nearest.data.games.length === 0 ? (
             <p className={styles.empty}>No unfinished games to show.</p>
           ) : (
@@ -108,6 +114,12 @@ export function AchievementsPage() {
       )}
     </div>
   );
+}
+
+/** The player's total also counts games beyond the 1,000 Xbox lists, so the list can be shorter. */
+function mythicsNote(shown: number, total: number | null, capped: boolean) {
+  const range = capped ? 'their last 1,000 games' : 'their whole history';
+  return total !== null && total > shown ? `${shown} of ${total}, from ${range}` : `From ${range}`;
 }
 
 function Skeletons() {

@@ -750,7 +750,7 @@ describe('achievements', () => {
       const second = renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await waitFor(() => expect(second.container.querySelector('[class*="countLoading"]')).toBeNull());
-      expect(screen.queryByText(/Mythic/)).toBeNull();
+      expect(screen.queryByText(/^\d+ Mythics?$/)).toBeNull();
     });
 
     it('holds a placeholder while the count loads, and leaves it out if it fails', async () => {
@@ -773,7 +773,7 @@ describe('achievements', () => {
       expect(container.querySelector('[class*="countLoading"]')).not.toBeNull();
       release();
       await waitFor(() => expect(container.querySelector('[class*="countLoading"]')).toBeNull());
-      expect(screen.queryByText(/Mythics?$/)).toBeNull();
+      expect(screen.queryByText(/^\d+ Mythics?$/)).toBeNull();
       expect(screen.getByRole('img', { name: 'Mythic' })).toBeInTheDocument();
       expect(screen.queryByRole('alert')).toBeNull();
     });
@@ -788,19 +788,19 @@ describe('achievements', () => {
     it('shows a Mythic on the per-game page from the flag, or from every achievement being unlocked', async () => {
       stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ game: mythic }) }, '/api/v1/players/TestPlayer': { body: profile } });
       const { unmount } = renderAt('/player/TestPlayer/achievements/101');
-      expect(await screen.findByText('· Game completed')).toBeInTheDocument();
+      expect(await screen.findByText('Mythic')).toBeInTheDocument();
       unmount();
       const all = [ach('1', { unlockedAt: '2026-10-01T10:00:00Z' })];
       stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ game: null, titleName: 'Old', achievements: all }) }, '/api/v1/players/TestPlayer': { body: profile } });
       renderAt('/player/TestPlayer/achievements/101');
-      expect(await screen.findByText('· Game completed')).toBeInTheDocument();
+      expect(await screen.findByText('Mythic')).toBeInTheDocument();
     });
 
     it('does not call an Xbox 360 game Mythic just because every listed achievement is unlocked', async () => {
       stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ lockedListed: false, achievements: [ach('1', { unlockedAt: '2026-10-01T10:00:00Z' })] }) }, '/api/v1/players/TestPlayer': { body: profile } });
       renderAt('/player/TestPlayer/achievements/101');
       await screen.findByRole('heading', { level: 1, name: 'Game 1' });
-      expect(screen.queryByText('· Game completed')).toBeNull();
+      expect(screen.queryByText('Mythic')).toBeNull();
     });
   });
 
@@ -825,7 +825,7 @@ describe('achievements', () => {
     const press = () => userEvent.click(screen.getByRole('button', { name: 'Nearest completion' }));
 
     it('searches only when the button is pressed, shows the list, and goes back to Recent without asking again', async () => {
-      const paths = stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [close], capped: true } } });
+      const paths = stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [close], mythics: [], capped: true } } });
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       expect(paths).not.toContain(NEAREST);
@@ -841,8 +841,34 @@ describe('achievements', () => {
       expect(paths.filter((p) => p === NEAREST)).toHaveLength(1);
     });
 
+    it('lists Mythics from the same read, with the note at the foot saying how many of the total', async () => {
+      const low = game(8, { name: 'Low Mythic', mythic: true, gamerscore: 400, totalGamerscore: 2195 });
+      const paths = stubRoutes({ ...base, '/api/v1/players/TestPlayer/mythics': { body: { xuid: XUID, mythics: 13 } }, [NEAREST]: { body: { xuid: XUID, games: [close], mythics: [low], capped: true } } });
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      await screen.findByText('13 Mythics');
+      await userEvent.click(screen.getByRole('button', { name: 'Mythics' }));
+      expect(await screen.findByRole('link', { name: /Low Mythic/ })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: 'Mythics' })).toBeInTheDocument();
+      const note = screen.getByText('1 of 13, from their last 1,000 games');
+      const grid = within(screen.getByRole('region', { name: 'Mythics' })).getByRole('list');
+      expect(grid.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      await press();
+      await screen.findByRole('link', { name: /Almost/ });
+      expect(paths.filter((p) => p === NEAREST)).toHaveLength(1);
+    });
+
+    it('says when the list holds every Mythic, and when there are none', async () => {
+      stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [], mythics: [], capped: false } } });
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      await userEvent.click(screen.getByRole('button', { name: 'Mythics' }));
+      expect(await screen.findByText('No Mythics to show.')).toBeInTheDocument();
+      expect(screen.getByText('From their whole history')).toBeInTheDocument();
+    });
+
     it('says when the whole history was searched, and when nothing is unfinished', async () => {
-      stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [], capped: false } } });
+      stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [], mythics: [], capped: false } } });
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await press();

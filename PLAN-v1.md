@@ -43,7 +43,7 @@ requests only from configured origins (§8, B3).
 | `GET /api/v1/clips/:xuid/:clipId` | One clip, with a media URL valid for playback. |
 | `GET /api/v1/clips/:xuid/:clipId/preview` | Clip metadata without a media URL or view count. Used only by the preview function (§7). |
 | `GET /api/v1/players/:identifier/mythics` | `{ xuid, mythics }`: the player's Mythic total, null when the history is hidden. Cached by the API for 24 hours; a first read can take about 30 seconds. |
-| `GET /api/v1/players/:identifier/nearest-completion` | `{ xuid, games, capped }`: the 100 started, unfinished games nearest to complete, from the whole history; `capped` when it reached the 1,000 games Xbox lists. Not cached by the API: one upstream call per request, up to about 30 seconds. |
+| `GET /api/v1/players/:identifier/nearest-completion` | `{ xuid, games, mythics, capped }`: the 100 started, unfinished games nearest to complete and up to 100 Mythic or fully earned games, from the whole history; `capped` when it reached the 1,000 games Xbox lists. Not cached by the API: one upstream call per request, up to about 30 seconds. |
 | `GET /api/v1/games/most-played` | `{ games }`: the Xbox Store's most-played games, ranked. Cached by the API for 6 hours. |
 | `GET /api/v1/games/:productId` | One game from that list, for the game page. |
 
@@ -707,32 +707,37 @@ player's total can be higher than the Mythics we can list: the history stops at
   first. The count is asked for only once the games show a history to read, and
   a first read can take about 30 seconds, so a shimmer holds its place. With
   none, or if it can't be read, it is left out, without an error.
-- **Per-game page:** a gold gamerscore bar, and a larger laurel with "Mythic ·
-  Game completed" under the title strap, no outline on the art. It relies on
+- **Per-game page:** a gold gamerscore bar, and a larger laurel with "Mythic"
+  under the title strap, no outline on the art. Not "completed": a Mythic can sit
+  far below 100%, one at 18% has been seen. It relies on
   the game being among the recent 100, or on every listed achievement being
   unlocked.
 - **Not on the player page.** The count needs a full read of the title history,
   which career stats deliberately avoid until someone scrolls, so the player
-  card stays as it is. Nor is there a Mythics list for now: it would be
-  incomplete for heavy players.
+  card stays as it is.
 - **Cost:** the flag comes with the recent games. The count is one upstream call
   per player per day, only when someone opens that player's Achievements page.
 
 ### P8 — Nearest completion (built; designed on the canvas 2026-11-01)
 
-The Achievements page has two buttons beside its section heading, Recent (the
-default) and Nearest completion, styled like the tabs on a game's achievements
+The Achievements page has three buttons beside its section heading, Recent (the
+default), Nearest completion and Mythics, styled like the tabs on a game's achievements
 page. Nearest completion shows the player's 100 started, unfinished games nearest
 to complete, from their whole history, not just their last 100; completed games,
 Mythics and games not started are left out.
 
-- **Cost:** the search runs only when the button is pressed, never on load or
+- **Mythics:** up to 100 Mythic or fully earned games, most recently played
+  first. A note at the foot of the list says "7 of 13, from their last 1,000
+  games" when the player's total is higher than the list, since the total counts
+  games beyond the 1,000; otherwise "From their whole history" or "From their last
+  1,000 games". Both lists come from one read.
+- **Cost:** the search runs only when either button is pressed, never on load or
   from a link. It is one upstream call and not cached by the API, measured at 11-17
   seconds and 10-14 ms of CPU for players at the 1,000-game limit. The browser
   keeps the result for 5 minutes, so switching back and forth doesn't search again.
 - **Waiting:** a shimmer grid, with no message on screen. If it fails, Try again;
   Recent still works.
-- **The note:** "From their last 1,000 games" at Xbox's limit, otherwise "From
+- **Nearest completion's note**, beside the heading: "From their last 1,000 games" at Xbox's limit, otherwise "From
   their whole history".
 - **Back from a game** returns to this list: the choice is kept in the history
   entry, not the URL, so a shared link never starts a search.

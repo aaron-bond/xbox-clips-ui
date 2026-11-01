@@ -22,7 +22,9 @@ any trade-off made.
       lists the 100 unfinished games nearest to complete, from the whole
       history, up to the 1,000 games Xbox lists. One uncached upstream call per
       press, measured at 11-17 s and 10-14 ms of CPU; the browser keeps the
-      result for 5 minutes.
+      result for 5 minutes. A Mythics button lists up to 100 of them from the
+      same read, with "7 of 13" at the foot when the list falls short of the
+      total.
 
 
 - [x] **Mythics** (2026-11-01). Laurel and gold bar on Mythic games, including

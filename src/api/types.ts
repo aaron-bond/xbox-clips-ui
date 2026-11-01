@@ -113,6 +113,8 @@ export interface NearestCompletion {
   xuid: string;
   /** Started and unfinished, nearest to complete first, from the whole history; empty when it is hidden. */
   games: PlayerGame[];
+  /** Mythic or fully earned games, most recently played first, at most 100. */
+  mythics: PlayerGame[];
   /** The history reached the 1,000 games Xbox lists, so older games weren't searched. */
   capped: boolean;
 }
