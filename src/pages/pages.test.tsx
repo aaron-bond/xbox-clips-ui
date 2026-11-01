@@ -804,6 +804,18 @@ describe('achievements', () => {
     });
   });
 
+  it('replaces a broken game image with a plain panel', async () => {
+    stubRoutes({ '/api/v1/players/TestPlayer/games': { body: { xuid: XUID, games: [game(1), game(2, { imageUrl: null })], limited: false } }, '/api/v1/players/TestPlayer': { body: profile }, '/api/v1/players/TestPlayer/mythics': { body: { xuid: XUID, mythics: 0 } } });
+    const { container } = renderAt('/player/TestPlayer/achievements');
+    await screen.findByRole('region', { name: 'Recent games' });
+    const img = container.querySelector('li img') as HTMLImageElement;
+    fireEvent.error(img);
+    expect(img.style.display).toBe('none');
+    expect(img.parentElement).toHaveAttribute('data-loaded');
+    const [, noArt] = screen.getAllByRole('link', { name: /Game \d/ });
+    expect(noArt!.querySelector('[class*="art"]')).toHaveAttribute('data-loaded');
+  });
+
   describe('nearest completion', () => {
     const GAMES = '/api/v1/players/TestPlayer/games';
     const NEAREST = '/api/v1/players/TestPlayer/nearest-completion';
@@ -838,7 +850,7 @@ describe('achievements', () => {
       expect(screen.getByText('From their whole history')).toBeInTheDocument();
     });
 
-    it('says the search is slow while it runs, and offers Try again if it fails', async () => {
+    it('announces the search while it runs, and offers Try again if it fails', async () => {
       let release = () => {};
       const held = new Promise<void>((r) => (release = r));
       vi.stubGlobal(
@@ -856,7 +868,7 @@ describe('achievements', () => {
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await press();
-      expect(await screen.findByRole('status')).toHaveTextContent('This can take up to 30 seconds');
+      expect(await screen.findByRole('status')).toHaveTextContent('Searching their whole history');
       release();
       expect(await screen.findByRole('button', { name: /try again/i })).toBeInTheDocument();
       await userEvent.click(screen.getByRole('button', { name: 'Recent' }));

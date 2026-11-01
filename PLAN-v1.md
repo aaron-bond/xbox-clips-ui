@@ -730,8 +730,8 @@ Mythics and games not started are left out.
   from a link. It is one upstream call and not cached by the API, measured at 11-17
   seconds and 10-14 ms of CPU for players at the 1,000-game limit. The browser
   keeps the result for 5 minutes, so switching back and forth doesn't search again.
-- **Waiting:** a shimmer grid and "Searching their whole history. This can take
-  up to 30 seconds." If it fails, Try again; Recent still works.
+- **Waiting:** a shimmer grid, with no message on screen. If it fails, Try again;
+  Recent still works.
 - **The note:** "From their last 1,000 games" at Xbox's limit, otherwise "From
   their whole history".
 - **Back from a game** returns to this list: the choice is kept in the history

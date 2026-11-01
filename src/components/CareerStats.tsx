@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import type { CareerGame, CareerStats as Stats, Clip } from '../api/types';
 import { gameAchievementsPath } from '../lib/format';
 import { storeImage } from '../lib/games';
+import { hideBroken } from '../lib/images';
 import { daysAgo, mostClipped } from '../lib/stats';
 import styles from './CareerStats.module.css';
 
@@ -103,7 +104,7 @@ export function CareerStatsPlaceholder() {
 
 function GameArt({ game, size }: { game: CareerGame; size: number }) {
   return game.imageUrl ? (
-    <img src={storeImage(game.imageUrl, size * 2)} alt="" width={size} height={size} className={styles.art} />
+    <img src={storeImage(game.imageUrl, size * 2)} alt="" width={size} height={size} className={styles.art} onError={hideBroken} />
   ) : (
     <span className={styles.art} style={{ width: size, height: size }} aria-hidden />
   );

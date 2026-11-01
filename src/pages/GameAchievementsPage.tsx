@@ -8,7 +8,7 @@ import { Laurel } from '../components/Laurel';
 import { PageHeader } from '../components/PageHeader';
 import { achievementsPath, formatDate, formatPlaytime } from '../lib/format';
 import { storeImage } from '../lib/games';
-import { markLoaded } from '../lib/images';
+import { hideBroken, markLoaded } from '../lib/images';
 import { achievementsQuery, playerQuery } from '../lib/queries';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
@@ -82,7 +82,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
         />
       </div>
       <header className={styles.banner}>
-        {data.game?.imageUrl && <img src={storeImage(data.game.imageUrl, 440)} alt="" className={styles.art} />}
+        {data.game?.imageUrl && <img src={storeImage(data.game.imageUrl, 440)} alt="" className={styles.art} onError={hideBroken} />}
         <div className={styles.strap}>
           <span className={styles.kicker}>Achievements</span>
           <h1 className="strap-title">{name}</h1>
@@ -157,8 +157,8 @@ function AchievementRow({ a, revealed, onReveal, fallbackArt }: { a: Achievement
   const rare = a.rarity?.category === 'Rare';
   return (
     <li className={done ? `${styles.row} ${styles.done}` : styles.row}>
-      <span className={done ? styles.thumb : `${styles.thumb} ${styles.lockedThumb}`}>
-        {art && <img src={art} alt="" loading="lazy" onLoad={markLoaded} />}
+      <span className={done ? styles.thumb : `${styles.thumb} ${styles.lockedThumb}`} data-loaded={art ? undefined : ''}>
+        {art && <img src={art} alt="" loading="lazy" onLoad={markLoaded} onError={hideBroken} />}
       </span>
       <div className={styles.text}>
         <strong className={styles.achName}>{hidden ? 'Secret achievement' : a.name}</strong>

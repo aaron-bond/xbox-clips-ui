@@ -7,7 +7,7 @@ import { Loading } from '../components/Loading';
 import { PageHeader } from '../components/PageHeader';
 import { gameAchievementsPath, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
-import { markLoaded } from '../lib/images';
+import { hideBroken, markLoaded } from '../lib/images';
 import { gamesQuery, mythicsQuery, nearestQuery, playerQuery } from '../lib/queries';
 import { daysAgo } from '../lib/stats';
 import { parsePlayerIdentifier } from '../lib/validation';
@@ -67,8 +67,8 @@ export function AchievementsPage() {
             </h2>
             {sort === 'recent' && games.data.limited && <span className={styles.note}>Their last {games.data.games.length} games</span>}
             {sort === 'nearest' && nearest.isPending && (
-              <span className={styles.note} role="status">
-                Searching their whole history. This can take up to 30 seconds.
+              <span className="visually-hidden" role="status">
+                Searching their whole history
               </span>
             )}
             {sort === 'nearest' && nearest.isSuccess && (
@@ -157,8 +157,8 @@ function GameTile({ game, to }: { game: PlayerGame; to: string }) {
   return (
     <li>
       <Link to={to} className={styles.tile}>
-        <span className={styles.art}>
-          {game.imageUrl && <img src={storeImage(game.imageUrl, 300)} alt="" loading="lazy" onLoad={markLoaded} />}
+        <span className={styles.art} data-loaded={game.imageUrl ? undefined : ''}>
+          {game.imageUrl && <img src={storeImage(game.imageUrl, 300)} alt="" loading="lazy" onLoad={markLoaded} onError={hideBroken} />}
           {game.xbox360 && <span className={styles.platform}>Xbox 360</span>}
         </span>
         <span className={styles.nameRow}>
