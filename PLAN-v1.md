@@ -728,17 +728,15 @@ Mythics and games not started are left out.
 
 - **Mythics:** up to 100 Mythic or fully earned games, most recently played
   first. A note at the foot of the list says "7 of 13, from their last 1,000
-  games" when the player's total is higher than the list, since the total counts
-  games beyond the 1,000; otherwise "From their whole history" or "From their last
-  1,000 games". Both lists come from one read.
+  games" only when the player's total is higher than the list, since the total
+  counts games beyond the 1,000; otherwise there is no note. The button and the
+  heading say "Mythic", matching "Recent". Both lists come from one read.
 - **Cost:** the search runs only when either button is pressed, never on load or
   from a link. It is one upstream call and not cached by the API, measured at 11-17
   seconds and 10-14 ms of CPU for players at the 1,000-game limit. The browser
   keeps the result for 5 minutes, so switching back and forth doesn't search again.
 - **Waiting:** a shimmer grid, with no message on screen. If it fails, Try again;
   Recent still works.
-- **Nearest completion's note**, beside the heading: "From their last 1,000 games" at Xbox's limit, otherwise "From
-  their whole history".
 - **Back from a game** returns to this list: the choice is kept in the history
   entry, not the URL, so a shared link never starts a search.
 

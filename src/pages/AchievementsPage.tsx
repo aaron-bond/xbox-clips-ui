@@ -19,7 +19,7 @@ type Sort = 'recent' | 'nearest' | 'mythics';
 const SORTS: [Sort, string][] = [
   ['recent', 'Recent'],
   ['nearest', 'Nearest completion'],
-  ['mythics', 'Mythics'],
+  ['mythics', 'Mythic'],
 ];
 
 const SKELETON_TILES = 6;
@@ -45,6 +45,7 @@ export function AchievementsPage() {
   const nearest = useQuery({ ...nearestQuery(identifier), enabled: hasGames && sort !== 'recent' });
   if (!valid) return <NotFoundPage />;
 
+  const note = nearest.data ? mythicsNote(nearest.data.mythics.length, mythics.data?.mythics ?? null, nearest.data.capped) : null;
   const gamertag = profile.data?.gamertag ?? identifier;
   return (
     <div className={styles.page}>
@@ -69,16 +70,12 @@ export function AchievementsPage() {
         <section aria-labelledby="games-heading" className={styles.section}>
           <div className={styles.sectionHead}>
             <h2 id="games-heading" className="section-title">
-              {sort === 'recent' ? 'Recent games' : SORTS.find(([id]) => id === sort)![1]}
+              {{ recent: 'Recent games', nearest: 'Nearest completion', mythics: 'Mythic' }[sort]}
             </h2>
-            {sort === 'recent' && games.data.limited && <span className={styles.note}>Their last {games.data.games.length} games</span>}
             {sort !== 'recent' && nearest.isPending && (
               <span className="visually-hidden" role="status">
                 Searching their whole history
               </span>
-            )}
-            {sort === 'nearest' && nearest.isSuccess && (
-              <span className={styles.note}>{nearest.data.capped ? 'From their last 1,000 games' : 'From their whole history'}</span>
             )}
             <div className={styles.sort} role="group" aria-label="Order games">
               {SORTS.map(([id, label]) => (
@@ -103,7 +100,7 @@ export function AchievementsPage() {
           ) : sort === 'mythics' ? (
             <>
               {nearest.data.mythics.length === 0 ? <p className={styles.empty}>No Mythics to show.</p> : <GameGrid games={nearest.data.mythics} identifier={identifier} />}
-              <p className={styles.footNote}>{mythicsNote(nearest.data.mythics.length, mythics.data?.mythics ?? null, nearest.data.capped)}</p>
+              {note && <p className={styles.footNote}>{note}</p>}
             </>
           ) : nearest.data.games.length === 0 ? (
             <p className={styles.empty}>No unfinished games to show.</p>
@@ -116,10 +113,10 @@ export function AchievementsPage() {
   );
 }
 
-/** The player's total also counts games beyond the 1,000 Xbox lists, so the list can be shorter. */
+/** Only when the list falls short of the player's total, which also counts games beyond the 1,000 Xbox lists. */
 function mythicsNote(shown: number, total: number | null, capped: boolean) {
-  const range = capped ? 'their last 1,000 games' : 'their whole history';
-  return total !== null && total > shown ? `${shown} of ${total}, from ${range}` : `From ${range}`;
+  if (total === null || total <= shown) return null;
+  return `${shown} of ${total}${capped ? ', from their last 1,000 games' : ''}`;
 }
 
 function Skeletons() {

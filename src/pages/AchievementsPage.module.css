@@ -49,16 +49,7 @@
   color: var(--on-accent);
 }
 
-.note,
-.empty {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.empty {
-  margin: 0;
-}
-
+.empty,
 .footNote {
   margin: 0;
   color: var(--muted);
@@ -246,10 +237,6 @@
 
   .sortButton:nth-child(2) {
     flex: 2;
-  }
-
-  .note {
-    order: 2;
   }
 
   .grid {

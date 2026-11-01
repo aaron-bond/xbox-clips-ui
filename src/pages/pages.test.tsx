@@ -699,7 +699,6 @@ describe('achievements', () => {
     expect(links.map((l) => l.getAttribute('href'))).toEqual(['/player/TestPlayer/achievements/101', '/player/TestPlayer/achievements/102']);
     expect(within(links[0]!).getByText('330')).toBeInTheDocument();
     expect(within(links[1]!).getByText('Xbox 360')).toBeInTheDocument();
-    expect(screen.getByText('Their last 2 games')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Back to player' })).toHaveAttribute('href', '/player/TestPlayer');
   });
 
@@ -832,7 +831,6 @@ describe('achievements', () => {
       await press();
       expect(await screen.findByRole('link', { name: /Almost/ })).toBeInTheDocument();
       expect(screen.getByRole('heading', { level: 2, name: 'Nearest completion' })).toBeInTheDocument();
-      expect(screen.getByText('From their last 1,000 games')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Nearest completion' })).toHaveAttribute('aria-pressed', 'true');
       await userEvent.click(screen.getByRole('button', { name: 'Recent' }));
       expect(await screen.findByRole('link', { name: /Game 1/ })).toBeInTheDocument();
@@ -847,33 +845,32 @@ describe('achievements', () => {
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await screen.findByText('13 Mythics');
-      await userEvent.click(screen.getByRole('button', { name: 'Mythics' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Mythic' }));
       expect(await screen.findByRole('link', { name: /Low Mythic/ })).toBeInTheDocument();
-      expect(screen.getByRole('heading', { level: 2, name: 'Mythics' })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: 'Mythic' })).toBeInTheDocument();
       const note = screen.getByText('1 of 13, from their last 1,000 games');
-      const grid = within(screen.getByRole('region', { name: 'Mythics' })).getByRole('list');
+      const grid = within(screen.getByRole('region', { name: 'Mythic' })).getByRole('list');
       expect(grid.compareDocumentPosition(note) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
       await press();
       await screen.findByRole('link', { name: /Almost/ });
       expect(paths.filter((p) => p === NEAREST)).toHaveLength(1);
     });
 
-    it('says when the list holds every Mythic, and when there are none', async () => {
+    it('leaves the note out when the list holds every Mythic, and says when there are none', async () => {
       stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [], mythics: [], capped: false } } });
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
-      await userEvent.click(screen.getByRole('button', { name: 'Mythics' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Mythic' }));
       expect(await screen.findByText('No Mythics to show.')).toBeInTheDocument();
-      expect(screen.getByText('From their whole history')).toBeInTheDocument();
+      expect(screen.queryByText(/whole history/)).toBeNull();
     });
 
-    it('says when the whole history was searched, and when nothing is unfinished', async () => {
+    it('says when nothing is unfinished', async () => {
       stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [], mythics: [], capped: false } } });
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await press();
       expect(await screen.findByText('No unfinished games to show.')).toBeInTheDocument();
-      expect(screen.getByText('From their whole history')).toBeInTheDocument();
     });
 
     it('announces the search while it runs, and offers Try again if it fails', async () => {
