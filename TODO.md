@@ -5,6 +5,8 @@ any trade-off made.
 
 ## Priorities (PLAN §13), in order
 
+- [ ] **Mythics** (P7): laurel and gold bars on games, the count on the
+      Achievements page. API first.
 - [ ] **A second player for comparison** (rest of P2).
 
 ## Later (PLAN §10)

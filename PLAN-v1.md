@@ -568,7 +568,7 @@ so the table records what the data actually holds.
 | Title history, `GET /v2/titles/{xuid}` | 1 | Up to **1,000 games**, each with gamerscore earned and available, completion %, last played, platforms; plus totals of achievements and "mythics" unlocked | **Usable.** Capped at 1,000 games (the sample's 1,000 covered 97,614 of 145,766 gamerscore), so facts read "of their last 1,000 games" for heavy players. About 1 MB raw: the API keeps only the derived facts |
 | Per-game progress, `GET /v2/achievements/player/{xuid}` | 1 | The same data as title history | Redundant |
 | Achievement records, `GET /v3/achievements/player/{xuid}` | 1 per 100 | Every achievement, locked or not, unordered; unlock times; **no rarity** | **Not viable:** the sample player has 24,731 records, about 250 calls to read; rarity facts are impossible |
-| Player stats, `POST /v2/player/stats` | 1 | `MinutesPlayed` came back with **no value** | **Not viable:** no playtime |
+| Player stats, `POST /v2/player/stats` | 1 | `MinutesPlayed`, per game. An early test returned no value; it works, and the achievements page uses it (P2) | **Usable** per game |
 | Catalog, `GET /v2/marketplace/title/{titleId}` | 1 per game | `Category` / `Categories` (e.g. "Shooter") | **Usable but costly:** one call per game; cacheable for all players, since genres don't change |
 
 **Candidate facts** (from title history unless noted; sample values in
@@ -595,8 +595,8 @@ brackets):
 facts are computed in the API and only they are stored. Genre adds up to
 five calls per player at first, falling as titles are cached.
 
-**Left out:** playtime, an achievement timeline and rarity (above);
-"mythics" until what Xbox means by it is confirmed; Game Pass share,
+**Left out:** an achievement timeline and rarity (above); Mythics, since
+planned separately (P7); Game Pass share,
 since the per-game flag's meaning is unclear.
 
 ### P5 — Installable app (PWA) (built 2026-10-18)
@@ -685,6 +685,38 @@ request; only its screenshots are asked for.
   empty list for two players, one of them an account known to have
   screenshots and whose clips are public. Without data there is nothing
   to design or build.
+
+### P7 — Mythics (planned, designed on the canvas 2026-11-01)
+
+A game is **Mythic** once a player has earned all its achievements, and it
+stays Mythic if more are added later, so a Mythic can sit below 100%. A
+player's total can be higher than the Mythics we can list: the history stops at
+1,000 games, and one player showed 13 in total, 7 listed, 1 in their last 100.
+
+- **Badge:** our own laurel in the kingfisher orange, with a lighter star. The
+  data supplies no icon, and Microsoft's artwork isn't used. Drawn in the
+  canvas's "Mythic badge" page; it becomes one shared SVG component. It stays
+  off box art: too fiddly below about 24 px.
+- **A Mythic game:** the laurel beside its name and a **gold** progress bar
+  (`#f2c14e`, a new `--gold` token). No outline on the art or the card. Other
+  games keep orange. The bar shows the real percentage, gold even below 100%.
+- **Achievements page:** the laurel and "13 Mythics" in the header, beside Back
+  to player on desktop and beside the gamertag on phones. The games appear
+  first and the count fills in; if it can't be read, it is left out.
+- **Per-game page:** a gold gamerscore bar, and a larger laurel with "Mythic ·
+  Game completed" under the title strap, no outline on the art. It relies on
+  the game being among the recent 100, or on every listed achievement being
+  unlocked.
+- **Not on the player page.** The count needs a full read of the title history,
+  which career stats deliberately avoid until someone scrolls, so the player
+  card stays as it is. Nor is there a Mythics list for now: it would be
+  incomplete for heavy players.
+- **Cost:** the flag comes with the recent games. The count is one upstream call
+  per player per day, only when someone opens that player's Achievements page.
+- **To build, after the API has shipped its part:** `mythic` on `PlayerGame` and
+  a `mythicsQuery`; a `Laurel` component and the `--gold` token; the tiles,
+  header and per-game page above; tests for a Mythic below 100%, a non-Mythic,
+  and the count missing or failing.
 
 ---
 
@@ -833,5 +865,7 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **A second player for comparison** (the rest of P2): add another
+1. **Mythics** (P7): laurel and gold bars on games, and the count on the
+   Achievements page. API first.
+2. **A second player for comparison** (the rest of P2): add another
    gamertag to the achievement view and compare.
