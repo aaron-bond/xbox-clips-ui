@@ -48,6 +48,7 @@ export const keys = {
   mostPlayed: () => ['games', 'most-played'] as const,
   career: (identifier: string) => ['career', identifier.toLowerCase()] as const,
   games: (identifier: string) => ['games', identifier.toLowerCase()] as const,
+  mythics: (identifier: string) => ['mythics', identifier.toLowerCase()] as const,
   achievements: (identifier: string, titleId: string) => ['achievements', identifier.toLowerCase(), titleId] as const,
   game: (productId: string) => ['game', productId.toUpperCase()] as const,
   screenshots: (productId: string) => ['screenshots', productId.toUpperCase()] as const,
@@ -125,6 +126,10 @@ export const screenshotsQuery = (productId: string, client: ApiClient = api) =>
 /** A player's recent games; the API reads them with the career facts. */
 export const gamesQuery = (identifier: string, client: ApiClient = api) =>
   queryOptions({ queryKey: keys.games(identifier), queryFn: () => client.getGames(identifier), staleTime: PLAYER_DATA_STALE });
+
+/** A player's Mythic total. Slow on a cold cache (up to about 30 s), so nothing waits for it. */
+export const mythicsQuery = (identifier: string, client: ApiClient = api) =>
+  queryOptions({ queryKey: keys.mythics(identifier), queryFn: () => client.getMythics(identifier), staleTime: PLAYER_DATA_STALE });
 
 /** A player's achievements and playtime in one game. */
 export const achievementsQuery = (identifier: string, titleId: string, client: ApiClient = api) =>

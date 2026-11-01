@@ -4,6 +4,7 @@ import { useParams } from 'react-router';
 import type { Achievement, GameAchievements } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Loading } from '../components/Loading';
+import { Laurel } from '../components/Laurel';
 import { PageHeader } from '../components/PageHeader';
 import { achievementsPath, formatDate, formatPlaytime } from '../lib/format';
 import { storeImage } from '../lib/games';
@@ -56,6 +57,8 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
   const gs = earned.reduce((n, a) => n + a.gamerscore, 0);
   const total = data.lockedListed ? all.reduce((n, a) => n + a.gamerscore, 0) : (data.game?.totalGamerscore ?? 0);
   const rarest = earned.filter((a) => a.rarity).sort((a, b) => a.rarity!.percent - b.rarity!.percent)[0];
+  // A game outside the recent 100 has no flag, but every achievement unlocked shows it.
+  const mythic = data.game?.mythic === true || (data.lockedListed && all.length > 0 && earned.length === all.length);
   const counts = { all: all.length, unlocked: earned.length, progress: all.filter(inProgress).length, locked: all.length - earned.length - all.filter(inProgress).length };
   const tabs: [Tab, string][] = [
     ['all', 'All'],
@@ -83,6 +86,14 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
         <div className={styles.strap}>
           <span className={styles.kicker}>Achievements</span>
           <h1 className="strap-title">{name}</h1>
+          {mythic && (
+            <p className={styles.mythic}>
+              <Laurel size={44} />
+              <span>
+                Mythic <span>· Game completed</span>
+              </span>
+            </p>
+          )}
         </div>
       </header>
 
@@ -93,7 +104,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
             {gs.toLocaleString()} {total > 0 && <span>/ {total.toLocaleString()} G</span>}
           </dd>
           {total > 0 && (
-            <span className={styles.bar}>
+            <span className={mythic ? `${styles.bar} ${styles.gold}` : styles.bar}>
               <span style={{ width: `${Math.min(100, Math.round((100 * gs) / total))}%` }} />
             </span>
           )}

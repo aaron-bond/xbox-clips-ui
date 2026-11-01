@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import styles from './PageHeader.module.css';
 
@@ -10,6 +11,8 @@ interface Props {
   back: { to: string; label: string };
   /** The gamertag is the page's heading unless the page has its own (a game title, say). */
   heading?: boolean;
+  /** Beside Back on desktop, beside the gamertag on phones. */
+  aside?: ReactNode;
 }
 
 /**
@@ -17,7 +20,7 @@ interface Props {
  * game's achievements): who the page is about, and one Back button to the page
  * above it. Every such page navigates back the same way.
  */
-export function PageHeader({ gamertag, gamerpicUrl, kicker, back, heading = true }: Props) {
+export function PageHeader({ gamertag, gamerpicUrl, kicker, back, heading = true, aside }: Props) {
   const Name = heading ? 'h1' : 'p';
   return (
     <header className={styles.head}>
@@ -26,6 +29,7 @@ export function PageHeader({ gamertag, gamerpicUrl, kicker, back, heading = true
         <Name className={styles.name}>{gamertag}</Name>
         {kicker && <span className={styles.kicker}>{kicker}</span>}
       </div>
+      {aside && <div className={styles.aside}>{aside}</div>}
       <Link to={back.to} className={`btn-outline ${styles.back}`}>
         {back.label}
       </Link>

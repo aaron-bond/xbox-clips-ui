@@ -2,12 +2,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
 import type { PlayerGame } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
+import { Laurel } from '../components/Laurel';
 import { Loading } from '../components/Loading';
 import { PageHeader } from '../components/PageHeader';
 import { gameAchievementsPath, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { markLoaded } from '../lib/images';
-import { gamesQuery, playerQuery } from '../lib/queries';
+import { gamesQuery, mythicsQuery, playerQuery } from '../lib/queries';
 import { daysAgo } from '../lib/stats';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
@@ -23,6 +24,9 @@ export function AchievementsPage() {
   const valid = parsePlayerIdentifier(identifier) !== null;
   const profile = useQuery({ ...playerQuery(identifier), enabled: valid });
   const games = useQuery({ ...gamesQuery(identifier), enabled: valid });
+  // Asked for once the games show there is a history to read: it takes a full read upstream.
+  const hasGames = (games.data?.games.length ?? 0) > 0;
+  const mythics = useQuery({ ...mythicsQuery(identifier), enabled: hasGames });
   if (!valid) return <NotFoundPage />;
 
   const gamertag = profile.data?.gamertag ?? identifier;
@@ -33,6 +37,7 @@ export function AchievementsPage() {
         gamerpicUrl={profile.data?.gamerpicUrl ?? null}
         kicker="Achievements"
         back={{ to: playerPath(identifier), label: 'Back to player' }}
+        aside={<MythicCount loading={games.isPending || (hasGames && mythics.isPending)} count={mythics.data?.mythics ?? 0} />}
       />
 
       {games.isPending ? (
@@ -67,6 +72,22 @@ export function AchievementsPage() {
   );
 }
 
+/**
+ * The player's Mythic total. The count can take half a minute on a cold cache,
+ * so a placeholder keeps its place. If there are none, or it can't be read, it
+ * is left out: the games below are what the page is for.
+ */
+function MythicCount({ loading, count }: { loading: boolean; count: number }) {
+  if (loading) return <span className={styles.countLoading} aria-hidden />;
+  if (count === 0) return null;
+  return (
+    <span className={styles.count}>
+      <Laurel size={34} />
+      {count} {count === 1 ? 'Mythic' : 'Mythics'}
+    </span>
+  );
+}
+
 /** "6 days ago" for recent play; just the year once it's over a year back. */
 function lastPlayedLabel(iso: string, now = Date.now()) {
   const days = (now - Date.parse(iso)) / 86_400_000;
@@ -82,13 +103,16 @@ function GameTile({ game, to }: { game: PlayerGame; to: string }) {
           {game.imageUrl && <img src={storeImage(game.imageUrl, 300)} alt="" loading="lazy" onLoad={markLoaded} />}
           {game.xbox360 && <span className={styles.platform}>Xbox 360</span>}
         </span>
-        <span className={styles.gameName}>{game.name}</span>
+        <span className={styles.nameRow}>
+          <span className={styles.gameName}>{game.name}</span>
+          {game.mythic && <Laurel size={34} label="Mythic" />}
+        </span>
         {game.totalGamerscore > 0 ? (
           <>
             <span className={styles.score}>
               {game.gamerscore.toLocaleString()} <span>/ {game.totalGamerscore.toLocaleString()} G</span>
             </span>
-            <span className={styles.bar} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Completion">
+            <span className={game.mythic ? `${styles.bar} ${styles.gold}` : styles.bar} role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Completion">
               <span style={{ width: `${pct}%` }} />
             </span>
           </>

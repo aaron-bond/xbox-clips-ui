@@ -44,7 +44,8 @@
 }
 
 .art,
-.skeleton {
+.skeleton,
+.countLoading {
   background: linear-gradient(90deg, var(--panel) 30%, #12395a 50%, var(--panel) 70%);
   background-size: 200% 100%;
   animation: shimmer 1.4s linear infinite;
@@ -92,9 +93,33 @@
   text-transform: uppercase;
 }
 
+.nameRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .gameName {
+  min-width: 0;
   font-weight: 600;
   line-height: 1.25;
+}
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+
+.countLoading {
+  display: block;
+  width: 118px;
+  height: 34px;
+  border-radius: var(--radius);
 }
 
 .score {
@@ -124,6 +149,10 @@
   background: var(--accent);
 }
 
+.gold span {
+  background: var(--gold);
+}
+
 .meta {
   color: var(--muted);
   font-size: 0.8rem;
@@ -147,6 +176,7 @@
 @media (prefers-reduced-motion: reduce) {
   .art,
   .skeleton,
+  .countLoading,
   .thumb {
     animation: none !important;
   }

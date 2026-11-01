@@ -48,6 +48,21 @@
   font-size: clamp(1.7rem, 3.6vw, 2.8rem);
 }
 
+.mythic {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0 26px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+}
+
+.mythic span span {
+  color: var(--muted);
+}
+
 .stats {
   display: grid;
   grid-template-columns: 1.3fr 1fr 1.4fr;
@@ -107,6 +122,10 @@
   height: 100%;
   border-radius: 3px;
   background: var(--accent);
+}
+
+.gold span {
+  background: var(--gold);
 }
 
 .list {
@@ -329,6 +348,10 @@
     padding: 0;
     margin-top: -20px;
     position: relative;
+  }
+
+  .mythic {
+    margin: 8px 0 0 var(--gutter);
   }
 
   .kicker {

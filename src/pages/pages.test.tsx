@@ -722,6 +722,88 @@ describe('achievements', () => {
     expect(screen.queryByText('Loading their games…')).toBeNull();
   });
 
+  describe('Mythics', () => {
+    const GAMES = '/api/v1/players/TestPlayer/games';
+    const MYTHICS = '/api/v1/players/TestPlayer/mythics';
+    const mythic = game(1, { mythic: true, gamerscore: 1000, totalGamerscore: 1100, percent: 91 });
+    const page = (games: unknown[]) => ({ body: { xuid: XUID, games, limited: false } });
+    const gold = (el: Element) => el.className.includes('gold');
+
+    it('marks a Mythic game below 100% with the laurel and a gold bar showing the real percentage', async () => {
+      stubRoutes({ [GAMES]: page([mythic, game(2)]), [MYTHICS]: { body: { xuid: XUID, mythics: 13 } }, '/api/v1/players/TestPlayer': { body: profile } });
+      renderAt('/player/TestPlayer/achievements');
+      expect(await screen.findByText('13 Mythics')).toBeInTheDocument();
+      const [first, second] = within(screen.getByRole('region', { name: 'Recent games' })).getAllByRole('link');
+      expect(within(first!).getByRole('img', { name: 'Mythic' })).toBeInTheDocument();
+      expect(within(first!).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '91');
+      expect(gold(within(first!).getByRole('progressbar'))).toBe(true);
+      expect(within(second!).queryByRole('img', { name: 'Mythic' })).toBeNull();
+      expect(gold(within(second!).getByRole('progressbar'))).toBe(false);
+    });
+
+    it('says 1 Mythic, and leaves out a count of none', async () => {
+      stubRoutes({ [GAMES]: page([game(1)]), [MYTHICS]: { body: { xuid: XUID, mythics: 1 } }, '/api/v1/players/TestPlayer': { body: profile } });
+      const { unmount } = renderAt('/player/TestPlayer/achievements');
+      expect(await screen.findByText('1 Mythic')).toBeInTheDocument();
+      unmount();
+      stubRoutes({ [GAMES]: page([game(1)]), [MYTHICS]: { body: { xuid: XUID, mythics: 0 } }, '/api/v1/players/TestPlayer': { body: profile } });
+      const second = renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      await waitFor(() => expect(second.container.querySelector('[class*="countLoading"]')).toBeNull());
+      expect(screen.queryByText(/Mythic/)).toBeNull();
+    });
+
+    it('holds a placeholder while the count loads, and leaves it out if it fails', async () => {
+      let release = () => {};
+      const held = new Promise<void>((r) => (release = r));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async (input: RequestInfo | URL) => {
+          const path = new URL(String(input)).pathname;
+          if (path === MYTHICS) {
+            await held;
+            return new Response(JSON.stringify({ error: { code: 'UPSTREAM_ERROR', message: 'x', status: 502 } }), { status: 502 });
+          }
+          const body = path === GAMES ? page([mythic]).body : profile;
+          return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        }),
+      );
+      const { container } = renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      expect(container.querySelector('[class*="countLoading"]')).not.toBeNull();
+      release();
+      await waitFor(() => expect(container.querySelector('[class*="countLoading"]')).toBeNull());
+      expect(screen.queryByText(/Mythics?$/)).toBeNull();
+      expect(screen.getByRole('img', { name: 'Mythic' })).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).toBeNull();
+    });
+
+    it('never asks for the count when the history is hidden', async () => {
+      const paths = stubRoutes({ [GAMES]: page([]), '/api/v1/players/TestPlayer': { body: profile } });
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByText(/game history isn't public/);
+      expect(paths).not.toContain(MYTHICS);
+    });
+
+    it('shows a Mythic on the per-game page from the flag, or from every achievement being unlocked', async () => {
+      stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ game: mythic }) }, '/api/v1/players/TestPlayer': { body: profile } });
+      const { unmount } = renderAt('/player/TestPlayer/achievements/101');
+      expect(await screen.findByText('· Game completed')).toBeInTheDocument();
+      unmount();
+      const all = [ach('1', { unlockedAt: '2026-10-01T10:00:00Z' })];
+      stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ game: null, titleName: 'Old', achievements: all }) }, '/api/v1/players/TestPlayer': { body: profile } });
+      renderAt('/player/TestPlayer/achievements/101');
+      expect(await screen.findByText('· Game completed')).toBeInTheDocument();
+    });
+
+    it('does not call an Xbox 360 game Mythic just because every listed achievement is unlocked', async () => {
+      stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ lockedListed: false, achievements: [ach('1', { unlockedAt: '2026-10-01T10:00:00Z' })] }) }, '/api/v1/players/TestPlayer': { body: profile } });
+      renderAt('/player/TestPlayer/achievements/101');
+      await screen.findByRole('heading', { level: 1, name: 'Game 1' });
+      expect(screen.queryByText('· Game completed')).toBeNull();
+    });
+  });
+
   it('says so when a game history is hidden', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer/games': { body: { xuid: XUID, games: [], limited: false } }, '/api/v1/players/TestPlayer': { body: profile } });
     renderAt('/player/TestPlayer/achievements');

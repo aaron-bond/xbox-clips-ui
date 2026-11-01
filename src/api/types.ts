@@ -97,6 +97,8 @@ export interface PlayerGame extends CareerGame {
   unlocked: number;
   /** Xbox 360 games list only unlocked achievements, without art. */
   xbox360: boolean;
+  /** All its achievements earned at some point. Stays true if more are added, so `percent` can be below 100. */
+  mythic: boolean;
 }
 
 export interface PlayerGames {
@@ -105,6 +107,12 @@ export interface PlayerGames {
   games: PlayerGame[];
   /** The player has more games than were read. */
   limited: boolean;
+}
+
+export interface PlayerMythics {
+  xuid: string;
+  /** The player's total, which can exceed the Mythics among their games; null when the history is hidden. */
+  mythics: number | null;
 }
 
 export interface Achievement {

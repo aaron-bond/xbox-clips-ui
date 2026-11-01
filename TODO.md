@@ -5,8 +5,6 @@ any trade-off made.
 
 ## Priorities (PLAN §13), in order
 
-- [ ] **Mythics** (P7): laurel and gold bars on games, the count on the
-      Achievements page. API first.
 - [ ] **A second player for comparison** (rest of P2).
 
 ## Later (PLAN §10)
@@ -19,6 +17,12 @@ any trade-off made.
       API tells the last two apart).
 
 ## Done
+
+- [x] **Mythics** (2026-11-01). Laurel and gold bar on Mythic games, including
+      below 100%; "Mythic · Game completed" on the per-game page; the count in
+      the Achievements page header, behind a shimmer because a first read can
+      take about 30 seconds. No count is shown for none or on failure.
+
 
 - [x] **Clips hiccups stay in the reel area** (2026-10-20). A failed clips
       request no longer replaces the whole player page: the replay's slot

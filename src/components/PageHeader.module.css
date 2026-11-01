@@ -39,10 +39,19 @@
   text-transform: uppercase;
 }
 
+.aside {
+  margin-left: auto;
+  flex: none;
+}
+
 /* Scoped under .head so it beats the global .btn-outline in any stylesheet order. */
 .head .back {
   margin-left: auto;
   flex: none;
+}
+
+.head .aside + .back {
+  margin-left: 0;
 }
 
 @media (max-width: 720px) {

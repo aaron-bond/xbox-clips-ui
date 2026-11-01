@@ -42,6 +42,7 @@ requests only from configured origins (§8, B3).
 | `GET /api/v1/players/:identifier/clips?limit=` | `{ xuid, access, total, clips }`. `limit` defaults to 20, maximum 100. |
 | `GET /api/v1/clips/:xuid/:clipId` | One clip, with a media URL valid for playback. |
 | `GET /api/v1/clips/:xuid/:clipId/preview` | Clip metadata without a media URL or view count. Used only by the preview function (§7). |
+| `GET /api/v1/players/:identifier/mythics` | `{ xuid, mythics }`: the player's Mythic total, null when the history is hidden. Cached by the API for 24 hours; a first read can take about 30 seconds. |
 | `GET /api/v1/games/most-played` | `{ games }`: the Xbox Store's most-played games, ranked. Cached by the API for 6 hours. |
 | `GET /api/v1/games/:productId` | One game from that list, for the game page. |
 
@@ -686,7 +687,7 @@ request; only its screenshots are asked for.
   screenshots and whose clips are public. Without data there is nothing
   to design or build.
 
-### P7 — Mythics (planned, designed on the canvas 2026-11-01)
+### P7 — Mythics (built; designed on the canvas 2026-11-01)
 
 A game is **Mythic** once a player has earned all its achievements, and it
 stays Mythic if more are added later, so a Mythic can sit below 100%. A
@@ -702,7 +703,9 @@ player's total can be higher than the Mythics we can list: the history stops at
   games keep orange. The bar shows the real percentage, gold even below 100%.
 - **Achievements page:** the laurel and "13 Mythics" in the header, beside Back
   to player on desktop and beside the gamertag on phones. The games appear
-  first and the count fills in; if it can't be read, it is left out.
+  first. The count is asked for only once the games show a history to read, and
+  a first read can take about 30 seconds, so a shimmer holds its place. With
+  none, or if it can't be read, it is left out, without an error.
 - **Per-game page:** a gold gamerscore bar, and a larger laurel with "Mythic ·
   Game completed" under the title strap, no outline on the art. It relies on
   the game being among the recent 100, or on every listed achievement being
@@ -713,10 +716,6 @@ player's total can be higher than the Mythics we can list: the history stops at
   incomplete for heavy players.
 - **Cost:** the flag comes with the recent games. The count is one upstream call
   per player per day, only when someone opens that player's Achievements page.
-- **To build, after the API has shipped its part:** `mythic` on `PlayerGame` and
-  a `mythicsQuery`; a `Laurel` component and the `--gold` token; the tiles,
-  header and per-game page above; tests for a Mythic below 100%, a non-Mythic,
-  and the count missing or failing.
 
 ---
 
@@ -865,7 +864,5 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **Mythics** (P7): laurel and gold bars on games, and the count on the
-   Achievements page. API first.
-2. **A second player for comparison** (the rest of P2): add another
+1. **A second player for comparison** (the rest of P2): add another
    gamertag to the achievement view and compare.
