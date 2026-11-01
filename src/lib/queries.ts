@@ -49,6 +49,7 @@ export const keys = {
   career: (identifier: string) => ['career', identifier.toLowerCase()] as const,
   games: (identifier: string) => ['games', identifier.toLowerCase()] as const,
   mythics: (identifier: string) => ['mythics', identifier.toLowerCase()] as const,
+  nearest: (identifier: string) => ['nearest', identifier.toLowerCase()] as const,
   achievements: (identifier: string, titleId: string) => ['achievements', identifier.toLowerCase(), titleId] as const,
   game: (productId: string) => ['game', productId.toUpperCase()] as const,
   screenshots: (productId: string) => ['screenshots', productId.toUpperCase()] as const,
@@ -130,6 +131,10 @@ export const gamesQuery = (identifier: string, client: ApiClient = api) =>
 /** A player's Mythic total. Slow on a cold cache (up to about 30 s), so nothing waits for it. */
 export const mythicsQuery = (identifier: string, client: ApiClient = api) =>
   queryOptions({ queryKey: keys.mythics(identifier), queryFn: () => client.getMythics(identifier), staleTime: PLAYER_DATA_STALE });
+
+/** The games a player is closest to finishing. The API doesn't cache this, so each ask is an upstream call. */
+export const nearestQuery = (identifier: string, client: ApiClient = api) =>
+  queryOptions({ queryKey: keys.nearest(identifier), queryFn: () => client.getNearestCompletion(identifier) });
 
 /** A player's achievements and playtime in one game. */
 export const achievementsQuery = (identifier: string, titleId: string, client: ApiClient = api) =>

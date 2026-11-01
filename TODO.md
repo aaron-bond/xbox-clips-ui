@@ -18,6 +18,13 @@ any trade-off made.
 
 ## Done
 
+- [x] **Nearest completion** (2026-11-01). A button on the Achievements page
+      lists the 100 unfinished games nearest to complete, from the whole
+      history, up to the 1,000 games Xbox lists. One uncached upstream call per
+      press, measured at 11-17 s and 10-14 ms of CPU; the browser keeps the
+      result for 5 minutes.
+
+
 - [x] **Mythics** (2026-11-01). Laurel and gold bar on Mythic games, including
       below 100%; "Mythic · Game completed" on the per-game page; the count in
       the Achievements page header, behind a shimmer because a first read can

@@ -109,6 +109,14 @@ export interface PlayerGames {
   limited: boolean;
 }
 
+export interface NearestCompletion {
+  xuid: string;
+  /** Started and unfinished, nearest to complete first, from the whole history; empty when it is hidden. */
+  games: PlayerGame[];
+  /** The history reached the 1,000 games Xbox lists, so older games weren't searched. */
+  capped: boolean;
+}
+
 export interface PlayerMythics {
   xuid: string;
   /** The player's total, which can exceed the Mythics among their games; null when the history is hidden. */

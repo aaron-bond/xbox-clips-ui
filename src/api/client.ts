@@ -1,4 +1,4 @@
-import type { ApiErrorCode, Clip, Game, GameAchievements, PlayerCareer, PlayerClips, PlayerGames, PlayerMythics, PlayerProfile, Screenshot } from './types';
+import type { ApiErrorCode, Clip, Game, GameAchievements, NearestCompletion, PlayerCareer, PlayerClips, PlayerGames, PlayerMythics, PlayerProfile, Screenshot } from './types';
 
 /**
  * A failure response from the API, or a network failure. `message` is the API's
@@ -23,6 +23,7 @@ export interface ApiClient {
   getCareer(identifier: string): Promise<PlayerCareer>;
   getGames(identifier: string): Promise<PlayerGames>;
   getMythics(identifier: string): Promise<PlayerMythics>;
+  getNearestCompletion(identifier: string): Promise<NearestCompletion>;
   getAchievements(identifier: string, titleId: string): Promise<GameAchievements>;
   getGame(productId: string): Promise<Game>;
   getScreenshots(productId: string): Promise<{ screenshots: Screenshot[] }>;
@@ -55,6 +56,7 @@ export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (...a
     getCareer: (identifier) => get(`/api/v1/players/${seg(identifier)}/career`),
     getGames: (identifier) => get(`/api/v1/players/${seg(identifier)}/games`),
     getMythics: (identifier) => get(`/api/v1/players/${seg(identifier)}/mythics`),
+    getNearestCompletion: (identifier) => get(`/api/v1/players/${seg(identifier)}/nearest-completion`),
     getAchievements: (identifier, titleId) => get(`/api/v1/players/${seg(identifier)}/achievements/${seg(titleId)}`),
     getGame: (productId) => get(`/api/v1/games/${seg(productId)}`),
     getScreenshots: (productId) => get(`/api/v1/games/${seg(productId)}/screenshots`),

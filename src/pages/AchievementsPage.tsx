@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Link, useParams } from 'react-router';
+import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import type { PlayerGame } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Laurel } from '../components/Laurel';
@@ -8,11 +8,15 @@ import { PageHeader } from '../components/PageHeader';
 import { gameAchievementsPath, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { markLoaded } from '../lib/images';
-import { gamesQuery, mythicsQuery, playerQuery } from '../lib/queries';
+import { gamesQuery, mythicsQuery, nearestQuery, playerQuery } from '../lib/queries';
 import { daysAgo } from '../lib/stats';
 import { parsePlayerIdentifier } from '../lib/validation';
 import { NotFoundPage } from './NotFoundPage';
 import styles from './AchievementsPage.module.css';
+
+type Sort = 'recent' | 'nearest';
+
+const SKELETON_TILES = 6;
 
 /**
  * A player's recent games, each leading to their achievements in it
@@ -27,6 +31,12 @@ export function AchievementsPage() {
   // Asked for once the games show there is a history to read: it takes a full read upstream.
   const hasGames = (games.data?.games.length ?? 0) > 0;
   const mythics = useQuery({ ...mythicsQuery(identifier), enabled: hasGames });
+  // Held in the history entry, so Back from a game returns to this list, but a shared
+  // link never starts the search: that runs only when someone presses the button.
+  const location = useLocation();
+  const navigate = useNavigate();
+  const sort: Sort = location.state?.sort === 'nearest' ? 'nearest' : 'recent';
+  const nearest = useQuery({ ...nearestQuery(identifier), enabled: hasGames && sort === 'nearest' });
   if (!valid) return <NotFoundPage />;
 
   const gamertag = profile.data?.gamertag ?? identifier;
@@ -43,11 +53,7 @@ export function AchievementsPage() {
       {games.isPending ? (
         <>
           <Loading label="Loading their games…" />
-          <ul className={styles.grid} aria-hidden>
-            {Array.from({ length: 6 }, (_, i) => (
-              <li key={i} className={styles.skeleton} />
-            ))}
-          </ul>
+          <Skeletons />
         </>
       ) : games.isError ? (
         <ErrorMessage error={games.error} onRetry={() => void games.refetch()} />
@@ -57,18 +63,70 @@ export function AchievementsPage() {
         <section aria-labelledby="games-heading" className={styles.section}>
           <div className={styles.sectionHead}>
             <h2 id="games-heading" className="section-title">
-              Recent games
+              {sort === 'nearest' ? 'Nearest completion' : 'Recent games'}
             </h2>
-            {games.data.limited && <span className={styles.note}>Their last {games.data.games.length} games</span>}
+            {sort === 'recent' && games.data.limited && <span className={styles.note}>Their last {games.data.games.length} games</span>}
+            {sort === 'nearest' && nearest.isPending && (
+              <span className={styles.note} role="status">
+                Searching their whole history. This can take up to 30 seconds.
+              </span>
+            )}
+            {sort === 'nearest' && nearest.isSuccess && (
+              <span className={styles.note}>{nearest.data.capped ? 'From their last 1,000 games' : 'From their whole history'}</span>
+            )}
+            <div className={styles.sort} role="group" aria-label="Order games">
+              {(
+                [
+                  ['recent', 'Recent'],
+                  ['nearest', 'Nearest completion'],
+                ] as [Sort, string][]
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={sort === id}
+                  className={sort === id ? `${styles.sortButton} ${styles.on}` : styles.sortButton}
+                  onClick={() => void navigate(location.pathname, { replace: true, state: { sort: id } })}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
-          <ul className={styles.grid}>
-            {games.data.games.map((g) => (
-              <GameTile key={g.titleId} game={g} to={gameAchievementsPath(identifier, g.titleId)} />
-            ))}
-          </ul>
+          {sort === 'recent' ? (
+            <GameGrid games={games.data.games} identifier={identifier} />
+          ) : nearest.isPending ? (
+            <Skeletons />
+          ) : nearest.isError ? (
+            <ErrorMessage error={nearest.error} onRetry={() => void nearest.refetch()} />
+          ) : nearest.data.games.length === 0 ? (
+            <p className={styles.empty}>No unfinished games to show.</p>
+          ) : (
+            <GameGrid games={nearest.data.games} identifier={identifier} />
+          )}
         </section>
       )}
     </div>
+  );
+}
+
+function Skeletons() {
+  return (
+    <ul className={styles.grid} aria-hidden>
+      {Array.from({ length: SKELETON_TILES }, (_, i) => (
+        <li key={i} className={styles.skeleton} />
+      ))}
+    </ul>
+  );
+}
+
+function GameGrid({ games, identifier }: { games: PlayerGame[]; identifier: string }) {
+  return (
+    <ul className={styles.grid}>
+      {games.map((g) => (
+        <GameTile key={g.titleId} game={g} to={gameAchievementsPath(identifier, g.titleId)} />
+      ))}
+    </ul>
   );
 }
 

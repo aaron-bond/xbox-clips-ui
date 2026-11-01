@@ -12,8 +12,41 @@
 
 .sectionHead {
   display: flex;
-  align-items: baseline;
-  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.sort {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.sortButton {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sortButton:hover {
+  border-color: var(--accent);
+}
+
+.sortButton.on {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .note,
@@ -186,6 +219,29 @@
 @media (max-width: 720px) {
   .page {
     padding: 0 var(--gutter);
+  }
+
+  .sectionHead :global(.section-title) {
+    width: 100%;
+  }
+
+  .sort {
+    order: 1;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sortButton {
+    flex: 1;
+    padding: 0 10px;
+  }
+
+  .sortButton + .sortButton {
+    flex: 2;
+  }
+
+  .note {
+    order: 2;
   }
 
   .grid {

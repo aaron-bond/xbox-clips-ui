@@ -804,6 +804,73 @@ describe('achievements', () => {
     });
   });
 
+  describe('nearest completion', () => {
+    const GAMES = '/api/v1/players/TestPlayer/games';
+    const NEAREST = '/api/v1/players/TestPlayer/nearest-completion';
+    const recent = { body: { xuid: XUID, games: [game(1)], limited: true } };
+    const close = game(7, { name: 'Almost', gamerscore: 990, totalGamerscore: 1000 });
+    const base = { [GAMES]: recent, '/api/v1/players/TestPlayer': { body: profile }, '/api/v1/players/TestPlayer/mythics': { body: { xuid: XUID, mythics: 0 } } };
+    const press = () => userEvent.click(screen.getByRole('button', { name: 'Nearest completion' }));
+
+    it('searches only when the button is pressed, shows the list, and goes back to Recent without asking again', async () => {
+      const paths = stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [close], capped: true } } });
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      expect(paths).not.toContain(NEAREST);
+      await press();
+      expect(await screen.findByRole('link', { name: /Almost/ })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 2, name: 'Nearest completion' })).toBeInTheDocument();
+      expect(screen.getByText('From their last 1,000 games')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Nearest completion' })).toHaveAttribute('aria-pressed', 'true');
+      await userEvent.click(screen.getByRole('button', { name: 'Recent' }));
+      expect(await screen.findByRole('link', { name: /Game 1/ })).toBeInTheDocument();
+      await press();
+      await screen.findByRole('link', { name: /Almost/ });
+      expect(paths.filter((p) => p === NEAREST)).toHaveLength(1);
+    });
+
+    it('says when the whole history was searched, and when nothing is unfinished', async () => {
+      stubRoutes({ ...base, [NEAREST]: { body: { xuid: XUID, games: [], capped: false } } });
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      await press();
+      expect(await screen.findByText('No unfinished games to show.')).toBeInTheDocument();
+      expect(screen.getByText('From their whole history')).toBeInTheDocument();
+    });
+
+    it('says the search is slow while it runs, and offers Try again if it fails', async () => {
+      let release = () => {};
+      const held = new Promise<void>((r) => (release = r));
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async (input: RequestInfo | URL) => {
+          const path = new URL(String(input)).pathname;
+          if (path === NEAREST) {
+            await held;
+            return new Response(JSON.stringify({ error: { code: 'UPSTREAM_ERROR', message: 'Xbox data is temporarily unavailable.', status: 502 } }), { status: 502 });
+          }
+          const body = path === GAMES ? recent.body : profile;
+          return new Response(JSON.stringify(body), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        }),
+      );
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByRole('region', { name: 'Recent games' });
+      await press();
+      expect(await screen.findByRole('status')).toHaveTextContent('This can take up to 30 seconds');
+      release();
+      expect(await screen.findByRole('button', { name: /try again/i })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'Recent' }));
+      expect(await screen.findByRole('link', { name: /Game 1/ })).toBeInTheDocument();
+    });
+
+    it('does not offer the sort when the history is hidden', async () => {
+      stubRoutes({ [GAMES]: { body: { xuid: XUID, games: [], limited: false } }, '/api/v1/players/TestPlayer': { body: profile } });
+      renderAt('/player/TestPlayer/achievements');
+      await screen.findByText(/game history isn't public/);
+      expect(screen.queryByRole('button', { name: 'Nearest completion' })).toBeNull();
+    });
+  });
+
   it('says so when a game history is hidden', async () => {
     stubRoutes({ '/api/v1/players/TestPlayer/games': { body: { xuid: XUID, games: [], limited: false } }, '/api/v1/players/TestPlayer': { body: profile } });
     renderAt('/player/TestPlayer/achievements');
