@@ -15,6 +15,13 @@
   margin-top: 4px;
 }
 
+/* On phones the buttons sit under the replay instead. */
+@media (max-width: 720px) {
+  .share {
+    display: none;
+  }
+}
+
 .empty {
   display: grid;
   place-items: center;

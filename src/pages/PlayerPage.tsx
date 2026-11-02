@@ -120,7 +120,12 @@ function PlayerReel({ identifier, name }: { identifier: string; name: string | n
     return (
       <div className={styles.page}>
         <div className={styles.top}>
-          <Replay clip={current} gamertag={gamertag} refresh={async () => (await replay.refetch()).data} />
+          <Replay
+            clip={current}
+            gamertag={gamertag}
+            actions={<ShareButtons url={shareUrl} title={current.gameTitle} label="Copy link" compact />}
+            refresh={async () => (await replay.refetch()).data}
+          />
           <PlayerCard profile={profile} gamertag={gamertag} identifier={identifier} clips={reel}>
             <div className={styles.share}>
               <ShareButtons url={shareUrl} title={current.gameTitle} label="Copy replay link" />

@@ -16,11 +16,24 @@
   padding: 0;
 }
 
-.row .share svg {
+.row svg {
   width: 20px;
   height: 20px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
   stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.compact {
+  gap: 8px;
+}
+
+.compact .copy,
+.compact .share {
+  flex: none;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
 }

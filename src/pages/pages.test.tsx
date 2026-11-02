@@ -318,6 +318,16 @@ describe('player page', () => {
     expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/clip/${XUID}/${CLIP_ID}`);
   });
 
+  it('copies the replay link from the icon on the replay', async () => {
+    const writeText = vi.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    stubRoutes({ '/api/v1/players/TestPlayer': { body: profile }, [`/api/v1/players/${XUID}/clips`]: { body: clipsOf(twoClips) } });
+    renderAt('/player/TestPlayer');
+    await userEvent.click(await screen.findByRole('button', { name: 'Copy link' }));
+    expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/clip/${XUID}/${CLIP_ID}`);
+    expect(await screen.findAllByText('Link copied to clipboard')).not.toHaveLength(0);
+  });
+
   it('opens an up-next clip without another clip request', async () => {
     const paths = stubRoutes({
       '/api/v1/players/TestPlayer': { body: profile },

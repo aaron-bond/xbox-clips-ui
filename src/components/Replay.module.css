@@ -49,6 +49,14 @@
   max-width: 100%;
 }
 
+.detail {
+  display: contents;
+}
+
+.actions {
+  display: none;
+}
+
 @media (max-width: 720px) {
   .frame {
     border-radius: 0;
@@ -59,4 +67,25 @@
     left: 10px;
   }
 
+  /* The bar runs edge to edge, so the buttons sit in the same place on every clip. */
+  .detail {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px var(--gutter);
+    background: var(--bg-deep);
+  }
+
+  .detail :global(.strap-sub) {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .actions {
+    display: block;
+    flex: none;
+  }
 }

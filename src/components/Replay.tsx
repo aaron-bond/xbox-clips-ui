@@ -8,6 +8,8 @@ interface Props {
   clip: Clip;
   /** Shown on the strap's detail bar. */
   gamertag?: string;
+  /** Buttons for the detail bar, shown on phones only. */
+  actions?: ReactNode;
   /** Fetches the clip again for a fresh media URL. Resolves to the updated clip. */
   refresh: () => Promise<Clip | undefined>;
 }
@@ -24,7 +26,7 @@ type State = 'playing' | 'retrying' | 'failed';
  * early, so a playback error triggers exactly one automatic refetch; a second
  * failure waits for the visitor (PLAN-v1.md §5).
  */
-export function Replay({ clip, gamertag, refresh }: Props) {
+export function Replay({ clip, gamertag, actions, refresh }: Props) {
   const [state, setState] = useState<State>('playing');
   const [retried, setRetried] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -59,6 +61,8 @@ export function Replay({ clip, gamertag, refresh }: Props) {
     formatDate(clip.recordedAt),
     viewsWorthShowing(clip) ? formatViews(clip.views) : null,
   ].filter(Boolean);
+
+  const sub = <span className="strap-sub">{details.join(' · ')}</span>;
 
   let screen: ReactNode;
   if (!clip.media) {
@@ -97,7 +101,14 @@ export function Replay({ clip, gamertag, refresh }: Props) {
       </div>
       <figcaption className={`strap ${styles.strap}`}>
         <span className="strap-title">{clip.gameTitle || 'Xbox clip'}</span>
-        <span className="strap-sub">{details.join(' · ')}</span>
+        {actions ? (
+          <div className={styles.detail}>
+            {sub}
+            <div className={styles.actions}>{actions}</div>
+          </div>
+        ) : (
+          sub
+        )}
       </figcaption>
     </figure>
   );

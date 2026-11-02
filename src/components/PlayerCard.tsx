@@ -86,10 +86,11 @@ function PinButton({ profile }: { profile: PlayerProfile }) {
       className={on ? `${styles.pin} ${styles.pinOn}` : styles.pin}
       aria-pressed={on}
       disabled={full}
+      aria-label={on ? 'Pinned' : undefined}
       title={full ? `Unpin someone first: up to ${MAX_PINNED} players can be pinned` : undefined}
       onClick={() => togglePin({ xuid: profile.xuid, gamertag: profile.gamertag, gamerpicUrl: profile.gamerpicUrl })}
     >
-      <span aria-hidden>{on ? '★' : '☆'}</span> {on ? 'Pinned' : 'Pin'}
+      <span aria-hidden>{on ? '★' : '☆'}</span> {!on && 'Pin'}
     </button>
   );
 }

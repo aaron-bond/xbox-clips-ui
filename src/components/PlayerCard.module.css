@@ -41,6 +41,8 @@
 .pin {
   flex: none;
   align-self: flex-start;
+  min-width: 44px;
+  min-height: 44px;
   padding: 7px 12px;
   border: 2px solid var(--accent);
   border-radius: var(--radius);
