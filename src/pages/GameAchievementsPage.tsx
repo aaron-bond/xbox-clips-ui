@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { useParams } from 'react-router';
-import type { Achievement, GameAchievements } from '../api/types';
+import { useLocation, useParams } from 'react-router';
+import type { Achievement, GameAchievements, PlayerGame } from '../api/types';
 import { ErrorMessage } from '../components/ErrorMessage';
 import { Loading } from '../components/Loading';
 import { Laurel } from '../components/Laurel';
@@ -51,14 +51,17 @@ function ordered(list: Achievement[]): Achievement[] {
 function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameAchievements; identifier: string; gamertag: string; gamerpicUrl: string | null }) {
   const [tab, setTab] = useState<Tab>('all');
   const [revealed, setRevealed] = useState<Set<string>>(new Set());
+  // The API knows only the recent games. An older one opened from a list arrives with its details.
+  const opened = (useLocation().state as { game?: PlayerGame } | null)?.game;
+  const game = data.game ?? (opened?.titleId === data.titleId ? opened : null);
   const all = ordered(data.achievements);
   const earned = all.filter(unlocked);
-  const name = data.game?.name ?? data.titleName ?? 'Achievements';
+  const name = game?.name ?? data.titleName ?? 'Achievements';
   const gs = earned.reduce((n, a) => n + a.gamerscore, 0);
-  const total = data.lockedListed ? all.reduce((n, a) => n + a.gamerscore, 0) : (data.game?.totalGamerscore ?? 0);
+  const total = data.lockedListed ? all.reduce((n, a) => n + a.gamerscore, 0) : (game?.totalGamerscore ?? 0);
   const rarest = earned.filter((a) => a.rarity).sort((a, b) => a.rarity!.percent - b.rarity!.percent)[0];
   // A game outside the recent 100 has no flag, but every achievement unlocked shows it.
-  const mythic = data.game?.mythic === true || (data.lockedListed && all.length > 0 && earned.length === all.length);
+  const mythic = game?.mythic === true || (data.lockedListed && all.length > 0 && earned.length === all.length);
   const counts = { all: all.length, unlocked: earned.length, progress: all.filter(inProgress).length, locked: all.length - earned.length - all.filter(inProgress).length };
   const tabs: [Tab, string][] = [
     ['all', 'All'],
@@ -82,7 +85,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
         />
       </div>
       <header className={styles.banner}>
-        {data.game?.imageUrl && <img src={storeImage(data.game.imageUrl, 440)} alt="" className={styles.art} onError={hideBroken} />}
+        {game?.imageUrl && <img src={storeImage(game.imageUrl, 440)} alt="" className={styles.art} onError={hideBroken} />}
         <div className={styles.strap}>
           <span className={styles.kicker}>Achievements</span>
           <h1 className="strap-title">{name}</h1>
@@ -139,7 +142,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
         {all.length === 0 && <p className={styles.note}>No achievements to show for this game.</p>}
         <ul className={styles.rows}>
           {shown.map((a) => (
-            <AchievementRow key={a.id} a={a} revealed={revealed.has(a.id)} onReveal={() => setRevealed(new Set(revealed).add(a.id))} fallbackArt={data.game?.imageUrl ?? null} />
+            <AchievementRow key={a.id} a={a} revealed={revealed.has(a.id)} onReveal={() => setRevealed(new Set(revealed).add(a.id))} fallbackArt={game?.imageUrl ?? null} />
           ))}
         </ul>
       </section>

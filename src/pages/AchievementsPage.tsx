@@ -165,7 +165,7 @@ function GameTile({ game, to }: { game: PlayerGame; to: string }) {
   const pct = game.totalGamerscore > 0 ? Math.min(100, Math.round((100 * game.gamerscore) / game.totalGamerscore)) : 0;
   return (
     <li>
-      <Link to={to} className={styles.tile}>
+      <Link to={to} state={{ game }} className={styles.tile}>
         <span className={styles.art} data-loaded={game.imageUrl ? undefined : ''}>
           {game.imageUrl && <img src={storeImage(game.imageUrl, 300)} alt="" loading="lazy" onLoad={markLoaded} onError={hideBroken} />}
           {game.xbox360 && <span className={styles.platform}>Xbox 360</span>}

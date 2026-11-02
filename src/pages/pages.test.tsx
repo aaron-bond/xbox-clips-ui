@@ -795,6 +795,22 @@ describe('achievements', () => {
       expect(await screen.findByText('Mythic')).toBeInTheDocument();
     });
 
+    it('keeps the art, name, total and Mythic of an older game opened from the list', async () => {
+      const older = game(1, { xbox360: true, name: 'Older game', mythic: true, gamerscore: 400, totalGamerscore: 2195 });
+      stubRoutes({
+        [GAMES]: page([older]),
+        [MYTHICS]: { body: { xuid: XUID, mythics: 1 } },
+        '/api/v1/players/TestPlayer/achievements/101': { body: list({ game: null, lockedListed: false, achievements: [ach('1', { unlockedAt: '2026-10-01T10:00:00Z', gamerscore: 400 })] }) },
+        '/api/v1/players/TestPlayer': { body: profile },
+      });
+      const { container } = renderAt('/player/TestPlayer/achievements');
+      await userEvent.click(await screen.findByRole('link', { name: /Older game/ }));
+      expect(await screen.findByRole('heading', { name: 'Older game' })).toBeInTheDocument();
+      expect(container.querySelector('header img')).toHaveAttribute('src', 'https://store-images.test/g?w=440');
+      expect(screen.getByText('/ 2,195 G')).toBeInTheDocument();
+      expect(screen.getByText('Mythic')).toBeInTheDocument();
+    });
+
     it('does not call an Xbox 360 game Mythic just because every listed achievement is unlocked', async () => {
       stubRoutes({ '/api/v1/players/TestPlayer/achievements/101': { body: list({ lockedListed: false, achievements: [ach('1', { unlockedAt: '2026-10-01T10:00:00Z' })] }) }, '/api/v1/players/TestPlayer': { body: profile } });
       renderAt('/player/TestPlayer/achievements/101');
