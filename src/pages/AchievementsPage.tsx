@@ -155,10 +155,10 @@ function MythicCount({ loading, count }: { loading: boolean; count: number }) {
   );
 }
 
-/** "6 days ago" for recent play; just the year once it's over a year back. */
+/** "Played 6 days ago" for recent play; just the year once it's over a year back. */
 function lastPlayedLabel(iso: string, now = Date.now()) {
   const days = (now - Date.parse(iso)) / 86_400_000;
-  return days > 365 ? `last played ${new Date(iso).getFullYear()}` : daysAgo(iso).toLowerCase();
+  return days > 365 ? `Played in ${new Date(iso).getFullYear()}` : `Played ${daysAgo(iso).toLowerCase()}`;
 }
 
 function GameTile({ game, to }: { game: PlayerGame; to: string }) {
@@ -171,7 +171,9 @@ function GameTile({ game, to }: { game: PlayerGame; to: string }) {
           {game.xbox360 && <span className={styles.platform}>Xbox 360</span>}
         </span>
         <span className={styles.nameRow}>
-          <span className={styles.gameName}>{game.name}</span>
+          <span className={styles.gameName} title={game.name}>
+            {game.name}
+          </span>
           {game.mythic && <Laurel size={34} label="Mythic" />}
         </span>
         {game.totalGamerscore > 0 ? (
@@ -188,8 +190,9 @@ function GameTile({ game, to }: { game: PlayerGame; to: string }) {
         )}
         <span className={styles.meta}>
           {game.unlocked} {game.unlocked === 1 ? 'achievement' : 'achievements'}
-          {game.lastPlayed && ` · ${lastPlayedLabel(game.lastPlayed)}`}
         </span>
+        {/* Its own line: beside the count it wraps on narrow tiles and unsettles the row. */}
+        {game.lastPlayed && <span className={styles.meta}>{lastPlayedLabel(game.lastPlayed)}</span>}
       </Link>
     </li>
   );

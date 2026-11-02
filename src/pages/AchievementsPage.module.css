@@ -69,6 +69,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* Fills its grid row, so the score and bar line up along the row's foot. */
+  height: 100%;
   color: var(--text);
   text-decoration: none;
 }
@@ -124,6 +126,7 @@
 }
 
 .nameRow {
+  flex: 1;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -134,6 +137,11 @@
   min-width: 0;
   font-weight: 600;
   line-height: 1.25;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
 }
 
 .count {
@@ -186,6 +194,11 @@
 .meta {
   color: var(--muted);
   font-size: 0.8rem;
+}
+
+/* The count and the date read as one block under the bar. */
+.meta + .meta {
+  margin-top: -6px;
 }
 
 .skeleton {
