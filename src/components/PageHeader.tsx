@@ -26,18 +26,15 @@ export function PageHeader({ gamertag, gamerpicUrl, playerTo, kicker, back, head
   const Name = heading ? 'h1' : 'p';
   return (
     <header className={styles.head}>
-      {/* The gamertag beside it is the same link, for keyboards and screen readers. */}
-      <Link to={playerTo} tabIndex={-1} aria-hidden className={styles.picLink}>
+      {/* One link round the picture and gamertag, so a thumb can't miss it. Named
+          for the gamertag alone: the kicker under it describes this page, not the player's. */}
+      <Link to={playerTo} aria-label={gamertag} className={styles.who}>
         {gamerpicUrl ? <img src={gamerpicUrl} alt="" width={56} height={56} className={styles.pic} /> : <span className={styles.pic} />}
+        <div className={styles.titles}>
+          <Name className={styles.name}>{gamertag}</Name>
+          {kicker && <span className={styles.kicker}>{kicker}</span>}
+        </div>
       </Link>
-      <div className={styles.titles}>
-        <Name className={styles.name}>
-          <Link to={playerTo} className={styles.nameLink}>
-            {gamertag}
-          </Link>
-        </Name>
-        {kicker && <span className={styles.kicker}>{kicker}</span>}
-      </div>
       {aside && <div className={styles.aside}>{aside}</div>}
       {back && (
         <Link to={back.to} className={`btn-outline ${styles.back}`}>
