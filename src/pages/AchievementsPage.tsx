@@ -99,7 +99,7 @@ export function AchievementsPage() {
             <ErrorMessage error={nearest.error} onRetry={() => void nearest.refetch()} />
           ) : sort === 'mythics' ? (
             <>
-              {nearest.data.mythics.length === 0 ? <p className={styles.empty}>No Mythics to show.</p> : <GameGrid games={nearest.data.mythics} identifier={identifier} />}
+              {nearest.data.mythics.length === 0 ? <p className={styles.empty}>No Mythic Achievements yet!</p> : <GameGrid games={nearest.data.mythics} identifier={identifier} />}
               {note && <p className={styles.footNote}>{note}</p>}
             </>
           ) : nearest.data.games.length === 0 ? (
@@ -150,7 +150,7 @@ function MythicCount({ loading, count }: { loading: boolean; count: number }) {
   return (
     <span className={styles.count}>
       <Laurel size={34} />
-      {count} {count === 1 ? 'Mythic' : 'Mythics'}
+      {count} Mythic
     </span>
   );
 }

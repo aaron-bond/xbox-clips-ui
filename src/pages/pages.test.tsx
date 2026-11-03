@@ -732,7 +732,7 @@ describe('achievements', () => {
     it('marks a Mythic game below 100% with the laurel and a gold bar showing the real percentage', async () => {
       stubRoutes({ [GAMES]: page([mythic, game(2)]), [MYTHICS]: { body: { xuid: XUID, mythics: 13 } }, '/api/v1/players/TestPlayer': { body: profile } });
       renderAt('/player/TestPlayer/achievements');
-      expect(await screen.findByText('13 Mythics')).toBeInTheDocument();
+      expect(await screen.findByText('13 Mythic')).toBeInTheDocument();
       const [first, second] = within(screen.getByRole('region', { name: 'Recent games' })).getAllByRole('link');
       expect(within(first!).getByRole('img', { name: 'Mythic' })).toBeInTheDocument();
       expect(within(first!).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '91');
@@ -750,7 +750,7 @@ describe('achievements', () => {
       const second = renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await waitFor(() => expect(second.container.querySelector('[class*="countLoading"]')).toBeNull());
-      expect(screen.queryByText(/^\d+ Mythics?$/)).toBeNull();
+      expect(screen.queryByText(/^\d+ Mythic$/)).toBeNull();
     });
 
     it('holds a placeholder while the count loads, and leaves it out if it fails', async () => {
@@ -773,7 +773,7 @@ describe('achievements', () => {
       expect(container.querySelector('[class*="countLoading"]')).not.toBeNull();
       release();
       await waitFor(() => expect(container.querySelector('[class*="countLoading"]')).toBeNull());
-      expect(screen.queryByText(/^\d+ Mythics?$/)).toBeNull();
+      expect(screen.queryByText(/^\d+ Mythic$/)).toBeNull();
       expect(screen.getByRole('img', { name: 'Mythic' })).toBeInTheDocument();
       expect(screen.queryByRole('alert')).toBeNull();
     });
@@ -861,7 +861,7 @@ describe('achievements', () => {
       const paths = stubRoutes({ ...base, '/api/v1/players/TestPlayer/mythics': { body: { xuid: XUID, mythics: 13 } }, [NEAREST]: { body: { xuid: XUID, games: [close], mythics: [low], capped: true } } });
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
-      await screen.findByText('13 Mythics');
+      await screen.findByText('13 Mythic');
       await userEvent.click(screen.getByRole('button', { name: 'Mythic' }));
       expect(await screen.findByRole('link', { name: /Low Mythic/ })).toBeInTheDocument();
       expect(screen.getByRole('heading', { level: 2, name: 'Mythic' })).toBeInTheDocument();
@@ -878,7 +878,7 @@ describe('achievements', () => {
       renderAt('/player/TestPlayer/achievements');
       await screen.findByRole('region', { name: 'Recent games' });
       await userEvent.click(screen.getByRole('button', { name: 'Mythic' }));
-      expect(await screen.findByText('No Mythics to show.')).toBeInTheDocument();
+      expect(await screen.findByText('No Mythic Achievements yet!')).toBeInTheDocument();
       expect(screen.queryByText(/whole history/)).toBeNull();
     });
 
