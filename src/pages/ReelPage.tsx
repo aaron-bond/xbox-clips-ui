@@ -40,7 +40,7 @@ function Reel({ identifier, name }: { identifier: string; name: string | null })
           gamertag={p?.gamertag ?? name ?? 'This player'}
           gamerpicUrl={p?.gamerpicUrl ?? null}
           kicker="Clips"
-          back={{ to: playerPath(identifier), label: 'Back to player' }}
+          playerTo={playerPath(identifier)}
         />
         {reel.length > 0 ? (
           <UpNext clips={reel} title={reel.length === 1 ? 'The only clip' : `All ${reel.length} clips`} />

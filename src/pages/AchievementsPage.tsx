@@ -53,7 +53,7 @@ export function AchievementsPage() {
         gamertag={gamertag}
         gamerpicUrl={profile.data?.gamerpicUrl ?? null}
         kicker="Achievements"
-        back={{ to: playerPath(identifier), label: 'Back to player' }}
+        playerTo={playerPath(identifier)}
         aside={<MythicCount loading={games.isPending || (hasGames && mythics.isPending)} count={mythics.data?.mythics ?? 0} />}
       />
 

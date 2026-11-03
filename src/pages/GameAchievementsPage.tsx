@@ -6,7 +6,7 @@ import { ErrorMessage } from '../components/ErrorMessage';
 import { Loading } from '../components/Loading';
 import { Laurel } from '../components/Laurel';
 import { PageHeader } from '../components/PageHeader';
-import { achievementsPath, formatDate, formatPlaytime } from '../lib/format';
+import { achievementsPath, formatDate, formatPlaytime, playerPath } from '../lib/format';
 import { storeImage } from '../lib/games';
 import { hideBroken, markLoaded } from '../lib/images';
 import { achievementsQuery, playerQuery } from '../lib/queries';
@@ -79,6 +79,7 @@ function Achievements({ data, identifier, gamertag, gamerpicUrl }: { data: GameA
         <PageHeader
           gamertag={gamertag}
           gamerpicUrl={gamerpicUrl}
+          playerTo={playerPath(identifier)}
           kicker="Achievements"
           back={{ to: achievementsPath(identifier), label: 'Back to games' }}
           heading={false}

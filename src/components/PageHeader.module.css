@@ -15,6 +15,11 @@
   box-sizing: border-box;
 }
 
+.picLink {
+  flex: none;
+  display: block;
+}
+
 .titles {
   display: flex;
   flex-direction: column;
@@ -30,6 +35,14 @@
   line-height: 1;
   text-transform: uppercase;
   overflow-wrap: anywhere;
+}
+
+.nameLink {
+  text-decoration: none;
+}
+
+.nameLink:hover {
+  color: var(--accent);
 }
 
 .kicker {

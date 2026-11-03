@@ -592,7 +592,8 @@ describe('reel page', () => {
     const all = await screen.findByRole('region', { name: 'All 12 clips' });
     expect(within(all).getAllByRole('link')).toHaveLength(12);
     expect(screen.getByRole('heading', { level: 1, name: 'TestPlayer' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Back to player' })).toHaveAttribute('href', '/player/TestPlayer');
+    expect(screen.getByRole('link', { name: 'TestPlayer' })).toHaveAttribute('href', '/player/TestPlayer');
+    expect(screen.queryByRole('link', { name: /^Back/ })).toBeNull();
     expect(new Set(playerPaths(paths))).toEqual(new Set(['/api/v1/players/TestPlayer', `/api/v1/players/${XUID}/clips?limit=100`]));
   });
 
@@ -700,7 +701,8 @@ describe('achievements', () => {
     expect(links.map((l) => l.getAttribute('href'))).toEqual(['/player/TestPlayer/achievements/101', '/player/TestPlayer/achievements/102']);
     expect(within(links[0]!).getByText('330')).toBeInTheDocument();
     expect(within(links[1]!).getByText('Xbox 360')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Back to player' })).toHaveAttribute('href', '/player/TestPlayer');
+    expect(screen.getByRole('link', { name: 'TestPlayer' })).toHaveAttribute('href', '/player/TestPlayer');
+    expect(screen.queryByRole('link', { name: /^Back/ })).toBeNull();
   });
 
   it('shows a loading spinner until the games arrive', async () => {
