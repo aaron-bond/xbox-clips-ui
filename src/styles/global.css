@@ -40,6 +40,23 @@ body {
   color: var(--text);
 }
 
+/* Wide screens: the 1280px column keeps the navy, edged by a faint line, and the
+   space either side falls away to near black so the eye stays on the middle. */
+@media (min-width: 1360px) {
+  body {
+    background:
+      linear-gradient(
+        to right,
+        transparent calc(50% - 641px),
+        var(--line) calc(50% - 641px) calc(50% - 640px),
+        transparent calc(50% - 640px) calc(50% + 640px),
+        var(--line) calc(50% + 640px) calc(50% + 641px),
+        transparent calc(50% + 641px)
+      ),
+      linear-gradient(to right, #010811, var(--bg) calc(50% - 640px) calc(50% + 640px), #010811);
+  }
+}
+
 a {
   color: inherit;
 }
