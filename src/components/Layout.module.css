@@ -4,8 +4,7 @@
   min-height: 100vh;
 }
 
-/* As tall on the home page, which has no header search, as on every other page,
-   where the search box sets the height: the logo sits the same everywhere. */
+/* Every page but home, which opens on its own headline and search box. */
 .header {
   display: flex;
   align-items: center;

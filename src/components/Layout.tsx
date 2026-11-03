@@ -5,17 +5,20 @@ import { Ticker } from './Ticker';
 import styles from './Layout.module.css';
 
 export function Layout() {
-  // The home page has its own large search box; the header's would duplicate it.
+  // The home page has no header: its headline and large search box open the page,
+  // and the logo on its own there would only float above them.
   const isHome = useLocation().pathname === '/';
   return (
     <div className={styles.shell}>
       <Ticker />
-      <header className={styles.header}>
-        <Link to="/" className={styles.brand} aria-label="Xbox Clips home">
-          XBOX<span>CLIPS</span>
-        </Link>
-        {!isHome && <SearchBox compact />}
-      </header>
+      {!isHome && (
+        <header className={styles.header}>
+          <Link to="/" className={styles.brand} aria-label="Xbox Clips home">
+            XBOX<span>CLIPS</span>
+          </Link>
+          <SearchBox compact />
+        </header>
+      )}
       <main className={styles.main}>
         <Outlet />
       </main>
