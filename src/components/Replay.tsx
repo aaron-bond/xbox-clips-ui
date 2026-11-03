@@ -8,7 +8,7 @@ interface Props {
   clip: Clip;
   /** Shown on the strap's detail bar. */
   gamertag?: string;
-  /** Buttons for the detail bar, shown on phones only. */
+  /** Buttons beside the strap; on phones, at the end of the detail bar. */
   actions?: ReactNode;
   /** Fetches the clip again for a fresh media URL. Resolves to the updated clip. */
   refresh: () => Promise<Clip | undefined>;
@@ -99,7 +99,7 @@ export function Replay({ clip, gamertag, actions, refresh }: Props) {
           <span className="badge badge-dark">{formatDuration(clip.durationSeconds)}</span>
         </span>
       </div>
-      <figcaption className={`strap ${styles.strap}`}>
+      <figcaption className={`strap ${styles.strap}${actions ? ` ${styles.withActions}` : ''}`}>
         <span className="strap-title">{clip.gameTitle || 'Xbox clip'}</span>
         {actions ? (
           <div className={styles.detail}>

@@ -46,6 +46,7 @@
 /* The name strap sits flush below the picture, always visible, so it never
    covers the clip or its controls. */
 .strap {
+  position: relative;
   max-width: 100%;
 }
 
@@ -53,8 +54,17 @@
   display: contents;
 }
 
+/* Room for the buttons, so a long game name never runs under them. */
+.withActions {
+  padding-right: 112px;
+}
+
+/* In the space beside the strap, under the picture's right edge. */
 .actions {
-  display: none;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
 }
 
 @media (max-width: 720px) {
@@ -65,6 +75,10 @@
   .badges {
     top: 10px;
     left: 10px;
+  }
+
+  .withActions {
+    padding-right: 0;
   }
 
   /* The bar runs edge to edge, so the buttons sit in the same place on every clip. */
@@ -85,7 +99,8 @@
   }
 
   .actions {
-    display: block;
+    position: static;
+    transform: none;
     flex: none;
   }
 }
