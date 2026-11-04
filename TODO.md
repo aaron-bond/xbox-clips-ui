@@ -5,14 +5,11 @@ any trade-off made.
 
 ## Next
 
-- [ ] **Observability, across the UI and the API.** Needs a proper plan of
-      attack before anything is built; the same item is in the API's
-      TODO. The UI side: report errors and a few events from the browser to a
-      monitoring service, on a free tier if one fits, so we can track and
-      alert rather than hear about problems from users. Record user agents
-      with them, to see how many visitors hit device-specific issues (see
-      Android full screen, below). Several items here and in the API's list
-      wait on the data this gives.
+- [ ] **Observability, across the UI and the API.** UI plan in PLAN §14,
+      starting with whether it's worth doing (§14.1) and its spike
+      (§14.6); the API's plan is its PLAN §11. Several items here and in
+      the API's list (Android full screen, below) wait on the data this
+      gives.
 
 ## Deferred
 

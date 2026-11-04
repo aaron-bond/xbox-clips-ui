@@ -369,7 +369,8 @@ zone is on Cloudflare. It is not needed for v1.
 - **Pagination** beyond the first page of clips.
 - **Short share links.** Possible without stored state by packing both
   identifiers into one code; not needed yet.
-- **Logs and analytics.** To be handled separately.
+- **Analytics.** Error reporting is planned in §14; page views and
+  analytics stay out of scope.
 - **Screenshots, accounts, any database.**
 - **Locking the API to this site.** Deferred (2026-10-23) until abuse is
   seen, such as the shared upstream budget running low. If it is, the
@@ -887,5 +888,157 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **A second player for comparison** (the rest of P2): add another
-   gamertag to the achievement view and compare.
+1. **Observability** (§14), after the API's (API `PLAN-v1.md` §11),
+   starting with the spike in §14.6. A second player for comparison (the
+   rest of P2) was deferred indefinitely on 2026-11-03.
+
+## 14. Observability
+
+Drafted 2026-11-04, after the API's plan (API repo, `PLAN-v1.md` §11),
+whose decisions this follows where they apply. Nothing here is built.
+Unlike the API's, this plan starts by asking whether the work is worth
+doing at all (§14.1); "no", or "only the smallest version", are
+acceptable outcomes.
+
+### 14.1 Is it worth it?
+
+The UI logs nothing today. Every failure is handled quietly in the
+browser and lost: render errors end on the router's error page, failed
+API calls show the visitor a message, playback errors retry silently,
+broken images are hidden, and the preview function falls back to the
+plain page.
+
+Much of what the UI could report is already in the API's logs: any API
+error the browser receives was logged by the API first. **The UI does not
+report API errors.** What only the browser can see:
+
+| Failure | Why the API can't see it | Value |
+| :--- | :--- | :--- |
+| Video playback fails | Media streams from Xbox's CDN straight to the browser (§5) | **High.** Playback is the product, and this is the evidence the API's closed question O1 ("some media URLs die before their `expiration`") waits on |
+| The app crashes or a page fails to render | Happens after a successful response | **High.** Today it ends on a generic error page and nobody knows |
+| A request gets no usable answer | It never reached the API (offline, DNS), or the browser refused the response: a CORS slip on a new preview origin is a `200` in the API's logs and a failure here | Medium: rare, invisible otherwise |
+| Device and browser problems (Android full screen, install) | Needs the user agent and what happened on screen | Medium: the deferred Android item (TODO) waits on this |
+| Images fail (store art, older Xbox 360 art) | Served by Xbox and the store directly | Low: already handled by hiding the image |
+
+Against that, the costs:
+
+- **Bundle weight.** 127 KB gzipped today. A full error-tracking SDK adds
+  perhaps 20-30 KB gzipped (to be measured, §14.6).
+- **Privacy.** IPs, user agents and the gamertags in URLs are personal
+  data. The site has no cookies, no analytics and no consent banner
+  today, and should keep it that way (§14.2).
+- **A third party** receiving data about visitors, and one more service
+  to look after.
+- **Effort**, small next to the API's: there is no existing logging to
+  migrate.
+
+**The decision rule.** Go ahead only if the spike (§14.6) finds a hosted
+service whose free tier fits, whose bundle cost is acceptable, and that
+can be set up without storing identifiers. If the SDK is too heavy, the
+fallback is a hand-rolled reporter for the two high-value events only
+(playback failed, app crashed), posting to the same service's ingest
+endpoint. If neither works, drop the feature and record why here.
+
+### 14.2 Constraints
+
+- **Best effort.** Browsers are uncontrolled: devices, extensions and
+  networks vary, and some reports will be lost. That is accepted.
+- **Straight to a hosted service, free tier.** The browser sends directly
+  to a service like Sentry. Ad blockers block the well-known ones, so
+  reports from visitors running one are lost. If that loss becomes a
+  problem, proxy through a Worker on our own domain, which also costs
+  Worker requests from the shared free allowance; not before.
+- **Events are sent as they happen.** They are rare (errors, not page
+  views), so nothing is batched and nothing needs flushing when the page
+  closes. No service worker exists to queue them, and none is added for
+  this.
+- **Privacy, without a consent banner.** No stored identifiers: a session
+  ID, if used, lives in memory only and dies with the tab. No gamertags:
+  reports carry route patterns (`/player/:id`), never URLs. IP storage
+  off at the service if it allows. A short privacy note on the site says
+  what is collected and why. (Error reporting without stored identifiers
+  generally doesn't need consent in the UK; this is a working reading,
+  not legal advice, and is checked before launch.) If these conditions
+  can't be met, the feature is dropped (§14.1).
+- **Abuse.** A browser-side key for a reporting service is public by
+  design, so anyone can send junk to that project. The service's own
+  limits and inbound filters (allowed domains, rate limits) are the first
+  line. If we proxy later, our own Worker can add more: short-lived
+  access tokens issued by the site, size limits, a per-IP limit. Not an
+  objection to starting, but recorded so it isn't forgotten.
+- **Readable stack traces.** The production build is minified and emits
+  no source maps. Error reports are hard to read without them; the
+  service may accept uploaded maps (built in CI, never published with the
+  site). Not a blocker: noted for the spike.
+
+### 14.3 Decisions so far
+
+- **Same conventions as the API.** A `Logger` interface of ours, events
+  from one registry with stable names, levels with `debug` only in local
+  builds, identifiers as separate fields, and alert-marked events (API
+  §11.2). The service's SDK, if used, sits behind it.
+- **Correlation through `X-Request-Id`.** The API returns its request ID
+  on every response (API §11.2). The API client keeps it, and any UI
+  event about that call carries `requestId`, so a report finds the API's
+  log lines for the same request.
+- **Alerting.** The service's own alerting, folded into the same quiet
+  end-of-day summary as the API's where it can be: nothing pages anyone.
+- **The preview function stays in this repo.** It is the UI's server
+  side (it rewrites the UI's own HTML, §7), so it is not moved to the API.
+  It logs as the API does, with the same interface, sends its own
+  `X-Request-Id` over the service binding (the API accepts a well-formed
+  one), and logs its fallbacks (timeout, API error) instead of swallowing
+  them silently. If keeping two copies of the logger aligned becomes a
+  chore, a small shared package solves it.
+
+### 14.4 Events
+
+Only what the browser alone can see (§14.1).
+
+| Event | When | Fields | Answers |
+| :--- | :--- | :--- | :--- |
+| `playback.failed` | The video element errors, before the automatic retry | Media error code, seconds until the URL's `expiration`, clip age, browser family, `requestId` of the clip fetch | Are URLs dying early, how early, on which browsers (API O1) |
+| `playback.recovered` / `playback.gave_up` | After the retry | As above | Does the one retry (§5) suffice |
+| `app.crashed` | Router error element, or an uncaught error or rejection | Message, stack, route pattern | What breaks and where |
+| `request.unanswered` | The API client gets no response or an unreadable one | Route pattern, error name | Network and CORS failures the API can't see |
+| `device.issue` | Reserved for specific cases such as the Android full-screen problem, added when needed | User agent, the case | How many visitors a device bug affects |
+
+Not reported: API error responses (the API has them), image failures
+(low value), page views and analytics (out of scope, §10).
+
+### 14.5 What would make this not worth it
+
+Recorded so the spike can end the work early: no free tier that fits;
+an SDK too heavy and a hand-rolled reporter not worth maintaining; a
+service that insists on storing IPs or setting identifiers; or, after a
+few weeks live, reports that tell us nothing the API's logs didn't.
+
+### 14.6 Spike, first in the work
+
+1. **The service.** Sentry's free tier (limits, retention, EU data
+   region, turning IP storage off, inbound filters, alert emails), and at
+   least one alternative (a Sentry-compatible host such as GlitchTip, or
+   Grafana Faro on Grafana Cloud's free tier). Verified against their
+   current pricing pages, not memory.
+2. **Bundle cost.** Build with and without the SDK, trimmed to errors
+   only (no tracing or session replay), and compare gzipped sizes.
+   Compare with a hand-rolled reporter posting to the same ingest
+   endpoint.
+3. **Privacy setup.** Confirm the chosen service can work with no stored
+   identifiers and route patterns instead of URLs; draft the privacy
+   note.
+4. **Source maps.** Whether the service takes uploaded maps from CI
+   without the maps being served by the site.
+5. **The preview function's logs.** Whether Pages Functions logs are kept
+   in Workers Logs as the API's are, or only seen live; that decides
+   where its events can be read.
+
+### 14.7 Order of work
+
+1. The spike; findings recorded here, ending with go, smallest version,
+   or drop (§14.1).
+2. If go: the logger and event registry, the `X-Request-Id` handling in
+   the API client, and the privacy note.
+3. `playback.*` and `app.crashed` first, the high-value pair.
+4. The preview function's logging.
+5. A few weeks live, then the §14.5 check: keep, trim, or remove.
