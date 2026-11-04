@@ -3,9 +3,28 @@
 Live backlog. Finished items keep a short note on what was actually built and
 any trade-off made.
 
-## Priorities (PLAN §13), in order
+## Next
 
-- [ ] **A second player for comparison** (rest of P2).
+- [ ] **Observability, across the UI and the API.** Needs a proper plan of
+      attack before anything is built; the same item is in the API's
+      TODO. The UI side: report errors and a few events from the browser to a
+      monitoring service, on a free tier if one fits, so we can track and
+      alert rather than hear about problems from users. Record user agents
+      with them, to see how many visitors hit device-specific issues (see
+      Android full screen, below). Several items here and in the API's list
+      wait on the data this gives.
+
+## Deferred
+
+- [ ] **A second player for comparison** (rest of P2). Deferred
+      indefinitely (2026-11-03): no visitor has asked for it, and it isn't
+      clear what it adds.
+- [ ] **Android full-screen workaround.** Overkill for now (2026-11-03).
+      Revisit once observability shows how many visitors it actually
+      affects.
+- [ ] **A fourth fact on the player card.** Parked (2026-11-03): every
+      candidate was too heavy (Mythics), too weak, or unreliable (presence).
+      Return to it if a good idea comes up.
 
 ## Later (PLAN §10)
 
@@ -15,8 +34,21 @@ any trade-off made.
       switched off.
 - [ ] Designed states for expired clips, empty reels and private reels (the
       API tells the last two apart).
+- [ ] Shared links to a game outside the player's recent 100 show no art or
+      name: the game page has only the list's data to go on. The store's
+      title endpoint has the art (about 58 KB per call); deliberately not
+      used yet.
 
 ## Done
+
+- [x] **Header and home page tidy** (2026-11-03). On the reel and games
+      pages the picture and gamertag are one link back to the player, which
+      replaced their Back to player buttons; a game's achievements page
+      keeps Back to games. The home page has no header: it opens on its
+      headline. Wide screens shade the space beside the 1280px column.
+      Replay share controls are icons beside the strap on every screen.
+      The Mythic count reads "15 Mythic", the laurel carrying the noun.
+
 
 - [x] **Nearest completion** (2026-11-01). A button on the Achievements page
       lists the 100 unfinished games nearest to complete, from the whole
@@ -43,6 +75,7 @@ any trade-off made.
 - [x] **Back navigation standardised** (2026-10-18). One shared header with an
       outline Back button on the reel, games and per-game achievements pages:
       "Back to player", or "Back to games" from a game's achievements.
+      (Back to player since replaced by the gamertag link, 2026-11-03.)
 
 
 - [x] **Loading states on the achievements pages** (2026-10-18). A spinner
