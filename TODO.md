@@ -9,7 +9,7 @@ any trade-off made.
       design and rollout are in the API's PLAN §6. This repo's part:
       `functions/api/[[path]].ts` forwarding `/api/*` over the `API`
       binding with a same-origin check (report-only first, then
-      enforced), `VITE_API_BASE_URL` empty in production, and the Vite
+      enforced), the app calling `/api/...` on its own origin, and the Vite
       dev server forwarding `/api` to `https://xboxclips.io`. Ship to a
       branch preview first. Re-test local development after Bot Fight
       Mode goes on.

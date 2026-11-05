@@ -29,13 +29,15 @@ export interface ApiClient {
   getScreenshots(productId: string): Promise<{ screenshots: Screenshot[] }>;
 }
 
-export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (...a) => fetch(...a)): ApiClient {
-  const base = baseUrl.replace(/\/$/, '');
-
+/**
+ * Paths are relative: the site serves the API on its own origin at /api/*
+ * (functions/api/[[path]].ts).
+ */
+export function createApiClient(fetchImpl: typeof fetch = (...a) => fetch(...a)): ApiClient {
   async function get<T>(path: string): Promise<T> {
     let res: Response;
     try {
-      res = await fetchImpl(base + path, { headers: { Accept: 'application/json' } });
+      res = await fetchImpl(path, { headers: { Accept: 'application/json' } });
     } catch {
       throw new ApiError('NETWORK_ERROR', 'Could not reach the server. Check your connection and try again.', 0);
     }
@@ -63,4 +65,4 @@ export function createApiClient(baseUrl: string, fetchImpl: typeof fetch = (...a
   };
 }
 
-export const api = createApiClient(import.meta.env.VITE_API_BASE_URL);
+export const api = createApiClient();

@@ -6,7 +6,7 @@ describe('validation (mirrors the API)', () => {
     expect(parsePlayerIdentifier('2533274900000001')).toEqual({ kind: 'xuid', xuid: '2533274900000001' });
   });
 
-  it.each(['TestPlayer', 'Major Nelson', 'プレイヤー', 'Player#1234'])('accepts gamertag %s', (g) => {
+  it.each(['TestPlayer', 'Test Player', 'プレイヤー', 'Player#1234'])('accepts gamertag %s', (g) => {
     expect(parsePlayerIdentifier(g)).toEqual({ kind: 'gamertag', gamertag: g });
   });
 

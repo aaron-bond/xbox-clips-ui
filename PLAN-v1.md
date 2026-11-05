@@ -380,8 +380,8 @@ zone is on Cloudflare. It is not needed for v1.
   link previews use; the API still sees the visitor's IP), letting a
   request through only if it is same-origin (`Sec-Fetch-Site`, or the
   `Referer` for older browsers); report-only at first, then `403`.
-  `VITE_API_BASE_URL` becomes empty in production, so the app calls
-  `/api/...` on its own origin, and the Vite dev server forwards `/api`
+  The app calls `/api/...` on its own origin (`VITE_API_BASE_URL` is
+  gone), and the Vite dev server forwards `/api`
   to `https://xboxclips.io` for local development.
 
 ---

@@ -79,7 +79,8 @@ export function stubApi(handler: Handler) {
   vi.stubGlobal(
     'fetch',
     vi.fn(async (input: RequestInfo | URL) => {
-      const url = new URL(String(input));
+      // The app calls /api/... on its own origin, so requests arrive as relative paths.
+      const url = new URL(String(input), 'http://localhost');
       const path = url.pathname + url.search;
       paths.push(path);
       const { status = 200, body } = handler(path);

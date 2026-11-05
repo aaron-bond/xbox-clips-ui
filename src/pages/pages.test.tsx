@@ -35,9 +35,9 @@ describe('search', () => {
   it('navigates to the player page with GO', async () => {
     stubRoutes({ '/api/v1/players/': { body: profile } });
     const { router } = renderAt('/');
-    await userEvent.type(screen.getByLabelText('Gamertag'), 'Major Nelson');
+    await userEvent.type(screen.getByLabelText('Gamertag'), 'Test Player');
     await userEvent.click(screen.getByRole('button', { name: 'Go' }));
-    expect(router.state.location.pathname).toBe('/player/Major%20Nelson');
+    expect(router.state.location.pathname).toBe('/player/Test%20Player');
   });
 });
 
@@ -71,7 +71,7 @@ describe('player page', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL) => {
-        const path = new URL(String(input)).pathname;
+        const path = new URL(String(input), 'http://localhost').pathname;
         const json = (status: number, body: unknown) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
         if (path === '/api/v1/players/TestPlayer') return json(200, profile);
         if (path === `/api/v1/players/${XUID}/clips`) {
@@ -711,7 +711,7 @@ describe('achievements', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL) => {
-        const path = new URL(String(input)).pathname;
+        const path = new URL(String(input), 'http://localhost').pathname;
         if (path.endsWith('/games')) await held;
         const body = path.endsWith('/games') ? { xuid: XUID, games: [game(1)], limited: false } : path === '/api/v1/players/TestPlayer' ? profile : { error: { code: 'NOT_FOUND', message: 'x', status: 404 } };
         return new Response(JSON.stringify(body), { status: 'error' in body ? 404 : 200, headers: { 'Content-Type': 'application/json' } });
@@ -761,7 +761,7 @@ describe('achievements', () => {
       vi.stubGlobal(
         'fetch',
         vi.fn(async (input: RequestInfo | URL) => {
-          const path = new URL(String(input)).pathname;
+          const path = new URL(String(input), 'http://localhost').pathname;
           if (path === MYTHICS) {
             await held;
             return new Response(JSON.stringify({ error: { code: 'UPSTREAM_ERROR', message: 'x', status: 502 } }), { status: 502 });
@@ -898,7 +898,7 @@ describe('achievements', () => {
       vi.stubGlobal(
         'fetch',
         vi.fn(async (input: RequestInfo | URL) => {
-          const path = new URL(String(input)).pathname;
+          const path = new URL(String(input), 'http://localhost').pathname;
           if (path === NEAREST) {
             await held;
             return new Response(JSON.stringify({ error: { code: 'UPSTREAM_ERROR', message: 'Xbox data is temporarily unavailable.', status: 502 } }), { status: 502 });

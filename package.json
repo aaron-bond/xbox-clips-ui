@@ -10,11 +10,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "pretypecheck": "wrangler types --strict-vars=false",
+    "pretypecheck": "wrangler types",
     "typecheck": "tsc -p tsconfig.app.json && tsc -p tsconfig.functions.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "cf-typegen": "wrangler types --strict-vars=false"
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.104.3",
