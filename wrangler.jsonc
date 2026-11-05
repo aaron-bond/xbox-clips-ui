@@ -12,5 +12,5 @@
 
   // The API proxy's same-origin check (functions/api/[[path]].ts): "report" forwards
   // cross-site requests marked for the API's logs, "enforce" refuses them with 403.
-  "vars": { "API_GUARD": "report" }
+  "vars": { "API_GUARD": "enforce" }
 }

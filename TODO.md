@@ -5,14 +5,10 @@ any trade-off made.
 
 ## Next
 
-- [ ] **Lock the API to this site.** Brought forward 2026-11-05; the
-      design and rollout are in the API's PLAN §6. This repo's part:
-      `functions/api/[[path]].ts` forwarding `/api/*` over the `API`
-      binding with a same-origin check (report-only first, then
-      enforced), the app calling `/api/...` on its own origin, and the Vite
-      dev server forwarding `/api` to `https://xboxclips.io`. Ship to a
-      branch preview first. Re-test local development after Bot Fight
-      Mode goes on.
+- [ ] **Lock the API to this site: the rest.** Rollout in the API's PLAN
+      §6. This repo's part is built (phases 1 and 2, below); what remains
+      is the API's and the dashboard's. Re-test local development after
+      Bot Fight Mode goes on.
 - [ ] **Observability, across the UI and the API.** UI plan in PLAN §14,
       starting with whether it's worth doing (§14.1) and its spike
       (§14.6); the API's plan is its PLAN §11. Several items here and in
@@ -41,6 +37,17 @@ any trade-off made.
       used yet.
 
 ## Done
+
+- [x] **API served from the site's own origin, enforced** (2026-11-05,
+      phases 1 and 2 of the API's PLAN §6). `functions/api/[[path]].ts`
+      forwards `/api/*` over the `API` binding and refuses requests that
+      aren't same-origin with `403 FORBIDDEN`; `API_GUARD` in
+      `wrangler.jsonc` switches it back to `report`. The app calls
+      `/api/...` by relative path (`VITE_API_BASE_URL` removed) and the dev
+      server forwards `/api` to `https://xboxclips.io`. Tested on a branch
+      preview, then live, link previews included.
+      Trade-off: enforced the same day rather than after a day or two of
+      report-only logs; failures, if reported, are handled then.
 
 - [x] **Header and home page tidy** (2026-11-03). On the reel and games
       pages the picture and gamertag are one link back to the player, which
