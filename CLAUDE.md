@@ -6,9 +6,10 @@ rules that must not be broken.
 
 ## What this is
 
-React + Vite + TypeScript single-page app on Cloudflare Pages, with one Pages
-Function for link previews. Talks to the xbox-clips-api Worker: from the
-browser over CORS, and from the function over a service binding.
+React + Vite + TypeScript single-page app on Cloudflare Pages, with Pages
+Functions for link previews and the API proxy. Talks to the xbox-clips-api
+Worker over a service binding: the browser calls `/api/...` on the site's own
+origin, which a function forwards (the API's PLAN §6).
 
 ## Map
 
@@ -36,6 +37,7 @@ browser over CORS, and from the function over a service binding.
 | `src/styles/global.css` | Kingfisher tokens and the shared broadcast pieces (`.strap`, `.badge`, `.btn-primary`). |
 | `functions/clip/[xuid]/[clipId].ts` | Pages Function: adds the clip's preview tags to the app page. |
 | `functions/_lib/preview.ts` | Preview tag building, API call over the binding, HTMLRewriter. |
+| `functions/api/[[path]].ts`, `functions/_lib/guard.ts` | The API proxy: `/api/*` forwarded over the binding, with the same-origin check. `API_GUARD` in `wrangler.jsonc` is `report` or `enforce`. |
 | `src/test/helpers.tsx` | Test fixtures, `stubApi` (fake fetch), `renderAt` (router + query client). |
 
 ## Invariants
@@ -59,8 +61,8 @@ browser over CORS, and from the function over a service binding.
 
 - Tests never call the API: `stubApi` fakes `fetch` in app tests; function
   tests use fake `ASSETS` and `API` bindings.
-- Local `npm run dev` uses the production API and the shared budget. One
-  lookup at a time.
+- Local `npm run dev` forwards `/api` to the production site, so it uses the
+  production API and the shared budget. One lookup at a time.
 - Commit locally freely; ask before every push. A push to `main` deploys
   through Pages, so list the commits that would go up (short hash and
   subject) and wait for explicit approval each time.

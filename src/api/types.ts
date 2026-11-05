@@ -174,4 +174,6 @@ export type ApiErrorCode =
   | 'RATE_LIMITED'
   | 'UPSTREAM_RATE_LIMIT'
   | 'UPSTREAM_ERROR'
-  | 'INTERNAL_ERROR';
+  | 'INTERNAL_ERROR'
+  /** From the site's API proxy, not the API: a cross-site request. */
+  | 'FORBIDDEN';

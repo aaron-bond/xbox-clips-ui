@@ -4,9 +4,9 @@ Frontend for a social hub for sharing Xbox game clips, served at
 `https://xboxclips.io`. Enter a gamertag, browse that player's clips, play
 one and share a link to it. No login for anyone.
 
-A React single-page app on Cloudflare Pages, plus one Pages Function that
-gives clip links real previews in chat apps. Data comes from
-[xbox-clips-api](https://github.com/aaron-bond/xbox-clips-api). The design
+A React single-page app on Cloudflare Pages, plus Pages Functions that give
+clip links real previews in chat apps and serve the API at `/api/*`. Data
+comes from [xbox-clips-api](https://github.com/aaron-bond/xbox-clips-api). The design
 and the reasoning behind it are in [PLAN-v1.md](PLAN-v1.md).
 
 ## Local development
@@ -18,11 +18,12 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
-The dev server uses the production API, which allows `localhost:5173`.
+The app calls `/api/...` on its own origin, and the dev server forwards
+those calls to the production site, so it uses the production API.
 **Every new player looked up spends the shared upstream budget of 150
 requests per hour**, so test sparingly. To use a local API instead, run
 xbox-clips-api with `npm run dev` and put
-`VITE_API_BASE_URL=http://localhost:8787` in `.env.local`.
+`API_PROXY_TARGET=http://localhost:8787` in `.env.local`.
 
 | Command | Does |
 | :--- | :--- |
