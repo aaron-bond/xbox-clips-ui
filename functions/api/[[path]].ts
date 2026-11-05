@@ -1,6 +1,12 @@
 import { GUARD_HEADER, refusalReason } from '../_lib/guard';
 
 /**
+ * The values `API_GUARD` takes in wrangler.jsonc. The generated `Env` types it as
+ * whichever value is set today, so it is widened to both here.
+ */
+type GuardMode = 'report' | 'enforce';
+
+/**
  * Serves the API from the site's own origin by forwarding `/api/*` to the API
  * Worker over the service binding (the API's PLAN-v1.md §6). The whole request is
  * forwarded, so the API still sees the visitor's IP as `CF-Connecting-IP`.
@@ -10,7 +16,7 @@ import { GUARD_HEADER, refusalReason } from '../_lib/guard';
  */
 export const onRequest: PagesFunction<Env> = async ({ request, env }) => {
   const reason = refusalReason(request);
-  if (reason !== null && env.API_GUARD === 'enforce') {
+  if (reason !== null && (env.API_GUARD as GuardMode) === 'enforce') {
     return Response.json(
       { error: { code: 'FORBIDDEN', message: 'This API serves xboxclips.io only.', status: 403 } },
       { status: 403 },
