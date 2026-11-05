@@ -61,6 +61,13 @@ browser over CORS, and from the function over a service binding.
   tests use fake `ASSETS` and `API` bindings.
 - Local `npm run dev` uses the production API and the shared budget. One
   lookup at a time.
+- Commit locally freely; ask before every push. A push to `main` deploys
+  through Pages, so list the commits that would go up (short hash and
+  subject) and wait for explicit approval each time.
+- No real gamertags or XUIDs in the project: not in code, tests, docs,
+  TODOs, PLAN or commit messages, and never in history. Use placeholders
+  such as `TestPlayer`. Real players must not be associated with the
+  project; check the diff and message before every commit.
 - Checking a deploy: `npx wrangler pages deployment list --project-name
   xbox-clips-ui` gives the status; to confirm it's live, compare the
   `index-*.js` name served by xboxclips.io with a local `npm run build`. If
