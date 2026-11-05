@@ -640,6 +640,13 @@ app.
   menu in Safari, Chrome, Edge and Firefox, but does not support a custom
   in-page install button. Safari on macOS adds any site to the Dock.
   Firefox does not install from a manifest.
+- **Opening xboxclips.io links in the app** (checked 2026-11-03): only
+  an install from Chrome on Android does this, because Chrome turns it
+  into a WebAPK that claims links within the manifest's scope (`/`).
+  Confirmed on a real phone. Installed from Firefox, it doesn't happen,
+  and iOS has no way to do it. Making it work in every Android browser
+  would mean a Trusted Web Activity in the Play Store (Bubblewrap, a $25
+  developer account); considered and declined.
 - **Offline: deliberately minimal.** The site's content is streamed
   video and live data, so there is little to offer offline. If a service
   worker is added, it caches only the app's own static files and an

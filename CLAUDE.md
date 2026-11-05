@@ -28,7 +28,7 @@ browser over CORS, and from the function over a service binding.
 | `src/components/Screenshots.tsx` | The game page's store screenshots: featured image and thumbnails, or a swipe row on phones. |
 | `src/lib/install.ts`, `src/components/Install.tsx` | The install prompt: Chromium's install offer or iOS steps, as a home page banner and a footer link. |
 | `src/lib/savedPlayers.ts`, `src/components/SavedPlayers.tsx` | Pinned and recent players in local storage (device only), and the home page's Pinned and Recent sections. |
-| `src/components/PageHeader.tsx` | The shared header of a player's secondary pages, with its one Back button. |
+| `src/components/PageHeader.tsx` | The shared header of a player's secondary pages: picture and gamertag as one link to the player, and an optional Back button (only "Back to games" uses it). |
 | `src/pages/AchievementsPage.tsx`, `GameAchievementsPage.tsx` | A player's recent games, and their achievements in one game. |
 | `src/lib/usePlayerReel.ts` | Profile and clips for the player and reel pages, including clips by gamertag when the profile is throttled. |
 | `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |
@@ -61,6 +61,11 @@ browser over CORS, and from the function over a service binding.
   tests use fake `ASSETS` and `API` bindings.
 - Local `npm run dev` uses the production API and the shared budget. One
   lookup at a time.
+- Checking a deploy: `npx wrangler pages deployment list --project-name
+  xbox-clips-ui` gives the status; to confirm it's live, compare the
+  `index-*.js` name served by xboxclips.io with a local `npm run build`. If
+  a build fails with "build failed to initialize in time", the fault is
+  Cloudflare's: retry it from the dashboard.
 - Open items are in [TODO.md](TODO.md) and PLAN §9/§13. Proposed features: PLAN §11. Code marker:
   `TODO(Q1)` for client-IP forwarding over the service binding.
 
