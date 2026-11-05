@@ -5,6 +5,14 @@ any trade-off made.
 
 ## Next
 
+- [ ] **Lock the API to this site.** Brought forward 2026-11-05; the
+      design and rollout are in the API's PLAN §6. This repo's part:
+      `functions/api/[[path]].ts` forwarding `/api/*` over the `API`
+      binding with a same-origin check (report-only first, then
+      enforced), `VITE_API_BASE_URL` empty in production, and the Vite
+      dev server forwarding `/api` to `https://xboxclips.io`. Ship to a
+      branch preview first. Re-test local development after Bot Fight
+      Mode goes on.
 - [ ] **Observability, across the UI and the API.** UI plan in PLAN §14,
       starting with whether it's worth doing (§14.1) and its spike
       (§14.6); the API's plan is its PLAN §11. Several items here and in
@@ -25,10 +33,6 @@ any trade-off made.
 
 ## Later (PLAN §10)
 
-- [ ] **Lock the API to this site, if abuse appears** (PLAN §10): serve it at
-      `/api/*` through a Pages Function over the `API` binding, with a
-      `Sec-Fetch-Site` check, before the API's `workers.dev` address is
-      switched off.
 - [ ] Designed states for expired clips, empty reels and private reels (the
       API tells the last two apart).
 - [ ] Shared links to a game outside the player's recent 100 show no art or
