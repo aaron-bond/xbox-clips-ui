@@ -9,14 +9,12 @@ any trade-off made.
       §6. This repo's part is built (phases 1 and 2, below); what remains
       is the API's and the dashboard's. Re-test local development after
       Bot Fight Mode goes on.
-- [ ] **Observability, across the UI and the API.** UI plan in PLAN §14,
-      starting with whether it's worth doing (§14.1) and its spike
-      (§14.6); the API's plan is its PLAN §11. Several items here and in
-      the API's list (Android full screen, below) wait on the data this
-      gives.
 
 ## Deferred
 
+- [ ] **Observability on the UI.** Dropped 2026-11-06 as not needed
+      yet; the API's side goes ahead (its PLAN §11). The items below
+      that waited on its data now rest on visitor reports.
 - [ ] **A second player for comparison** (rest of P2). Deferred
       indefinitely (2026-11-03): no visitor has asked for it, and it isn't
       clear what it adds.

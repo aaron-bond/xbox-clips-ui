@@ -369,8 +369,8 @@ zone is on Cloudflare. It is not needed for v1.
 - **Pagination** beyond the first page of clips.
 - **Short share links.** Possible without stored state by packing both
   identifiers into one code; not needed yet.
-- **Analytics.** Error reporting is planned in §14; page views and
-  analytics stay out of scope.
+- **Analytics.** Error reporting was planned in §14 and dropped; page
+  views and analytics stay out of scope.
 - **Screenshots, accounts, any database.**
 - **Locking the API to this site.** No longer out of scope: brought
   forward 2026-11-05. The design, the checks and the phased rollout are
@@ -891,11 +891,16 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-1. **Observability** (§14), after the API's (API `PLAN-v1.md` §11),
-   starting with the spike in §14.6. A second player for comparison (the
-   rest of P2) was deferred indefinitely on 2026-11-03.
+None queued here. Observability on the UI (§14) was dropped on
+2026-11-06; a second player for comparison (the rest of P2) was
+deferred indefinitely on 2026-11-03.
 
 ## 14. Observability
+
+**Dropped 2026-11-06: not needed yet.** Kept below as the reasoning if it
+comes back. The API's side goes ahead without it, alerting through
+Cloudflare's own monitors and without the shared request ID this
+section relied on (API `PLAN-v1.md` §11).
 
 Drafted 2026-11-04, after the API's plan (API repo, `PLAN-v1.md` §11),
 whose decisions this follows where they apply. Nothing here is built.
