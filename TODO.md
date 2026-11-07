@@ -44,7 +44,9 @@ any trade-off made.
       into a full load (Back and Forward reload in place). API calls
       send `X-App-Build`. A test builds the app twice and checks
       `version.json` against the page, in place of a loop guard.
-      Still to confirm live: the header shows in Workers Logs.
+      Header confirmed in Workers Logs from the branch preview. The
+      reload itself was not tried by hand (the hourly wait); unit tests
+      cover it.
 
 - [x] **API served from the site's own origin, enforced** (2026-11-05,
       phases 1 and 2 of the API's PLAN §6). `functions/api/[[path]].ts`
