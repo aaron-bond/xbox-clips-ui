@@ -10,16 +10,14 @@ any trade-off made.
       is the API's and the dashboard's. Re-test local development after
       Bot Fight Mode goes on.
 
-- [ ] **Open tabs shouldn't run an old build forever.** The app never
-      reloads itself, so a tab left open (or put to sleep, or restored
-      by the browser) keeps running whatever bundle it first loaded.
-      Seen 2026-11-07: an Edge tab from weeks earlier still calling the
-      API's `workers.dev` host. Fresh loads are fine (`index.html` is
-      `max-age=0, must-revalidate`, bundles are hashed). Mechanism not
-      settled; one option is polling a small version file (and checking
-      when the tab regains focus), then reloading or offering to. Copies
-      already running won't have it, so it doesn't help the current
-      rollout.
+- [ ] **Open tabs shouldn't run an old build forever** (PLAN §15,
+      designed 2026-11-07). Seen: an Edge tab from weeks earlier still
+      calling the API's `workers.dev` host. The build writes
+      `version.json`; on focus or visibility, at most once an hour, a
+      background fetch sets a "newer build" flag; the root route turns
+      the next navigation into a full page load. The navigation check
+      never fetches. Copies already running won't have it, so it
+      doesn't help the current rollout.
 
 ## Deferred
 

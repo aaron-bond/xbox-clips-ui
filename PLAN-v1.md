@@ -891,9 +891,10 @@ working backlog; `CLAUDE.md` is the map of the code.
 
 ### Next steps, in order
 
-None queued here. Observability on the UI (§14) was dropped on
-2026-11-06; a second player for comparison (the rest of P2) was
-deferred indefinitely on 2026-11-03.
+1. **Open tabs and new builds** (§15): planned 2026-11-07, not built.
+
+Observability on the UI (§14) was dropped on 2026-11-06; a second player
+for comparison (the rest of P2) was deferred indefinitely on 2026-11-03.
 
 ## 14. Observability
 
@@ -1050,3 +1051,63 @@ few weeks live, reports that tell us nothing the API's logs didn't.
 3. `playback.*` and `app.crashed` first, the high-value pair.
 4. The preview function's logging.
 5. A few weeks live, then the §14.5 check: keep, trim, or remove.
+
+## 15. Open tabs and new builds
+
+Planned 2026-11-07, not built. **The goal: a tab left open never runs an
+old build forever.**
+
+### The problem
+
+Fresh loads are already current: Vite names each bundle by its content
+hash, and Pages serves `index.html` with `max-age=0, must-revalidate`.
+But the app never reloads itself, so a tab left open, put to sleep by
+the browser, or restored with a session keeps the bundle it first
+loaded. Seen 2026-11-07: an Edge tab from weeks earlier still calling the
+API's `workers.dev` host after the move to `/api` (API `PLAN-v1.md` §6).
+
+### Design
+
+- **Build ID.** The build writes `version.json` (the commit SHA) into
+  `dist/` and embeds the same ID in the bundle.
+- **Detection, in one module (`src/lib/build.ts`).** On `visibilitychange`
+  to visible and on window `focus`, it fetches `version.json` with
+  `cache: 'no-store'`, **at most once an hour**. No timer: every way a tab
+  goes stale (backgrounded, slept, restored, an app switched away from)
+  passes through becoming visible again. The fetch is fire-and-forget;
+  failures are ignored until the next check. A differing ID sets an
+  in-memory "newer build" flag.
+- **Switching, on the next navigation.** The root route in
+  `src/routes.tsx` checks the flag before each navigation renders and, if
+  set, throws `redirectDocument(destination)`: React Router abandons the
+  client-side navigation and does a full load of the URL the visitor was
+  heading to. Nothing interrupts a clip that is playing; the visitor sees
+  an ordinary page change. Pages and components don't change.
+- **The navigation check never fetches.** It reads the flag and returns.
+  A test holds this: a navigation completes while `version.json` is
+  still pending.
+
+### Choices made
+
+- **Hook:** a root `loader` with `shouldRevalidate: () => true`, or root
+  `middleware` (stable in React Router 8) if client middleware turns out
+  to run on every navigation with no loaders present. Check when
+  building.
+- **No timer, no 5-minute throttle.** An hour between checks is enough:
+  a tab notices a deploy within an hour of becoming visible, then
+  switches on its next navigation. Breaking changes go through a staged
+  rollout anyway.
+- **Not a service worker.** It would add a cache layer that can itself
+  serve stale code; the app has none (§11, P5).
+
+### To check when building
+
+- **Back and forward.** The browser has already moved the URL; make sure
+  the full load doesn't leave a duplicate history entry. If it does,
+  use `location.reload()` for those.
+- **The known gap:** a tab kept visible and focused across a deploy
+  stays old until it next loses and regains focus. Rare; if reports come
+  in, add a background check on navigation, at most once an hour.
+- **Optional later:** a `minimumBuild` in `version.json`, for a change
+  that must reach open tabs promptly: an older tab reloads at once while
+  hidden, or shows a banner while visible.
