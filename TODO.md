@@ -19,6 +19,14 @@ any trade-off made.
       never fetches. Copies already running won't have it, so it
       doesn't help the current rollout.
 
+- [ ] **Send the build ID on API requests.** The API client adds an
+      `X-App-Build` header (the same ID as `version.json`, PLAN §15) to
+      every call, so Workers Logs show which build each request came
+      from, under `$workers.event.request.headers`. Same-origin, so no
+      preflight. No API change expected: check one live record shows
+      the header before relying on it. Requests without it come from
+      older builds.
+
 ## Deferred
 
 - [ ] **Observability on the UI.** Dropped 2026-11-06 as not needed

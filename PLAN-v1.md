@@ -1087,6 +1087,12 @@ API's `workers.dev` host after the move to `/api` (API `PLAN-v1.md` §6).
   A test holds this: a navigation completes while `version.json` is
   still pending.
 
+- **The build ID on API requests.** The API client sends the same ID as
+  an `X-App-Build` header on every call (same-origin, so no preflight).
+  Workers Logs keep request headers on Cloudflare's own record of each
+  request, so the API needs no change to show which build a request
+  came from. Requests without the header come from older builds.
+
 ### Choices made
 
 - **Hook:** a root `loader` with `shouldRevalidate: () => true`, or root
