@@ -1,3 +1,4 @@
+import { currentBuild } from '../lib/build';
 import type { ApiErrorCode, Clip, Game, GameAchievements, NearestCompletion, PlayerCareer, PlayerClips, PlayerGames, PlayerMythics, PlayerProfile, Screenshot } from './types';
 
 /**
@@ -31,13 +32,15 @@ export interface ApiClient {
 
 /**
  * Paths are relative: the site serves the API on its own origin at /api/*
- * (functions/api/[[path]].ts).
+ * (functions/api/[[path]].ts). Each call names the build that made it, so the
+ * API's logs show which build a request came from (PLAN-v1.md §15).
  */
-export function createApiClient(fetchImpl: typeof fetch = (...a) => fetch(...a)): ApiClient {
+export function createApiClient(fetchImpl: typeof fetch = (...a) => fetch(...a), build: string | null = currentBuild()): ApiClient {
+  const headers: Record<string, string> = { Accept: 'application/json', ...(build ? { 'X-App-Build': build } : {}) };
   async function get<T>(path: string): Promise<T> {
     let res: Response;
     try {
-      res = await fetchImpl(path, { headers: { Accept: 'application/json' } });
+      res = await fetchImpl(path, { headers });
     } catch {
       throw new ApiError('NETWORK_ERROR', 'Could not reach the server. Check your connection and try again.', 0);
     }

@@ -10,25 +10,6 @@ any trade-off made.
       is the API's and the dashboard's. Re-test local development after
       Bot Fight Mode goes on.
 
-- [ ] **Open tabs shouldn't run an old build forever** (PLAN §15,
-      designed 2026-11-07). Seen: an Edge tab from weeks earlier still
-      calling the API's `workers.dev` host. The build writes
-      `version.json`, keyed on the bundle's content hash, not the
-      commit; on focus, visibility or `pageshow`, at most once an hour,
-      a background fetch sets a "different build" flag; the root route
-      turns the next navigation into a full page load. The navigation
-      check never fetches. CI tests that `version.json` matches the
-      bundle, in place of a loop guard. Copies already running won't have it, so it
-      doesn't help the current rollout.
-
-- [ ] **Send the build ID on API requests.** The API client adds an
-      `X-App-Build` header (the same ID as `version.json`, PLAN §15) to
-      every call, so Workers Logs show which build each request came
-      from, under `$workers.event.request.headers`. Same-origin, so no
-      preflight. No API change expected: check one live record shows
-      the header before relying on it. Requests without it come from
-      older builds.
-
 ## Deferred
 
 - [ ] **Observability on the UI.** Dropped 2026-11-06 as not needed
@@ -54,6 +35,16 @@ any trade-off made.
       used yet.
 
 ## Done
+
+- [x] **Open tabs move to new builds** (2026-11-07, PLAN §15). The
+      build writes `version.json` and stamps `<meta name="app-build">`,
+      keyed on the hashed assets the page loads. On focus, visibility or
+      `pageshow`, at most once an hour, a background check marks a
+      different build; the root route's loader turns the next navigation
+      into a full load (Back and Forward reload in place). API calls
+      send `X-App-Build`. A test builds the app twice and checks
+      `version.json` against the page, in place of a loop guard.
+      Still to confirm live: the header shows in Workers Logs.
 
 - [x] **API served from the site's own origin, enforced** (2026-11-05,
       phases 1 and 2 of the API's PLAN §6). `functions/api/[[path]].ts`

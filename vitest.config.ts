@@ -16,6 +16,14 @@ export default defineConfig({
         },
       },
       {
+        // The build itself: version.json against the page (PLAN-v1.md §15).
+        test: {
+          name: 'build',
+          environment: 'node',
+          include: ['build/**/*.test.ts'],
+        },
+      },
+      {
         // The Pages Function, in the Workers runtime, which provides HTMLRewriter.
         plugins: [cloudflareTest({ miniflare: { compatibilityDate: '2026-10-01' } })],
         test: {

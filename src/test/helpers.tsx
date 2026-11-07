@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { vi } from 'vitest';
 import type { Clip, Game, PlayerClips, PlayerProfile } from '../api/types';
+import { routerOptions } from '../lib/build';
 import { createQueryClient } from '../lib/queries';
 import { routes } from '../routes';
 
@@ -96,7 +97,7 @@ export function apiError(code: string, status: number, message = `${code} messag
 
 export function renderAt(path: string) {
   const queryClient = createQueryClient();
-  const router = createMemoryRouter(routes, { initialEntries: [path] });
+  const router = createMemoryRouter(routes, { ...routerOptions, initialEntries: [path] });
   const view = render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />

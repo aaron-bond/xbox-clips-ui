@@ -1054,7 +1054,7 @@ few weeks live, reports that tell us nothing the API's logs didn't.
 
 ## 15. Open tabs and new builds
 
-Planned 2026-11-07, not built. **The goal: a tab left open never runs an
+Planned and built 2026-11-07. **The goal: a tab left open never runs an
 old build forever.**
 
 ### The problem
@@ -1120,10 +1120,18 @@ deploys atomically, so this is accepted rather than guarded.
 
 ### Choices made
 
-- **Hook:** a root `loader` with `shouldRevalidate: () => true`, or root
-  `middleware` (stable in React Router 8) if client middleware turns out
-  to run on every navigation with no loaders present. Check when
-  building.
+- **Hook: a root `loader`** (`staleBuildLoader`) with
+  `shouldRevalidate: () => true`. Its first-load run is skipped by
+  passing the root route's data as already loaded (`routerOptions`), so
+  the first page renders exactly as before, with no loading pass.
+- **Back and Forward reload in place.** React Router turns a document
+  redirect into `location.assign()`, which after Back would add a
+  duplicate history entry. The watch notes `popstate` (it starts before
+  the router, so it hears it first) and the loader calls
+  `location.reload()` for those instead.
+- **The ID** is the first 12 hex digits of a SHA-256 over the sorted
+  `/assets/` names `index.html` loads (`build/build-id.ts`), so CSS-only
+  changes count too. The page carries it as `<meta name="app-build">`.
 - **No timer, no 5-minute throttle.** An hour between checks is enough:
   a tab notices a deploy within an hour of becoming visible, then
   switches on its next navigation. Breaking changes go through a staged
@@ -1131,11 +1139,8 @@ deploys atomically, so this is accepted rather than guarded.
 - **Not a service worker.** It would add a cache layer that can itself
   serve stale code; the app has none (§11, P5).
 
-### To check when building
+### Still to note
 
-- **Back and forward.** The browser has already moved the URL; make sure
-  the full load doesn't leave a duplicate history entry. If it does,
-  use `location.reload()` for those.
 - **The known gap:** a tab kept visible and focused across a deploy
   stays old until it next loses and regains focus. Rare; if reports come
   in, add a background check on navigation, at most once an hour.

@@ -34,3 +34,13 @@ describe('createApiClient', () => {
     await expect(api.getPlayer('x')).rejects.toMatchObject({ code: 'INTERNAL_ERROR', status: 502 });
   });
 });
+
+describe('the build header', () => {
+  it('names the build on every call, and is left out without one', async () => {
+    const fetch = vi.fn(async () => Response.json({ games: [] }));
+    await createApiClient(fetch, '5824a52a1b4b').getMostPlayed();
+    expect(new Headers((fetch.mock.calls[0] as unknown as [string, RequestInit])[1].headers).get('X-App-Build')).toBe('5824a52a1b4b');
+    await createApiClient(fetch, null).getMostPlayed();
+    expect(new Headers((fetch.mock.calls[1] as unknown as [string, RequestInit])[1].headers).has('X-App-Build')).toBe(false);
+  });
+});

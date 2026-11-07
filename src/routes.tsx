@@ -9,11 +9,16 @@ import { NotFoundPage } from './pages/NotFoundPage';
 import { PlayerPage } from './pages/PlayerPage';
 import { ReelPage } from './pages/ReelPage';
 import { SearchPage } from './pages/SearchPage';
+import { ROOT_ROUTE_ID, staleBuildLoader } from './lib/build';
 
 /** PLAN-v1.md §4. `/clip/:xuid/:clipId` is also the share link. */
 export const routes: RouteObject[] = [
   {
+    id: ROOT_ROUTE_ID,
     element: <Layout />,
+    // Before every navigation: if a different build is live, load it (PLAN-v1.md §15).
+    loader: staleBuildLoader,
+    shouldRevalidate: () => true,
     errorElement: <ErrorMessage error={null} />,
     children: [
       { path: '/', element: <SearchPage /> },

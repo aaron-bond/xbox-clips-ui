@@ -33,6 +33,7 @@ origin, which a function forwards (the API's PLAN §6).
 | `src/pages/AchievementsPage.tsx`, `GameAchievementsPage.tsx` | A player's recent games, and their achievements in one game. |
 | `src/lib/usePlayerReel.ts` | Profile and clips for the player and reel pages, including clips by gamertag when the profile is throttled. |
 | `src/lib/useNearViewport.ts` | "Has this element come into view yet?": defers work like the career request. |
+| `src/lib/build.ts`, `build/build-id.ts` | Open tabs and new builds (PLAN §15): the build ID and `version.json`, the background check, the root route's loader that turns the next navigation into a full load. |
 | `src/lib/stats.ts` | Stats derived from data already loaded (last clip, reel length, expiry). |
 | `src/styles/global.css` | Kingfisher tokens and the shared broadcast pieces (`.strap`, `.badge`, `.btn-primary`). |
 | `functions/clip/[xuid]/[clipId].ts` | Pages Function: adds the clip's preview tags to the app page. |
