@@ -13,10 +13,12 @@ any trade-off made.
 - [ ] **Open tabs shouldn't run an old build forever** (PLAN §15,
       designed 2026-11-07). Seen: an Edge tab from weeks earlier still
       calling the API's `workers.dev` host. The build writes
-      `version.json`; on focus or visibility, at most once an hour, a
-      background fetch sets a "newer build" flag; the root route turns
-      the next navigation into a full page load. The navigation check
-      never fetches. Copies already running won't have it, so it
+      `version.json`, keyed on the bundle's content hash, not the
+      commit; on focus, visibility or `pageshow`, at most once an hour,
+      a background fetch sets a "different build" flag; the root route
+      turns the next navigation into a full page load. The navigation
+      check never fetches. CI tests that `version.json` matches the
+      bundle, in place of a loop guard. Copies already running won't have it, so it
       doesn't help the current rollout.
 
 - [ ] **Send the build ID on API requests.** The API client adds an

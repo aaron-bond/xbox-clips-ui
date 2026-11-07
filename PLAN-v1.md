@@ -1068,15 +1068,24 @@ API's `workers.dev` host after the move to `/api` (API `PLAN-v1.md` §6).
 
 ### Design
 
-- **Build ID.** The build writes `version.json` (the commit SHA) into
-  `dist/` and embeds the same ID in the bundle.
+- **Build ID: the bundle's content hash, not the commit SHA.** The build
+  writes `version.json` into `dist/` and embeds the same ID in the
+  bundle, derived from the built output (the entry bundle's hash, as in
+  `index-83X2KzFQ.js`). A push that changes only docs or Pages Functions
+  leaves the browser code identical, so the ID stays the same and open
+  tabs aren't reloaded for nothing. The ID names the code a visitor
+  actually ran.
 - **Detection, in one module (`src/lib/build.ts`).** On `visibilitychange`
-  to visible and on window `focus`, it fetches `version.json` with
+  to visible, window `focus`, and `pageshow` (the dependable event when
+  a page returns from the back/forward cache), it fetches `version.json` with
   `cache: 'no-store'`, **at most once an hour**. No timer: every way a tab
   goes stale (backgrounded, slept, restored, an app switched away from)
   passes through becoming visible again. The fetch is fire-and-forget;
   failures are ignored until the next check. A differing ID sets an
-  in-memory "newer build" flag.
+  in-memory "different build" flag: different, not newer, since rolling
+  back a Pages deployment should move open tabs back too. Off in the
+  dev server, which has no `version.json`; the tests drive the module
+  directly instead.
 - **Switching, on the next navigation.** The root route in
   `src/routes.tsx` checks the flag before each navigation renders and, if
   set, throws `redirectDocument(destination)`: React Router abandons the
@@ -1086,12 +1095,28 @@ API's `workers.dev` host after the move to `/api` (API `PLAN-v1.md` §6).
 - **The navigation check never fetches.** It reads the flag and returns.
   A test holds this: a navigation completes while `version.json` is
   still pending.
-
 - **The build ID on API requests.** The API client sends the same ID as
   an `X-App-Build` header on every call (same-origin, so no preflight).
   Workers Logs keep request headers on Cloudflare's own record of each
   request, so the API needs no change to show which build a request
   came from. Requests without the header come from older builds.
+
+### Tests rather than a loop guard
+
+If `version.json` and the bundle ever disagreed, every navigation would
+become a full page load. Rather than a guard in the code, tests prevent
+it:
+
+- **On the build output** (CI, after `vite build`): the ID in
+  `dist/version.json` equals the ID embedded in the entry bundle, and
+  changes only when the bundle does (two builds of the same source give
+  the same ID).
+- **In the module:** matching IDs never set the flag; a differing one
+  does; a failed or malformed fetch leaves it unset.
+
+The remaining risk is a browser getting `version.json` from a new
+deployment and `index.html` from an old one during a deploy. Pages
+deploys atomically, so this is accepted rather than guarded.
 
 ### Choices made
 
